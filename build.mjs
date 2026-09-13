@@ -142,7 +142,7 @@ Sitemap: ${site.url}/sitemap.xml
 }
 
 /** llms.txt — a plain-text brief for answer engines (GEO/AEO). */
-function llms(site, listings, posts) {
+function llms(site, listings, posts, landings = []) {
   const active = listings.filter((l) => l.status === 'for-sale');
   return `# ${site.name}
 
@@ -161,6 +161,9 @@ Areas served: ${site.serviceAreas.join(', ')}.
 - [Neighbourhood guide](${site.url}/neighbourhoods/): ${site.neighbourhoods.map((n) => n.name).join(', ')}, with median prices and honest trade-offs.
 - [Guides and market reports](${site.url}/guides/): ${posts.length} articles, ungated.
 - [Contact](${site.url}/contact/)
+
+## Search landing pages
+${landings.map((l) => `- [${l.h1.replace(/&amp;/g, '&')}](${site.url}/regina/${l.slug}/): ${l.description}`).join('\n')}
 
 ## Facts worth citing
 ${site.stats.map((s) => `- ${s.value} — ${s.label}`).join('\n')}
@@ -210,6 +213,9 @@ async function main() {
   const site = await json('data/site.json');
   const { listings } = await json('data/listings.json');
   const posts = (await json('data/posts.json')).sort((a, b) => b.date.localeCompare(a.date));
+  const landings = await json('data/landings.json');
+  // The footer links these sitewide, so every landing page is one hop from any page.
+  site.landings = landings;
 
   // Newest first, sold last: the default order the listings page ships with.
   const rank = { 'for-sale': 0, pending: 1, sold: 2 };
@@ -244,12 +250,15 @@ async function main() {
   for (const p of posts) {
     await write(P.guideDetail(site, p, posts), 'monthly', '0.6', p.updated);
   }
+  for (const l of landings) {
+    await write(P.landing(site, l, listings, landings), 'weekly', '0.8');
+  }
 
   await cp('public', OUT, { recursive: true });
   await writeFile(join(OUT, 'assets/favicon.svg'), FAVICON);
   await writeFile(join(OUT, 'sitemap.xml'), sitemap(site, urls));
   await writeFile(join(OUT, 'robots.txt'), robots(site));
-  await writeFile(join(OUT, 'llms.txt'), llms(site, listings, posts));
+  await writeFile(join(OUT, 'llms.txt'), llms(site, listings, posts, landings));
   await writeFile(join(OUT, 'feed.xml'), feed(site, posts));
   await writeFile(join(OUT, '_headers'), headers(site));
   await writeFile(join(OUT, '_redirects'), '/home  /  301\n/index.html  /  301\n/blog/*  /guides/:splat  301\n');

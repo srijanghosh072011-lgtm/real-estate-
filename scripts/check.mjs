@@ -196,6 +196,60 @@ if (!failures) pass(`${linkCount} unique internal links all resolve`);
   if (!failures) pass(`${listings.length} listings each have a page, unique safe slug, and photos`);
 }
 
+/* ------------------------------------------------------ landing pages --- */
+// Near-duplicate pages that exist only to catch a keyword are doorway pages,
+// and search engines demote them. Every landing page must carry real inventory
+// and substantial writing of its own.
+{
+  const { matchListings } = await import('../src/pages.mjs');
+  const landings = JSON.parse(await readFile('data/landings.json', 'utf8'));
+  const { listings } = JSON.parse(await readFile('data/listings.json', 'utf8'));
+  const slugs = new Set();
+
+  for (const p of landings) {
+    if (slugs.has(p.slug)) fail(`duplicate landing slug: ${p.slug}`);
+    slugs.add(p.slug);
+
+    if (!(await exists(join(OUT, 'regina', p.slug, 'index.html')))) fail(`no page built for ${p.slug}`);
+
+    const matched = matchListings(listings, p.match).filter((l) => l.status !== 'sold');
+    if (!matched.length) fail(`${p.slug}: matches no active listings — thin page`);
+
+    const words = [
+      p.intro.join(' '),
+      p.sections.map((s) => s.h + ' ' + s.p).join(' '),
+      p.faqs.map((f) => f.q + ' ' + f.a).join(' '),
+    ]
+      .join(' ')
+      .split(/\s+/).length;
+    if (words < 300) fail(`${p.slug}: only ${words} words of unique content (min 300)`);
+    if (p.sections.length < 3) fail(`${p.slug}: fewer than 3 content sections`);
+    if (!p.faqs.length) fail(`${p.slug}: no FAQs, so no FAQPage schema`);
+
+    for (const r of p.related || []) {
+      if (!landings.some((o) => o.slug === r)) fail(`${p.slug}: related page "${r}" does not exist`);
+    }
+  }
+  if (!failures) pass(`${landings.length} landing pages each have listings, 300+ unique words and FAQs`);
+}
+
+/* ------------------------------------------------ duplicate metadata --- */
+// Two pages sharing a title or description is the clearest doorway-page signal.
+{
+  const seen = { title: new Map(), desc: new Map() };
+  for (const [f, src] of pages) {
+    const name = relative(OUT, f);
+    const title = src.match(/<title>([^<]*)<\/title>/)?.[1];
+    const desc = src.match(/<meta name="description" content="([^"]*)"/)?.[1];
+    for (const [key, val] of [['title', title], ['desc', desc]]) {
+      if (!val) continue;
+      if (seen[key].has(val)) fail(`duplicate ${key}: "${val.slice(0, 60)}…" in ${name} and ${seen[key].get(val)}`);
+      else seen[key].set(val, name);
+    }
+  }
+  if (!failures) pass('every page has a unique title and meta description');
+}
+
 /* ------------------------------------------------- pre-launch blockers --- */
 // These are configuration, not code defects, so they are reported once and
 // only fail the run under `--strict` (what CI uses before a production deploy).

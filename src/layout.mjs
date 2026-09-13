@@ -128,6 +128,19 @@ function footer(site) {
             <li><a href="/privacy/">Privacy policy</a></li>
           </ul>
         </div>
+        ${
+          site.landings?.length
+            ? `<div>
+          <h3>Popular searches</h3>
+          <ul>
+            ${site.landings
+              .slice(0, 6)
+              .map((l) => `<li><a href="/regina/${esc(l.slug)}/">${l.h1}</a></li>`)
+              .join('')}
+          </ul>
+        </div>`
+            : ''
+        }
         <div>
           <h3>Office</h3>
           <ul class="plain">

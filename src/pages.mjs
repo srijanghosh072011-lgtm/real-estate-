@@ -874,6 +874,187 @@ ${ctaBanner()}`;
 const slugify = (s) =>
   s.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 
+/* -------------------------------------------------------------- landing --- */
+
+/**
+ * Select the listings a landing page should show.
+ * Every landing page carries real inventory — a page with nothing on it is a
+ * doorway page, which is worth less than no page at all.
+ */
+export function matchListings(listings, m = {}) {
+  return listings.filter((l) => {
+    if (m.status && l.status !== m.status) return false;
+    if (m.hood && l.neighbourhood !== m.hood) return false;
+    if (m.hoods && !m.hoods.includes(l.neighbourhood)) return false;
+    if (m.types && !m.types.includes(l.type)) return false;
+    if (m.maxPrice && l.price > m.maxPrice) return false;
+    if (m.minPrice && l.price < m.minPrice) return false;
+    if (m.keyword) {
+      const hay = (l.description + ' ' + l.highlights.join(' ')).toLowerCase();
+      if (!hay.includes(m.keyword.toLowerCase())) return false;
+    }
+    return true;
+  });
+}
+
+export function landing(site, page, listings, all) {
+  const hood = page.hood ? site.neighbourhoods.find((n) => n.slug === page.hood) : null;
+  const matched = matchListings(listings, page.match).filter((l) => l.status !== 'sold');
+  // Never ship an empty grid: fall back to current inventory so the page is useful.
+  const shown = matched.length ? matched : listings.filter((l) => l.status === 'for-sale').slice(0, 3);
+  const prices = matched.map((l) => l.price);
+
+  const facts = [
+    hood ? ['Median price', money(hood.medianPrice)] : null,
+    ['Listings on this page', matched.length],
+    prices.length ? ['From', money(Math.min(...prices))] : null,
+    prices.length ? ['Up to', money(Math.max(...prices))] : null,
+  ].filter(Boolean);
+
+  const related = (page.related || [])
+    .map((slug) => all.find((p) => p.slug === slug))
+    .filter(Boolean)
+    .map(
+      (p) => `
+      <a class="rel-card" href="/regina/${esc(p.slug)}/" data-track="related_landing" data-track-id="${esc(p.slug)}">
+        <span class="rel-eyebrow">${esc(p.eyebrow)}</span>
+        <span class="rel-title">${p.h1}</span>
+        ${icon('arrow', 'rel-ic')}
+      </a>`
+    )
+    .join('');
+
+  const body = `
+<section class="shell page-head">
+  <nav class="crumbs" aria-label="Breadcrumb">
+    <a href="/">Home</a> <span aria-hidden="true">/</span>
+    <a href="/listings/">Listings</a> <span aria-hidden="true">/</span>
+    <span aria-current="page">${page.h1}</span>
+  </nav>
+  <p class="eyebrow">${esc(page.eyebrow)}</p>
+  <h1 class="display">${page.h1}</h1>
+  ${page.intro.map((p, i) => (i === 0 ? `<p class="lede">${esc(p)}</p>` : `<p class="prose">${esc(p)}</p>`)).join('')}
+  <div class="row">
+    <a class="btn btn-dark" href="#current" data-track="landing_to_listings"><span>See current listings</span><span class="btn-ic">${icon('arrow')}</span></a>
+    <a class="btn btn-ghost" href="/contact/"><span>Ask a question</span></a>
+  </div>
+</section>
+
+${hood ? `
+<section class="shell sec-tight">
+  <div class="card-shell hero-strip">
+    <img src="${esc(hood.image)}" alt="${esc(hood.name)}, Regina" fetchpriority="high" decoding="async" width="1800" height="800">
+  </div>
+</section>` : ''}
+
+<section class="band" aria-label="At a glance">
+  <div class="shell stats">
+    ${facts.map((f) => `<div class="stat"><p class="stat-v">${esc(f[1])}</p><p class="stat-l">${esc(f[0])}</p></div>`).join('')}
+  </div>
+</section>
+
+<section class="shell sec" id="current" aria-labelledby="cur-h">
+  ${sectionHead({
+    eyebrow: matched.length ? 'Available now' : 'Currently available',
+    title: matched.length ? `${matched.length} matching ${matched.length === 1 ? 'property' : 'properties'}` : 'Nothing matching right now',
+    lede: matched.length
+      ? 'Updated from the MLS&reg; System. Every one of these is a property we have walked ourselves.'
+      : 'Inventory in this segment turns over quickly. Set an alert below and you will hear the morning something matches, or browse what is on the market today.',
+    action: `<a class="btn btn-ghost" href="/listings/"><span>All listings</span><span class="btn-ic">${icon('arrow')}</span></a>`,
+  })}
+  <div class="grid-3">${shown.map((l, i) => listingCard(l, { eager: i < 3 })).join('')}</div>
+</section>
+
+<section class="shell sec" aria-labelledby="detail-h">
+  <div class="article">
+    <aside class="article-toc"><div class="sticky">
+      <h2>On this page</h2>
+      <ul>${page.sections.map((s) => `<li><a href="#${esc(slugify(s.h))}">${esc(s.h)}</a></li>`).join('')}</ul>
+    </div></aside>
+    <div class="article-body prose">
+      <h2 class="sr-only" id="detail-h">About ${page.h1}</h2>
+      ${page.sections.map((s) => `<h2 id="${esc(slugify(s.h))}">${esc(s.h)}</h2><p>${esc(s.p)}</p>`).join('')}
+    </div>
+  </div>
+</section>
+
+${faqSection(page.faqs, { title: 'Questions people ask' })}
+
+${related ? `
+<section class="shell sec" aria-labelledby="rel-h">
+  ${sectionHead({ eyebrow: 'Related searches', title: 'People looking at this also looked at' })}
+  <div class="rel-grid">${related}</div>
+</section>` : ''}
+
+<section class="shell sec">
+  <div class="alert-box">
+    <div>
+      <p class="eyebrow">Property alerts</p>
+      <h2 class="display">Hear about these first.</h2>
+      <p class="lede">Tell us what you are after and you get an email the morning anything matching hits the MLS&reg;. One click to unsubscribe, and we never pass your details on.</p>
+    </div>
+    ${leadForm(site, {
+      id: `alert-${page.slug}`,
+      kind: `landing_${page.slug.replace(/-/g, '_')}`,
+      heading: 'Set up an alert',
+      sub: page.h1.replace(/&amp;/g, '&'),
+      cta: 'Start alerts',
+      fields: [
+        { name: 'criteria', label: 'What are you looking for?', type: 'textarea', required: true, placeholder: 'Budget, must-haves, timeline' },
+      ],
+    })}
+  </div>
+</section>`;
+
+  const schema = [
+    breadcrumbs(site, [
+      { name: 'Home', path: '/' },
+      { name: 'Listings', path: '/listings/' },
+      { name: page.h1.replace(/&amp;/g, '&'), path: `/regina/${page.slug}/` },
+    ]),
+    faqSchema(page.faqs),
+  ];
+
+  if (matched.length) {
+    schema.push({
+      '@type': 'ItemList',
+      name: page.h1.replace(/&amp;/g, '&'),
+      numberOfItems: matched.length,
+      itemListElement: matched.map((l, i) => ({
+        '@type': 'ListItem',
+        position: i + 1,
+        url: `${site.url}/listings/${l.slug}/`,
+        name: l.title,
+      })),
+    });
+  }
+
+  if (hood) {
+    schema.push({
+      '@type': 'Place',
+      name: hood.name,
+      description: hood.blurb,
+      image: hood.image,
+      address: {
+        '@type': 'PostalAddress',
+        addressLocality: site.city,
+        addressRegion: site.region,
+        addressCountry: site.country,
+      },
+    });
+  }
+
+  return {
+    title: page.title,
+    description: page.description,
+    path: `/regina/${page.slug}/`,
+    ogImage: hood ? hood.image : shown[0]?.images[0],
+    ogAlt: page.h1.replace(/&amp;/g, '&'),
+    body,
+    schema,
+  };
+}
+
 /* ---------------------------------------------------------------- about --- */
 
 export function about(site) {
