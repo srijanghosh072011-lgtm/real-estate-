@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 // Static site build. No dependencies — node >= 18 only.
-// Usage: node build.mjs   (output: dist/)
+// Usage: node build.mjs                      (output: dist/, served at /)
+//        BASE_PATH=/repo-name node build.mjs (served from a subdirectory)
 
 import { readFile, writeFile, mkdir, rm, cp } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
@@ -11,10 +12,19 @@ const OUT = 'dist';
 const json = async (p) => JSON.parse(await readFile(p, 'utf8'));
 const today = () => new Date().toISOString().slice(0, 10);
 
+// GitHub Pages serves a project repo from /<repo>/, not from the origin root,
+// so every root-absolute href and src needs that prefix. Rewriting the finished
+// HTML keeps the prefix out of all the templates.
+// ponytail: one regex at the end beats threading a base path through 3 modules.
+const BASE = (process.env.BASE_PATH || '').replace(/\/+$/, '');
+
+const rebase = (html) =>
+  BASE ? html.replace(/\b(href|src|action)="\/(?!\/)/g, `$1="${BASE}/`) : html;
+
 async function emit(path, html) {
   const file = join(OUT, path);
   await mkdir(dirname(file), { recursive: true });
-  await writeFile(file, html);
+  await writeFile(file, rebase(html));
 }
 
 const render = (site, spec) => page({ ...spec, site });
@@ -219,8 +229,10 @@ async function main() {
   await writeFile(join(OUT, 'feed.xml'), feed(site, posts));
   await writeFile(join(OUT, '_headers'), headers(site));
   await writeFile(join(OUT, '_redirects'), '/home  /  301\n/index.html  /  301\n/blog/*  /guides/:splat  301\n');
+  // Without this GitHub Pages runs Jekyll, which silently drops _headers.
+  await writeFile(join(OUT, '.nojekyll'), '');
 
-  console.log(`built ${urls.length + 1} pages -> ${OUT}/`);
+  console.log(`built ${urls.length + 1} pages -> ${OUT}/${BASE ? ` (base path ${BASE}/)` : ''}`);
   if (site.forms.accessKey.startsWith('REPLACE_')) {
     console.warn('WARNING: data/site.json still has a placeholder form access key. Forms will not deliver.');
   }

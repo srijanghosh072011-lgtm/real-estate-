@@ -13,6 +13,35 @@ node scripts/e2e.mjs    # browser checks (filters, calculator, forms, menu)
 npm run serve           # build + serve on :4173
 ```
 
+## Seeing the site
+
+**Locally:** `npm run serve`, then open <http://localhost:4173>. Nothing else needed.
+
+**On GitHub Pages:** `.github/workflows/pages.yml` builds and publishes on every
+push to `main` or a `claude/**` branch. Enable it once at **Settings → Pages →
+Source → GitHub Actions**, then the URL appears in the workflow run.
+
+If Pages shows this README instead of the site, Pages is set to
+"Deploy from a branch" — it finds no `index.html` at the repo root (the build
+output is `dist/`, which is gitignored) and falls back to rendering `README.md`.
+Switching the source to GitHub Actions fixes it.
+
+A project repo is served from `https://<user>.github.io/<repo>/`, not from the
+origin root, so the build takes a `BASE_PATH`:
+
+```bash
+BASE_PATH=/real-estate- node build.mjs   # rewrites every root-absolute href/src
+```
+
+The workflow derives that from the repository name automatically. Without it
+every stylesheet, script and link 404s and you get an unstyled wall of text.
+`check.mjs`, `e2e.mjs` and `shots.mjs` all honour `BASE_PATH` too, so the
+subdirectory build is tested exactly as it deploys.
+
+GitHub Pages is a **preview only** — it cannot serve the `_headers` file, so
+HSTS and the CSP are not applied there. Production belongs on Cloudflare Pages
+or Netlify, which is what `sync-and-deploy.yml` targets.
+
 ## Layout
 
 ```

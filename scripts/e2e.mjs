@@ -13,8 +13,11 @@ import assert from 'node:assert/strict';
 import { chromium } from 'playwright';
 
 const TYPES = { '.html': 'text/html', '.css': 'text/css', '.js': 'text/javascript', '.svg': 'image/svg+xml' };
+// Mirror a subdirectory deploy: links carry the prefix, dist/ does not.
+const BASE = (process.env.BASE_PATH || '').replace(/\/+$/, '');
 const server = createServer(async (req, res) => {
   let p = decodeURIComponent(req.url.split('?')[0]);
+  if (BASE && p.startsWith(BASE + '/')) p = p.slice(BASE.length);
   if (p.endsWith('/')) p += 'index.html';
   try {
     const buf = await readFile(join('dist', p));
@@ -27,7 +30,7 @@ const server = createServer(async (req, res) => {
 });
 
 const PORT = 4175;
-const url = (p) => `http://127.0.0.1:${PORT}${p}`;
+const url = (p) => `http://127.0.0.1:${PORT}${BASE}${p}`;
 await new Promise((r) => server.listen(PORT, r));
 
 const browser = await chromium.launch({ executablePath: process.env.CHROME_PATH || undefined });
@@ -106,7 +109,10 @@ assert.equal(await page.getAttribute('#general-contact [name="name"]', 'aria-inv
 ok('empty form is blocked client-side and the bad field is marked');
 
 // Hidden context fields must be populated for lead attribution.
-assert.equal(await page.inputValue('#general-contact [data-fill="page"]'), '/contact/');
+assert.ok(
+  (await page.inputValue('#general-contact [data-fill="page"]')).endsWith('/contact/'),
+  'lead form did not record the submitting page'
+);
 ok('lead forms carry page attribution');
 
 /* ---------------------------------------------------------- mobile nav --- */

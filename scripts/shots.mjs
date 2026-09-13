@@ -10,8 +10,10 @@ const TYPES = {
   '.svg': 'image/svg+xml', '.xml': 'application/xml', '.txt': 'text/plain', '.json': 'application/json',
 };
 
+const BASE = (process.env.BASE_PATH || '').replace(/\/+$/, '');
 const server = createServer(async (req, res) => {
   let p = decodeURIComponent(req.url.split('?')[0]);
+  if (BASE && p.startsWith(BASE + '/')) p = p.slice(BASE.length);
   if (p.endsWith('/')) p += 'index.html';
   try {
     const buf = await readFile(join('dist', p));
@@ -46,7 +48,7 @@ for (const [label, viewport] of [['desktop', { width: 1440, height: 1000 }], ['m
   page.on('pageerror', (e) => errors.push(`${label} ${page.url()}: ${e.message}`));
 
   for (const path of PAGES) {
-    await page.goto(`http://127.0.0.1:${PORT}${path}`, { waitUntil: 'load', timeout: 30000 }).catch(() => {});
+    await page.goto(`http://127.0.0.1:${PORT}${BASE}${path}`, { waitUntil: 'load', timeout: 30000 }).catch(() => {});
     await page.waitForTimeout(700);
     // Reveal animations are viewport-triggered; scroll through so nothing shoots blank.
     await page.evaluate(async () => {

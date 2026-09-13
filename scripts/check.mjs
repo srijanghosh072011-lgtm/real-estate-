@@ -131,6 +131,10 @@ const exists = async (p) => {
 
 const checked = new Set();
 let linkCount = 0;
+// When built for a subdirectory the prefix is part of every link but not of
+// the on-disk path, so strip it before resolving.
+const BASE = (process.env.BASE_PATH || '').replace(/\/+$/, '');
+const unbase = (h) => (BASE && h.startsWith(BASE + '/') ? h.slice(BASE.length) : h);
 
 for (const [f, src] of pages) {
   for (const m of src.matchAll(/href="(\/[^"#?]*)/g)) {
@@ -138,7 +142,8 @@ for (const [f, src] of pages) {
     if (checked.has(href)) continue;
     checked.add(href);
     linkCount++;
-    const target = href.endsWith('/') ? join(OUT, href, 'index.html') : join(OUT, href);
+    const path = unbase(href);
+    const target = path.endsWith('/') ? join(OUT, path, 'index.html') : join(OUT, path);
     if (!(await exists(target))) fail(`broken internal link: ${href} (first seen in ${relative(OUT, f)})`);
   }
 }

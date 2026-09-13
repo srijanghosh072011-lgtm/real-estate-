@@ -1,0 +1,71 @@
+name: Preview on GitHub Pages
+
+# Publishes the built site to GitHub Pages so there is always a live URL to
+# look at. This is a PREVIEW: GitHub Pages cannot serve the _headers file, so
+# HSTS and the Content-Security-Policy are not applied here. Production belongs
+# on Cloudflare Pages or Netlify — see sync-and-deploy.yml and SECURITY.md.
+
+on:
+  push:
+    branches: [main, 'claude/**']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Never cancel a running deploy half-way; queue instead.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Work out the base path
+        id: base
+        # A project site is served from https://<user>.github.io/<repo>/, so the
+        # build needs that prefix. A <user>.github.io repo is served from the
+        # root and needs none.
+        run: |
+          repo="${GITHUB_REPOSITORY#*/}"
+          if [ "$repo" = "${GITHUB_REPOSITORY_OWNER}.github.io" ]; then
+            echo "path=" >> "$GITHUB_OUTPUT"
+          else
+            echo "path=/$repo" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Build
+        env:
+          BASE_PATH: ${{ steps.base.outputs.path }}
+        run: node build.mjs
+
+      - name: Verify
+        env:
+          BASE_PATH: ${{ steps.base.outputs.path }}
+        # Not --strict: a preview is expected to run before the form and
+        # analytics keys are filled in.
+        run: node scripts/check.mjs
+
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
