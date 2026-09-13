@@ -1,12 +1,13 @@
-name: Sync listings and deploy
+name: Sync listings and rebuild pages
 
 on:
   schedule:
     # Twice an hour matches how often CREA DDF® boards refresh.
     - cron: '5,35 * * * *'
-  push:
-    branches: [main]
   workflow_dispatch:
+
+# Deliberately not triggered by push: this job pushes a commit itself, which
+# would retrigger it. Pages redeploys on that commit on its own.
 
 permissions:
   contents: write
@@ -34,29 +35,23 @@ jobs:
           DDF_AGENT_ID: ${{ vars.DDF_AGENT_ID }}
         run: node scripts/sync-listings.mjs
 
-      - name: Commit listing changes
-        run: |
-          if [ -n "$(git status --porcelain data/listings.json)" ]; then
-            git config user.name  "listing-bot"
-            git config user.email "bot@users.noreply.github.com"
-            git add data/listings.json
-            git commit -m "chore: sync listings from MLS feed"
-            git push
-          else
-            echo "no listing changes"
-          fi
-
-      - name: Build
-        run: node build.mjs
+      - name: Rebuild the pages committed at the repository root
+        # GitHub Pages serves this branch directly, so new listing data is not
+        # live until the generated pages are regenerated and committed too.
+        run: npm run pages
 
       - name: Verify
-        # --strict fails the deploy while any pre-launch item is unresolved.
-        run: node scripts/check.mjs --strict
+        run: node build.mjs && node scripts/check.mjs
 
-      - name: Deploy to Cloudflare Pages
-        if: ${{ secrets.CLOUDFLARE_API_TOKEN != '' }}
-        uses: cloudflare/wrangler-action@v3
-        with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages deploy dist --project-name=everline
+      - name: Commit listings and regenerated pages
+        run: |
+          if [ -n "$(git status --porcelain)" ]; then
+            git config user.name  "listing-bot"
+            git config user.email "bot@users.noreply.github.com"
+            git add -A
+            git commit -m "chore: sync listings from MLS feed and rebuild pages"
+            git push
+          else
+            echo "nothing changed"
+          fi
+

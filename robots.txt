@@ -1,0 +1,17 @@
+User-agent: *
+Allow: /
+Disallow: /404.html
+
+# Answer engines and AI crawlers are welcome on the public content.
+User-agent: GPTBot
+Allow: /
+User-agent: OAI-SearchBot
+Allow: /
+User-agent: ClaudeBot
+Allow: /
+User-agent: PerplexityBot
+Allow: /
+User-agent: Google-Extended
+Allow: /
+
+Sitemap: https://www.everlineproperty.ca/sitemap.xml

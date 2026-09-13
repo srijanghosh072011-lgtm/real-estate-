@@ -15,6 +15,32 @@ npm run serve           # build + serve on :4173
 
 ## Seeing the site
 
+**It is served by GitHub Pages from this branch.** The built pages are
+committed at the repository root — `index.html`, `assets/`, `listings/`,
+`buy/`, `sell/` and the rest — which is what Pages serves in its default
+"Deploy from a branch" mode. No workflow, no settings to change.
+
+Those root files are **generated**. Never hand-edit them; they are overwritten.
+Source lives in `data/`, `src/`, `public/` and `scripts/`. After changing any
+of it:
+
+```bash
+npm run pages     # rebuild and refresh the copies at the repository root
+git add -A && git commit -m "rebuild" && git push
+```
+
+`scripts/build-pages.mjs` tracks what it wrote in `.pages-manifest`, so a page
+you delete is removed from the root on the next run instead of lingering.
+
+Links are relative, so the same files work at `user.github.io`, at
+`user.github.io/repo/`, and by double-clicking `index.html` with no server.
+
+GitHub Pages cannot serve the `_headers` file, so HSTS and the CSP are **not**
+applied there — it is fine for viewing and sharing, but see `SECURITY.md`
+before treating it as the production host.
+
+## Other ways to run it
+
 **Locally:** `npm run serve`, then open <http://localhost:4173>. Nothing else needed.
 
 **With no server at all:** build with relative links and double-click the result.

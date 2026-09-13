@@ -9,6 +9,7 @@
   },
   "scripts": {
     "build": "node build.mjs",
+    "pages": "RELATIVE=1 node build.mjs && node scripts/build-pages.mjs",
     "check": "node build.mjs && node scripts/check.mjs",
     "e2e": "node build.mjs && node scripts/e2e.mjs",
     "shots": "node build.mjs && node scripts/shots.mjs",
