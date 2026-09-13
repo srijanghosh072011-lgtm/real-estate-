@@ -1,0 +1,62 @@
+name: Sync listings and deploy
+
+on:
+  schedule:
+    # Twice an hour matches how often CREA DDF® boards refresh.
+    - cron: '5,35 * * * *'
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: sync-and-deploy
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Pull listings from the MLS feed
+        if: ${{ vars.DDF_URL != '' }}
+        env:
+          DDF_URL: ${{ vars.DDF_URL }}
+          DDF_USER: ${{ secrets.DDF_USER }}
+          DDF_PASS: ${{ secrets.DDF_PASS }}
+          DDF_AGENT_ID: ${{ vars.DDF_AGENT_ID }}
+        run: node scripts/sync-listings.mjs
+
+      - name: Commit listing changes
+        run: |
+          if [ -n "$(git status --porcelain data/listings.json)" ]; then
+            git config user.name  "listing-bot"
+            git config user.email "bot@users.noreply.github.com"
+            git add data/listings.json
+            git commit -m "chore: sync listings from MLS feed"
+            git push
+          else
+            echo "no listing changes"
+          fi
+
+      - name: Build
+        run: node build.mjs
+
+      - name: Verify
+        # --strict fails the deploy while any pre-launch item is unresolved.
+        run: node scripts/check.mjs --strict
+
+      - name: Deploy to Cloudflare Pages
+        if: ${{ secrets.CLOUDFLARE_API_TOKEN != '' }}
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy dist --project-name=everline

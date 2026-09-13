@@ -1,0 +1,12 @@
+node_modules/
+dist/
+shots/
+.env
+.env.*
+!.env.example
+.DS_Store
+*.log
+.cache/
+.vercel/
+.netlify/
+.wrangler/

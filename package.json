@@ -1,0 +1,22 @@
+{
+  "name": "everline-property-group",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Static real estate site for Regina, SK. Zero dependencies.",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "build": "node build.mjs",
+    "check": "node build.mjs && node scripts/check.mjs",
+    "e2e": "node build.mjs && node scripts/e2e.mjs",
+    "shots": "node build.mjs && node scripts/shots.mjs",
+    "sync": "node scripts/sync-listings.mjs",
+    "serve": "node build.mjs && node --run serve:only",
+    "serve:only": "npx --yes serve dist -l 4173"
+  },
+  "devDependencies": {
+    "playwright": "^1.49.1"
+  }
+}
