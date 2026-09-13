@@ -17,6 +17,23 @@ npm run serve           # build + serve on :4173
 
 **Locally:** `npm run serve`, then open <http://localhost:4173>. Nothing else needed.
 
+**With no server at all:** build with relative links and double-click the result.
+
+```bash
+RELATIVE=1 node build.mjs      # then open dist/index.html in a browser
+```
+
+Every root-absolute link becomes a relative one computed from the page's depth,
+and directory URLs get an explicit `index.html`, so the whole site clicks
+through straight off the filesystem.
+
+**As a shareable hosted preview:** `node scripts/artifact-build.mjs` (after a
+`RELATIVE=1` build) produces a copy for a sandbox that only serves same-origin
+images — the Unsplash photography is swapped for generated SVG art in the brand
+palette and the map embeds become styled placeholders. Layout, type and every
+interaction are the real thing; the photography is not. The normal build keeps
+the real photography.
+
 **On GitHub Pages:** `.github/workflows/pages.yml` builds and publishes on every
 push to `main` or a `claude/**` branch. Enable it once at **Settings → Pages →
 Source → GitHub Actions**, then the URL appears in the workflow run.

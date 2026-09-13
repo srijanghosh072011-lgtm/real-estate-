@@ -12,19 +12,43 @@ const OUT = 'dist';
 const json = async (p) => JSON.parse(await readFile(p, 'utf8'));
 const today = () => new Date().toISOString().slice(0, 10);
 
-// GitHub Pages serves a project repo from /<repo>/, not from the origin root,
-// so every root-absolute href and src needs that prefix. Rewriting the finished
-// HTML keeps the prefix out of all the templates.
+// Templates always write root-absolute links (/assets/…, /listings/…). Two
+// deploy shapes need something else, so the finished HTML is rewritten once.
 // ponytail: one regex at the end beats threading a base path through 3 modules.
+//
+//   BASE_PATH=/repo   GitHub Pages project site, served from a subdirectory
+//   RELATIVE=1        no server at all — open dist/index.html by double-clicking
 const BASE = (process.env.BASE_PATH || '').replace(/\/+$/, '');
+const RELATIVE = !!process.env.RELATIVE;
 
-const rebase = (html) =>
-  BASE ? html.replace(/\b(href|src|action)="\/(?!\/)/g, `$1="${BASE}/`) : html;
+const LINK = /\b(href|src|action)="\/(?!\/)([^"]*)"/g;
+
+/**
+ * @param {string} html
+ * @param {string} file - output path, e.g. "listings/foo/index.html"
+ */
+function rebase(html, file) {
+  if (RELATIVE) {
+    // "listings/foo/index.html" sits two directories deep, so root is "../../".
+    const depth = file.split('/').length - 1;
+    const up = depth ? '../'.repeat(depth) : '';
+    return html.replace(LINK, (_, attr, rest) => {
+      // Split off ?query / #fragment so only the path part gets index.html.
+      const cut = rest.search(/[?#]/);
+      let path = cut === -1 ? rest : rest.slice(0, cut);
+      const tail = cut === -1 ? '' : rest.slice(cut);
+      // A directory URL has no file to open over file://; name it explicitly.
+      if (path === '' || path.endsWith('/')) path += 'index.html';
+      return `${attr}="${up}${path}${tail}"`;
+    });
+  }
+  return BASE ? html.replace(LINK, (_, attr, rest) => `${attr}="${BASE}/${rest}"`) : html;
+}
 
 async function emit(path, html) {
   const file = join(OUT, path);
   await mkdir(dirname(file), { recursive: true });
-  await writeFile(file, rebase(html));
+  await writeFile(file, rebase(html, path));
 }
 
 const render = (site, spec) => page({ ...spec, site });
