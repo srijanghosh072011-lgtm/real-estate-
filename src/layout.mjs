@@ -96,8 +96,8 @@ function footer(site) {
     <div class="footer-top">
       <div class="footer-lead">
         <p class="eyebrow">Get in touch</p>
-        <h2 class="display">Let's talk about<br>what you're actually trying to do.</h2>
-        <p class="lede">No script, no pressure. A twenty-minute call where you ask questions and we answer them.</p>
+        <h2 class="display">So what are you<br>actually trying to do?</h2>
+        <p class="lede">Twenty minutes on the phone. You ask, we answer. No script, and nobody chases you afterwards.</p>
         <div class="row">
           <a class="btn btn-dark" href="/contact/" data-track="footer_cta">
             <span>Book a call</span><span class="btn-ic">${icon('arrow')}</span>

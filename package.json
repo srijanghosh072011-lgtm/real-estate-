@@ -15,7 +15,8 @@
     "shots": "node build.mjs && node scripts/shots.mjs",
     "sync": "node scripts/sync-listings.mjs",
     "serve": "node build.mjs && node --run serve:only",
-    "serve:only": "npx --yes serve dist -l 4173"
+    "serve:only": "npx --yes serve dist -l 4173",
+    "voice": "node scripts/voice.mjs"
   },
   "devDependencies": {
     "playwright": "^1.49.1"

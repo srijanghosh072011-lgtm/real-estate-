@@ -6,44 +6,50 @@
     "title": "Harbour Landing Homes for Sale, Regina | Prices & Listings",
     "description": "Current Harbour Landing listings, median prices, school catchments, and the honest trade-off on lot size. Regina's largest modern build-out, from an agent who sells there.",
     "eyebrow": "Regina · South end",
-    "match": { "hood": "Harbour Landing" },
+    "match": {
+      "hood": "Harbour Landing"
+    },
     "intro": [
-      "Harbour Landing is the largest planned neighbourhood Regina has built in fifty years, and almost every house in it went up after 2008. That single fact explains most of what it is like to own here: predictable maintenance, modern insulation and windows, insurance quotes that do not flinch, and a street grid designed around a grocery store rather than a grain elevator.",
-      "It is also the neighbourhood buyers most often fall for on a Saturday and regret on a Tuesday, because the lots are small and the boulevards have no canopy yet. Here is what we tell clients before they write."
+      "Harbour Landing is the biggest planned neighbourhood Regina's built in fifty years, and almost every house in it went up after 2008. That one fact explains most of what it's like to live here. Maintenance you can predict. Modern windows. Insurance quotes that don't flinch. A street grid built around a grocery store instead of a grain elevator.",
+      "It's also the neighbourhood buyers fall for on a Saturday and second-guess by Tuesday, because the lots are small and the boulevards have no shade yet. So here's what we tell people before they write."
     ],
     "sections": [
       {
-        "h": "What you actually get for the money",
-        "p": "The median sits around $412,000, which in Harbour Landing buys a 1,800 to 2,200 square foot two-storey, three or four bedrooms, attached double garage, and a fully developed or development-ready basement. Compare that with Cathedral, where the same money buys more square footage and more land but comes with a 1920s mechanical system attached to it. You are paying a premium here for not having to think about the house."
+        "h": "What the money actually buys",
+        "p": "Median's around $412,000. That gets you 1,800 to 2,200 square feet, three or four bedrooms, an attached double garage, and a basement that's either finished or ready to be. Cathedral gives you more house and more land for the same money, but it comes with 1920s wiring attached. Here you're paying not to think about the house. For plenty of people that's worth it."
       },
       {
-        "h": "Schools and the daily run",
-        "p": "Dr. George Ferguson School and Harbour Landing School both sit inside the neighbourhood, which is why families with children under twelve dominate the buyer pool. The practical effect on price is that homes within a genuine walking radius of either school hold value noticeably better and sell faster in spring. If schooling matters to you, verify the catchment with Regina Public Schools for the specific address rather than trusting the neighbourhood name — the boundaries cut through it."
+        "h": "Schools, and the walk to them",
+        "p": "Dr. George Ferguson and Harbour Landing School are both inside the neighbourhood, which is why families with young kids dominate the buyer pool. Anything within a real walking radius of either one holds its value better and sells faster in spring. One warning: the catchment boundaries cut right through the neighbourhood, so check the specific address with Regina Public Schools. Don't trust the name on the sign."
       },
       {
-        "h": "The trade-off nobody mentions at the showing",
-        "p": "Lots run small, commonly 35 to 42 feet wide, and the houses are close together. If you want a yard your kids can actually kick a ball in, or a garage deep enough for a truck plus a workbench, you will be happier in White City or on an older Lakeview lot. The tree cover is also twenty years out. Harbour Landing in August is a bright, hot, open neighbourhood, not a shaded one."
+        "h": "The part that catches people out",
+        "p": "Lots are narrow, often 35 to 42 feet, and the houses sit close. If you want a yard your kids can play soccer in, or a garage deep enough for a truck and a workbench, you'll be happier in White City or on an older Lakeview lot. And the tree cover is twenty years out. In August this is a bright, hot, wide-open place. It isn't shady."
       },
       {
-        "h": "Basement suites and the mortgage helper",
-        "p": "A meaningful share of the newer builds here were framed with a separate basement entrance, and legal suites are common enough to be worth searching for specifically. A legal one-bedroom suite in Harbour Landing currently rents at roughly $1,100 to $1,250 including utilities. That is the difference between qualifying and not qualifying for a lot of buyers, so the suited homes move fast and rarely need a price reduction."
+        "h": "Suites are worth searching for specifically",
+        "p": "A lot of the newer builds here were framed with a separate basement entrance, and legal suites are common enough to hunt for on purpose. A one-bedroom suite in Harbour Landing rents for roughly $1,100 to $1,250 with utilities. For a lot of buyers that's the difference between qualifying and not. Which is exactly why suited houses here go fast and almost never need a price drop."
       }
     ],
     "faqs": [
       {
         "q": "Is Harbour Landing a good place to buy in Regina?",
-        "a": "For a family wanting a newer, low-maintenance house with schools and groceries within walking distance, it is probably the strongest choice in the city. For someone wanting land, mature trees, character, or a workshop, it is the wrong neighbourhood and no amount of showings will change that."
+        "a": "If you want a newer, low-maintenance house with schools and groceries you can walk to, it's probably the best choice in the city. If you want land, big trees, character or a workshop, it's the wrong neighbourhood and no amount of showings will fix that."
       },
       {
         "q": "How much is a house in Harbour Landing?",
-        "a": "The median sale price is around $412,000 on a rolling twelve-month basis. Townhouses and condos start near $250,000, and the larger executive builds on the southern edge reach into the $600,000s."
+        "a": "Median sale price sits around $412,000 over a rolling year. Townhouses and condos start near $250,000. The bigger executive builds on the southern edge run into the $600,000s."
       },
       {
         "q": "Are Harbour Landing homes new enough to skip an inspection?",
-        "a": "No. We have found improperly graded lots, failing sump systems and poorly finished basement developments in houses under ten years old. New construction shifts which problems you look for, it does not remove them. Always inspect."
+        "a": "No. We've found bad lot grading, failing sumps and rough basement developments in houses under ten years old. New construction changes which problems you're looking for. It doesn't remove them. Inspect anyway."
       }
     ],
-    "related": ["regina-homes-with-basement-suites", "first-time-home-buyers-regina", "the-greens-on-gardiner-homes-for-sale"]
+    "related": [
+      "regina-homes-with-basement-suites",
+      "first-time-home-buyers-regina",
+      "the-greens-on-gardiner-homes-for-sale"
+    ]
   },
   {
     "slug": "cathedral-homes-for-sale",
@@ -52,44 +58,50 @@
     "title": "Cathedral Regina Homes for Sale | Character Houses & Prices",
     "description": "Cathedral listings, median prices, and a straight account of what a 1920s Regina character house really costs to own. Best value per square foot in the city, with conditions.",
     "eyebrow": "Regina · Character district",
-    "match": { "hood": "Cathedral" },
+    "match": {
+      "hood": "Cathedral"
+    },
     "intro": [
-      "Cathedral is the closest thing Regina has to a walkable urban neighbourhood: elm canopy over the streets, front porches people actually sit on, and 13th Avenue carrying the densest run of independent cafés, restaurants and shops in Saskatchewan.",
-      "It is also the neighbourhood where buyers most often underestimate the cost of ownership. The houses are ninety to a hundred years old and were built before anyone anticipated a dishwasher, let alone a heat pump."
+      "Cathedral's the closest thing Regina has to a proper walkable neighbourhood. Elm canopy over the streets, porches people actually sit on, and 13th Avenue running the densest stretch of independent shops and restaurants in the province.",
+      "It's also where buyers most often underestimate what ownership costs. These houses are ninety-odd years old. They were built before anyone imagined a dishwasher, never mind a heat pump."
     ],
     "sections": [
       {
-        "h": "The best value per square foot in Regina",
-        "p": "The median is around $298,000, comfortably the lowest of any established Regina neighbourhood with this level of amenity. For that you are typically getting 1,300 to 1,700 square feet over two storeys on a 50-foot lot with a detached garage off a paved lane. In pure dollars-per-foot terms nothing else in the city competes."
+        "h": "Best value per square foot in the city",
+        "p": "Median's about $298,000, easily the lowest of any established Regina neighbourhood with this much going on. You typically get 1,300 to 1,700 square feet over two storeys, a 50-foot lot, and a detached garage off a paved lane. On pure dollars per foot, nothing else in Regina comes close."
       },
       {
-        "h": "Budget for the deferred items, then buy anyway",
-        "p": "Assume $15,000 to $30,000 of work on almost any Cathedral purchase that has not been recently updated: knob-and-tube remediation or a panel upgrade, a section of sewer line, basement crack injection, or shingles. We price this into every offer we write here. Factored in honestly, Cathedral is still the better deal — the mistake is not the house, it is pretending the list is empty."
+        "h": "Budget for the list, then buy anyway",
+        "p": "Assume $15,000 to $30,000 of work on any Cathedral house that hasn't been updated recently. Panel upgrade or knob-and-tube removal, a stretch of sewer line, crack injection, shingles. We price that into every offer we write here. Counted honestly, it's still the better deal. The mistake isn't the house. It's pretending the list is empty."
       },
       {
-        "h": "What to have the inspector look at first",
-        "p": "Three things, in order. The electrical panel and whether any knob-and-tube remains, because it affects insurability before it affects safety. The foundation, since Regina's expansive clay moves with moisture and Cathedral basements show it. And the sewer line to the street — a camera scope costs a couple of hundred dollars and is the single best money you will spend on a hundred-year-old house."
+        "h": "What to point the inspector at",
+        "p": "Three things. The electrical panel, and whether any knob-and-tube is left, because that hits your insurability before it hits your safety. The foundation, since Regina clay moves with moisture and Cathedral basements show it. And the sewer line to the street. A camera scope runs a couple hundred dollars and it's the best money you'll spend on a hundred-year-old house."
       },
       {
-        "h": "Parking, lanes and the winter reality",
-        "p": "Most Cathedral houses have no attached garage and many have no driveway. Parking is on the street or in a detached garage off the back lane, and the lanes are not plowed with the same priority as the streets. If you have two vehicles and no tolerance for shovelling, look hard at that before falling for the porch."
+        "h": "Parking, lanes, and January",
+        "p": "Most houses here have no attached garage and plenty have no driveway. You park on the street or in a detached garage off the back lane, and the lanes don't get plowed on the same schedule as the streets. Two vehicles and no patience for shovelling? Think hard about that before the porch wins you over."
       }
     ],
     "faqs": [
       {
         "q": "Is Cathedral a good neighbourhood in Regina?",
-        "a": "It is the strongest neighbourhood in the city for walkability, character housing and independent business, and the best value per square foot. The trade-offs are old mechanical systems, street parking and smaller closets. People who want it tend to want it specifically, and they rarely leave."
+        "a": "For walkability, character housing and independent business it's the strongest in the city, and the best value per square foot. You trade that against old mechanical systems, street parking and small closets. People who want Cathedral tend to want Cathedral specifically, and they don't often leave."
       },
       {
         "q": "How old are Cathedral houses?",
-        "a": "Most of the housing stock dates from 1910 to 1935, with pockets of postwar infill. Expect original fir floors, plaster walls, and a basement that was dug for a coal furnace rather than a rec room."
+        "a": "Most were built between 1910 and 1935, with some postwar infill scattered through. Expect fir floors, plaster walls, and a basement dug for a coal furnace rather than a rec room."
       },
       {
         "q": "Can you get a mortgage on an older Cathedral home?",
-        "a": "Yes, but insurability drives it. Lenders want to see the home insured, and insurers ask about knob-and-tube wiring, 60-amp service, oil tanks and roof age. Get an insurance quote during your condition period, not after."
+        "a": "Yes, but insurability drives it. The lender wants the house insured, and insurers ask about knob-and-tube, 60-amp service, oil tanks and roof age. Get an insurance quote during your condition period, not after."
       }
     ],
-    "related": ["regina-revenue-and-investment-properties", "first-time-home-buyers-regina", "lakeview-homes-for-sale"]
+    "related": [
+      "regina-revenue-and-investment-properties",
+      "first-time-home-buyers-regina",
+      "lakeview-homes-for-sale"
+    ]
   },
   {
     "slug": "lakeview-homes-for-sale",
@@ -98,44 +110,50 @@
     "title": "Lakeview Regina Homes for Sale | Wascana Park Real Estate",
     "description": "Lakeview listings backing onto Wascana Park. Median prices, why inventory is so thin, and what a mid-century bungalow on a big lot is really worth in Regina.",
     "eyebrow": "Regina · Wascana",
-    "match": { "hood": "Lakeview" },
+    "match": {
+      "hood": "Lakeview"
+    },
     "intro": [
-      "Lakeview is where Regina's mid-century professional class built, and the reason it still commands a premium is simple geography: it backs onto Wascana Park, one of the largest urban parks in North America, and nobody is making more of that edge.",
-      "The consequence for buyers is that Lakeview rarely has much on the market, and the good properties do not sit."
+      "Lakeview is where Regina's mid-century professionals built, and the reason it still costs more is geography. It backs onto Wascana Park, and nobody's making any more of that edge.",
+      "Which means Lakeview rarely has much for sale, and the good ones don't sit."
     ],
     "sections": [
       {
-        "h": "Why inventory is always thin",
-        "p": "Lakeview turns over slowly. Owners stay for decades, and a significant share of recent sales have been to buyers who intend to rebuild rather than renovate. At any given moment the neighbourhood might have a handful of active listings. If you want in, you generally wait — and you need to be ready to act within days when the right one appears, which means financing arranged in advance."
+        "h": "Why there's never anything on the market",
+        "p": "People stay here for decades. A good share of recent sales went to buyers who planned to rebuild rather than renovate. At any given moment the whole neighbourhood might have a handful of active listings. If you want in, you wait, and then you move within days when the right one shows up. That means financing sorted well in advance."
       },
       {
-        "h": "Proximity to the park is the durable value",
-        "p": "The closer a property sits to the Wascana pathway, the more resilient its price is in a soft market. Backing directly onto green space, or sitting within two or three properties of a pathway entrance, is the single most reliable value feature in Regina residential real estate. It survives interest rate cycles in a way that a renovated kitchen does not."
+        "h": "Park proximity is the durable part",
+        "p": "The closer a house sits to the Wascana pathway, the better its price holds in a soft market. Backing green space, or sitting two or three doors from a pathway entrance, is the most reliable value feature in Regina residential real estate. It survives rate cycles. A renovated kitchen doesn't."
       },
       {
-        "h": "Bungalows, rebuilds and what you are really buying",
-        "p": "The classic Lakeview property is a 1950s or 1960s bungalow on a 60 to 75 foot lot. Many have been taken to the studs and rebuilt behind a retained facade — clerestory windows and a stone fireplace kept, everything else new. Read the listing carefully: a 'renovated' 1962 bungalow and a studs-out 2020 rebuild are different assets at different prices, and the MLS remarks do not always make the distinction clear."
+        "h": "Bungalows, rebuilds, and reading the listing carefully",
+        "p": "The classic Lakeview property is a 1950s or 60s bungalow on a 60 to 75 foot lot. Plenty have been taken to the studs and rebuilt behind a kept facade, clerestory windows and stone fireplace retained, everything else new. Read the remarks closely. A renovated 1962 bungalow and a studs-out 2020 rebuild are different assets at different prices, and the MLS wording doesn't always make that obvious."
       },
       {
-        "h": "The lot is often worth more than the house",
-        "p": "On the larger Lakeview lots, particularly those over 8,000 square feet near the park, the land carries most of the value. That changes how you should think about condition. A tired house on an excellent lot can be a better buy than a nicely finished one on a narrow interior lot, and we will tell you when we think that is the case."
+        "h": "Sometimes the lot is the asset",
+        "p": "On the bigger Lakeview lots, especially the ones over 8,000 square feet near the park, the land carries most of the value. That should change how you read condition. A tired house on a great lot can beat a tidy one on a narrow interior lot, and we'll tell you when we think that's the case."
       }
     ],
     "faqs": [
       {
         "q": "How much are homes in Lakeview, Regina?",
-        "a": "The median is around $465,000 on a rolling twelve-month basis. Rebuilt properties and those backing the Wascana pathway regularly clear $700,000, while original-condition interior-lot bungalows can still be found in the high $300,000s."
+        "a": "Median's around $465,000 over a rolling year. Rebuilt houses and anything backing the pathway regularly clear $700,000. You can still find original-condition interior-lot bungalows in the high $300,000s."
       },
       {
         "q": "Why do Lakeview homes sell so quickly?",
-        "a": "Low turnover means few listings, and the buyer pool waiting for the neighbourhood is larger than the supply. Well-priced Lakeview properties frequently see offers inside the first week."
+        "a": "Low turnover means few listings, and the group of buyers waiting for this neighbourhood is bigger than the supply. A well-priced Lakeview house often sees offers in the first week."
       },
       {
         "q": "Is Lakeview good for families?",
-        "a": "Yes, though the age profile skews older than Harbour Landing. The park access, established schools and large lots suit families who want space and trees more than they want a new build."
+        "a": "Yes, though the average age skews older than Harbour Landing. Park access, established schools and big lots suit families who'd rather have space and trees than a new build."
       }
     ],
-    "related": ["the-greens-on-gardiner-homes-for-sale", "cathedral-homes-for-sale", "regina-acreages-and-country-properties"]
+    "related": [
+      "the-greens-on-gardiner-homes-for-sale",
+      "cathedral-homes-for-sale",
+      "regina-acreages-and-country-properties"
+    ]
   },
   {
     "slug": "the-greens-on-gardiner-homes-for-sale",
@@ -144,44 +162,50 @@
     "title": "The Greens on Gardiner Homes for Sale | East Regina Executive",
     "description": "The Greens on Gardiner listings, median prices, commute reality, and who east-end executive housing actually suits. Current inventory updated from the MLS® System.",
     "eyebrow": "Regina · East end",
-    "match": { "hood": "The Greens on Gardiner" },
+    "match": {
+      "hood": "The Greens on Gardiner"
+    },
     "intro": [
-      "The Greens on Gardiner is Regina's east-end executive neighbourhood: larger two-storeys wrapped around green corridors, quiet crescents, and the fastest access in the city to the Ring Road and the airport run.",
-      "It attracts buyers moving up from a first home, and people relocating to Regina who want a turnkey house without a renovation project attached."
+      "The Greens on Gardiner is Regina's east-end executive pocket. Bigger two-storeys wrapped around green corridors, quiet crescents, and a short hop onto the Ring Road.",
+      "It pulls in two kinds of buyer: people moving up from a first house, and people relocating to Regina who want something turnkey with no renovation attached."
     ],
     "sections": [
       {
-        "h": "What the premium buys",
-        "p": "The median is around $528,000, the highest of the neighbourhoods we track. That buys 2,000 to 2,600 square feet, four bedrooms, nine-foot main floor ceilings, a developed basement, and frequently a lot backing green space with no rear neighbour. Construction is almost entirely post-2005, so triple-pane windows, HRVs and modern insulation are the norm rather than an upgrade."
+        "h": "What the premium gets you",
+        "p": "Median's around $528,000, the highest of the neighbourhoods we track. That buys 2,000 to 2,600 square feet, four bedrooms, nine-foot main floor ceilings, a finished basement, and often a lot backing green space with nobody behind you. Nearly everything here went up after 2005, so triple-pane windows, an HRV and modern insulation are standard rather than upgrades."
       },
       {
-        "h": "Backing the green corridor is worth paying for",
-        "p": "The interior lots and the green-backing lots in this neighbourhood are priced closer together than they should be. A lot with no rear neighbour, south-facing, holding evening sun, is a materially better asset than an interior lot on the same crescent — and on resale it is the first thing the next buyer will notice. When both are available we will usually push you toward the green one even at a higher number."
+        "h": "Pay up for the green-backing lot",
+        "p": "Interior lots and green-backing lots in this neighbourhood are priced closer together than they should be. A lot with no rear neighbour, facing south, holding evening sun, is a better asset than an interior lot on the same crescent. On resale it's the first thing the next buyer notices. When both are available we'll usually push you toward the green one even at a higher number."
       },
       {
-        "h": "The commute is real, not what the map says",
-        "p": "Google will tell you downtown is eight minutes. In a January snow event with Victoria Avenue backed up, plan on twenty to twenty-five. If one partner works at the university or in the downtown core and hates winter driving, sit with that honestly before buying east. Airport access, by contrast, genuinely is quick, which is why the neighbourhood suits people who travel for work."
+        "h": "The commute isn't what the map says",
+        "p": "Google will tell you downtown is eight minutes. In a January storm with Victoria Avenue backed up, budget twenty to twenty-five. If someone in the house works at the university or downtown and hates winter driving, sit with that honestly before you fall for the crescent. The airport, on the other hand, really is quick, which is why this pocket suits people who travel for work."
       },
       {
-        "h": "Resale profile",
-        "p": "This is a segment where inventory has grown and pricing has flattened, which makes it a buyer's market relative to the $300,000 to $450,000 band. If you are buying here you have room to write conditions and negotiate. If you are selling here, you need to be priced against the last sixty days of sales, not against what your neighbour listed at in spring."
+        "h": "Where the market is right now",
+        "p": "Inventory's grown in this segment and pricing has flattened, which makes it friendlier to buyers than the $300,000 to $450,000 band. Buying here, you've got room to write conditions and negotiate. Selling here, you need to price against the last sixty days of sales, not against whatever your neighbour listed at in spring."
       }
     ],
     "faqs": [
       {
         "q": "Is The Greens on Gardiner expensive?",
-        "a": "It carries the highest median of Regina's major neighbourhoods at around $528,000, but per square foot it is competitive with newer south-end construction. You are paying for size, build year and lot quality rather than location scarcity."
+        "a": "It carries the highest median of Regina's major neighbourhoods at roughly $528,000, but per square foot it's competitive with newer south-end builds. You're paying for size, build year and lot quality rather than scarcity."
       },
       {
         "q": "How far is The Greens from downtown Regina?",
-        "a": "Roughly 11 kilometres. Eight to ten minutes in clear conditions via the Ring Road, and realistically twenty or more in winter rush hour."
+        "a": "About 11 kilometres. Eight to ten minutes on a clear day via the Ring Road, and realistically twenty or more in winter rush hour."
       },
       {
         "q": "Is now a good time to buy in the east end?",
-        "a": "Inventory above $600,000 has grown and days on market have lengthened, which favours buyers. That is the segment where conditions and negotiation have returned to normal."
+        "a": "Inventory above $600,000 has grown and houses are taking longer to sell, which favours buyers. That's the segment where conditions and real negotiation have come back."
       }
     ],
-    "related": ["lakeview-homes-for-sale", "harbour-landing-homes-for-sale", "regina-acreages-and-country-properties"]
+    "related": [
+      "lakeview-homes-for-sale",
+      "harbour-landing-homes-for-sale",
+      "regina-acreages-and-country-properties"
+    ]
   },
   {
     "slug": "white-city-homes-for-sale",
@@ -190,44 +214,50 @@
     "title": "White City & Emerald Park Homes for Sale | Regina Commuter Belt",
     "description": "White City and Emerald Park listings east of Regina. Larger lots, no city mill rate, and an honest look at the two-vehicle cost of commuter-belt living.",
     "eyebrow": "Commuter belt · 15 min east",
-    "match": { "hood": "White City" },
+    "match": {
+      "hood": "White City"
+    },
     "intro": [
-      "Fifteen minutes east on Highway 1 gets you substantially more house and land than the same money buys inside Regina, and no city mill rate on top of it. White City and neighbouring Emerald Park have absorbed a decade of families making exactly that trade.",
-      "It is a good trade for some households and a quietly expensive one for others. The deciding factor is almost never the house."
+      "A quarter hour east on Highway 1 buys noticeably more house and land than the same money gets you inside Regina, with no city mill rate on top. White City and Emerald Park have absorbed a decade of families making exactly that swap.",
+      "For some households it's a great trade. For others it's quietly expensive. The deciding factor is almost never the house."
     ],
     "sections": [
       {
-        "h": "The value case, in numbers",
-        "p": "The median is around $487,000, which out here buys 2,000 to 2,400 square feet on a quarter-acre or larger, frequently with a heated triple garage. The equivalent lot and garage inside Regina, if you could find it, would price well above $600,000. Property taxes are lower because there is no city mill rate, though you should confirm the current RM of Edenwold levy for the specific parcel."
+        "h": "The value case, in actual numbers",
+        "p": "Median's around $487,000, which out here buys 2,000 to 2,400 square feet on a quarter acre or more, often with a heated triple garage. The same lot and garage inside Regina, if you could even find it, would be well past $600,000. Taxes are lower with no city mill rate, though you'll want to confirm the current RM of Edenwold levy for the specific parcel."
       },
       {
-        "h": "Water, septic and the questions to ask",
-        "p": "Do not assume services. Some properties are on municipal water and sewer, some on a drilled well with a treatment system, some on a cistern with hauled water, and septic arrangements vary. Each has a different maintenance cost and a different effect on financing and insurance. Establish which you are buying before the offer, not during the inspection."
+        "h": "Ask about water and septic before anything else",
+        "p": "Don't assume services. Some properties run municipal water and sewer, some a drilled well with treatment, some a cistern with hauled water. Septic arrangements vary just as much. Each carries a different maintenance cost and a different effect on financing and insurance. Sort out which one you're buying before the offer, not during the inspection."
       },
       {
-        "h": "The two-vehicle reality",
-        "p": "This is the part people underestimate. Out here every errand is a highway trip, and almost every household runs two vehicles. Add fuel, insurance, maintenance and depreciation on a second vehicle and a meaningful share of the housing saving goes back out the door. Families who move out here for the space rarely regret it; couples who move out purely on the price-per-square-foot maths sometimes do."
+        "h": "The second vehicle nobody budgets for",
+        "p": "This is the part people miss. Out here every errand is a highway trip and almost every household runs two vehicles. Fuel, insurance, maintenance, depreciation. A good chunk of what you saved on the house goes straight back out. Families who move for the space rarely regret it. Couples who moved purely on price per square foot sometimes do."
       },
       {
         "h": "Schools and the bus",
-        "p": "White City School serves the community, with older students bussed. For younger children the bus ride is short and uneventful. For teenagers with activities in the city, you become the transport, most evenings, in winter. Worth picturing concretely before you commit."
+        "p": "White City School serves the community and older students get bussed. For young kids the ride is short and uneventful. For teenagers with activities in the city, you become the transport, most evenings, through winter. Picture that concretely before you commit."
       }
     ],
     "faqs": [
       {
         "q": "Is White City cheaper than Regina?",
-        "a": "Per square foot and per acre, clearly yes, and property taxes are lower without a city mill rate. Total cost of living is closer than the sticker price suggests once a second vehicle is accounted for."
+        "a": "Per square foot and per acre, clearly. Taxes are lower too without a city mill rate. Total cost of living is closer than the sticker price suggests once you count a second vehicle."
       },
       {
         "q": "How far is White City from Regina?",
-        "a": "About 15 kilometres east on Highway 1, roughly fifteen minutes to the Ring Road and twenty to twenty-five to downtown outside of winter conditions."
+        "a": "Roughly 15 kilometres east on Highway 1. About fifteen minutes to the Ring Road, twenty to twenty-five to downtown outside of winter conditions."
       },
       {
         "q": "Do White City homes have city water?",
-        "a": "Many do — White City operates municipal water and sewer in the developed subdivisions — but acreage parcels outside them often rely on a well or cistern with a septic field. Always verify for the specific property."
+        "a": "Many do. White City runs municipal water and sewer in the developed subdivisions. Acreage parcels outside them often rely on a well or cistern with a septic field, so always check the specific property."
       }
     ],
-    "related": ["regina-acreages-and-country-properties", "the-greens-on-gardiner-homes-for-sale", "harbour-landing-homes-for-sale"]
+    "related": [
+      "regina-acreages-and-country-properties",
+      "the-greens-on-gardiner-homes-for-sale",
+      "harbour-landing-homes-for-sale"
+    ]
   },
   {
     "slug": "downtown-regina-condos-for-sale",
@@ -236,44 +266,50 @@
     "title": "Downtown Regina Condos for Sale | Warehouse District Lofts",
     "description": "Downtown and Warehouse District condo listings in Regina. Condo fees, reserve fund health, rental yields, and what to read before you waive your condo document condition.",
     "eyebrow": "Regina · Downtown & Warehouse",
-    "match": { "hood": "Downtown & Warehouse District" },
+    "match": {
+      "hood": "Downtown & Warehouse District"
+    },
     "intro": [
-      "Downtown Regina and the Warehouse District hold the city's concrete towers and converted warehouse lofts, and the strongest rental yields available on a one-bedroom hold anywhere in the city.",
-      "Condo buying is a different discipline from buying a house. You are buying a share of a corporation as much as a set of rooms, and the corporation's paperwork matters more than the backsplash."
+      "Downtown Regina and the Warehouse District hold the city's concrete towers and converted warehouse lofts, plus the strongest rental yields you'll find on a one-bedroom hold anywhere in Regina.",
+      "Buying a condo is a different job from buying a house. You're buying into a corporation as much as a set of rooms, and the corporation's paperwork matters more than the backsplash."
     ],
     "sections": [
       {
-        "h": "Read the reserve fund study before anything else",
-        "p": "The reserve fund study tells you whether the building has saved enough for the roof, elevators, windows and parkade it will inevitably need. A study that says the fund is underfunded is a special assessment waiting to arrive, and it will land on you, not the seller. We read these for clients line by line during the condo document condition, and we have walked people away from units that showed beautifully."
+        "h": "Read the reserve fund study first",
+        "p": "It tells you whether the building has put away enough for the roof, the elevators, the windows and the parkade it's definitely going to need. A study that says the fund is underfunded is a special assessment waiting to land, and it'll land on you, not the seller. We read these line by line during the condo document condition. We've walked clients away from units that showed beautifully."
       },
       {
-        "h": "What the condo fee should actually cover",
-        "p": "Downtown Regina fees commonly run $300 to $500 a month for a one or two bedroom. What matters is what is inside that number: heat, water, insurance on the common property, reserve contribution, management. A low fee is not automatically good news — it often means the reserve contribution is too small, and you will pay the difference later with less warning."
+        "h": "What the condo fee should cover",
+        "p": "Downtown fees usually run $300 to $500 a month for a one or two bedroom. What matters is what's inside that number: heat, water, insurance on common property, the reserve contribution, management. A low fee isn't automatically good news. Often it means the reserve contribution is too small and you'll pay the difference later with less warning."
       },
       {
-        "h": "The yield case for investors",
-        "p": "A one-bedroom downtown unit currently rents in the range of $1,250 to $1,450, against purchase prices commonly between $175,000 and $230,000. That is a stronger gross yield than anything in the suburbs. Net yield is what counts, so run the real numbers: condo fee, property tax, insurance, vacancy allowance and management. We will build that model with you before you write."
+        "h": "The yield case, if you're investing",
+        "p": "A one-bedroom downtown rents somewhere around $1,250 to $1,450 against purchase prices commonly between $175,000 and $230,000. That's a better gross yield than anything in the suburbs. Net yield is what counts though, so work through the condo fee, property tax, insurance, vacancy and management. We'll build that model with you before you write."
       },
       {
-        "h": "Concrete versus wood frame",
-        "p": "It is the first question to ask about any Regina condo building. Concrete construction means you hear the elevator and essentially nothing else; wood frame means you hear your neighbours. The difference shows up in resale liquidity as much as in daily comfort, and it is not always obvious from the listing photos."
+        "h": "Concrete or wood frame",
+        "p": "First question to ask about any Regina condo building. Concrete means you hear the elevator and basically nothing else. Wood frame means you hear your neighbours. It shows up in resale liquidity as much as in daily comfort, and you can't tell from the listing photos."
       }
     ],
     "faqs": [
       {
         "q": "Are condos a good investment in Regina?",
-        "a": "Downtown one-bedroom units produce the strongest gross rental yields in the city. The risks are special assessments from underfunded reserves and slower resale than detached housing. With the condo documents properly reviewed, they can be a sound hold."
+        "a": "Downtown one-bedrooms produce the best gross rental yields in the city. The risks are special assessments from underfunded reserves and slower resale than a house. With the documents properly reviewed they can be a solid hold."
       },
       {
         "q": "What are condo fees in downtown Regina?",
-        "a": "Typically $300 to $500 per month for a one or two bedroom, usually covering heat, water, common insurance, management and the reserve contribution. Confirm the inclusions in writing for each building."
+        "a": "Usually $300 to $500 a month for a one or two bedroom, generally covering heat, water, common insurance, management and the reserve contribution. Get the inclusions confirmed in writing for each building."
       },
       {
         "q": "What documents should I review when buying a condo?",
-        "a": "The reserve fund study, the last two years of board minutes, the current budget and financial statements, the bylaws, the insurance certificate, and the estoppel or information certificate. Minutes are the most revealing — that is where an impending assessment gets discussed first."
+        "a": "Reserve fund study, the last two years of board minutes, the current budget and financials, bylaws, insurance certificate, and the estoppel certificate. The minutes tell you the most. That's where a coming assessment gets discussed first."
       }
     ],
-    "related": ["regina-revenue-and-investment-properties", "first-time-home-buyers-regina", "cathedral-homes-for-sale"]
+    "related": [
+      "regina-revenue-and-investment-properties",
+      "first-time-home-buyers-regina",
+      "cathedral-homes-for-sale"
+    ]
   },
   {
     "slug": "first-time-home-buyers-regina",
@@ -281,48 +317,55 @@
     "title": "First-Time Home Buyer Regina | Programs, Costs & Listings Under $350k",
     "description": "What a first home in Regina really costs: down payment rules, no Saskatchewan land transfer tax, FHSA and Home Buyers' Plan, plus current listings under $350,000.",
     "eyebrow": "Buying your first home",
-    "match": { "maxPrice": 350000, "status": "for-sale" },
+    "match": {
+      "maxPrice": 350000,
+      "status": "for-sale"
+    },
     "intro": [
-      "Regina remains one of the most accessible housing markets in Canada for a first purchase. The median sale price sits around $342,000, Saskatchewan charges no land transfer tax, and the entry band is still well within reach of a single professional income.",
-      "The barrier is almost never the mortgage. It is the closing costs and the deposit that nobody mentioned."
+      "Regina's still one of the easier places in Canada to buy a first house. Median sale price sits around $342,000, Saskatchewan charges no land transfer tax, and the entry band is properly within reach on one professional income.",
+      "The thing that stops people usually isn't the mortgage. It's the closing costs and the deposit nobody warned them about."
     ],
     "sections": [
       {
-        "h": "What you actually need saved",
-        "p": "Minimum down payment is 5% on the first $500,000, so $17,500 on a $350,000 home. On top of that budget roughly 1.5% of the purchase price for closing costs, plus a deposit of $5,000 to $10,000 payable within days of an accepted offer — that is separate money you need liquid, and it catches first-time buyers out more than anything else."
+        "h": "What you actually need in the bank",
+        "p": "Minimum down payment is 5% on the first $500,000, so $17,500 on a $350,000 house. Add roughly 1.5% of the price for closing costs. Then there's the deposit, $5,000 to $10,000, payable within days of an accepted offer. That's separate money you need liquid, and it catches more first-time buyers out than anything else on this page."
       },
       {
-        "h": "Saskatchewan costs less to close in than you think",
-        "p": "There is no land transfer tax in Saskatchewan. What you pay instead is a title registration fee scaled to value, typically $200 to $400 on a median Regina home, plus legal fees around $1,200 to $1,800 and a title insurance premium. Buyers relocating from Ontario or British Columbia are routinely surprised by how much smaller this line is."
+        "h": "Closing here costs less than you'd think",
+        "p": "Saskatchewan has no land transfer tax. That one absence saves you what would be several thousand dollars in most other provinces. What you pay instead is a title registration fee tied to the value of the place, generally a few hundred dollars, plus $1,200 to $1,800 for your lawyer and a title insurance premium. Buyers moving here from Ontario or BC read that line twice."
       },
       {
-        "h": "Open an FHSA before you do anything else",
-        "p": "The First Home Savings Account is the single best instrument available to a Saskatchewan first-time buyer: $8,000 per year to a $40,000 lifetime limit, a deduction going in and tax-free growth coming out. It stacks with the Home Buyers' Plan, which lets you withdraw up to $60,000 per person from an RRSP tax-free toward a first home. Most people under thirty have not opened an FHSA, and the contribution room only starts accruing once you do."
+        "h": "Open an FHSA today, before anything else",
+        "p": "The First Home Savings Account is the best tool a Saskatchewan first-time buyer has. $8,000 a year up to $40,000 lifetime, a deduction going in and tax-free growth coming out. It stacks with the Home Buyers' Plan, which lets you pull up to $60,000 each from an RRSP tax-free. Most people under thirty haven't opened one, and the contribution room only starts building once you do. That's the whole reason to do it now."
       },
       {
-        "h": "Where the entry band actually is",
-        "p": "Under $350,000 in Regina buys a Cathedral character two-storey, a townhouse in Harbour Landing, or a two-bedroom condo downtown. These are genuinely different propositions in maintenance, monthly carrying cost and resale liquidity. A $268,000 townhouse with a $285 condo fee and a $339,000 house with a $200-a-month maintenance habit are closer in true cost than the prices suggest."
+        "h": "What's actually in the entry band",
+        "p": "Under $350,000 in Regina gets you a Cathedral character two-storey, a Harbour Landing townhouse, or a two-bedroom condo downtown. Those are three different propositions once you count maintenance, monthly carrying cost and how easily you'll resell. A $268,000 townhouse with a $285 fee and a $339,000 house with a $200-a-month repair habit are closer in real cost than the prices let on."
       }
     ],
     "faqs": [
       {
         "q": "How much do I need to buy a house in Regina?",
-        "a": "On a $350,000 home, $17,500 as the minimum 5% down payment, roughly $5,000 in closing costs, and a deposit of $5,000 to $10,000 available within days of an accepted offer. Call it $28,000 to $32,000 total to be comfortable."
+        "a": "On a $350,000 house: $17,500 for the 5% minimum down payment, about $5,000 in closing costs, and a deposit of $5,000 to $10,000 ready within days of an accepted offer. Call it $28,000 to $32,000 to be comfortable."
       },
       {
         "q": "Is there a land transfer tax in Saskatchewan?",
-        "a": "No. Saskatchewan charges a title registration fee scaled to property value instead, usually $200 to $400 on a median Regina home — far less than the land transfer tax in most provinces."
+        "a": "No. Saskatchewan charges a title registration fee based on property value instead, which on a median Regina house comes to a few hundred dollars rather than the several thousand a land transfer tax would cost you elsewhere."
       },
       {
         "q": "Does a first-time buyer pay for their own agent?",
-        "a": "Usually not directly. The seller's commission agreement typically covers the co-operating brokerage, so buyer representation generally costs you nothing out of pocket while giving you someone whose duty of care is to you rather than to the listing."
+        "a": "Usually not directly. The seller's commission agreement typically covers the co-operating brokerage, so buyer representation generally costs you nothing out of pocket, and you end up with an agent who answers to you instead of to the seller."
       },
       {
         "q": "What credit score do I need for a mortgage in Canada?",
-        "a": "Most A-lenders look for 680 or better for the best rates, and insured mortgages generally require at least 600. Below that you are into alternative lenders at higher rates. Check your score before you shop, not after an offer is accepted."
+        "a": "Most A-lenders want 680 or better for the best rates, and insured mortgages generally need at least 600. Below that you're into alternative lenders at higher rates. Check your score before you start shopping, not after an offer's accepted."
       }
     ],
-    "related": ["downtown-regina-condos-for-sale", "cathedral-homes-for-sale", "regina-homes-with-basement-suites"]
+    "related": [
+      "downtown-regina-condos-for-sale",
+      "cathedral-homes-for-sale",
+      "regina-homes-with-basement-suites"
+    ]
   },
   {
     "slug": "regina-homes-with-basement-suites",
@@ -330,48 +373,54 @@
     "title": "Homes with Legal Basement Suites for Sale in Regina | Mortgage Helpers",
     "description": "Regina houses with legal basement suites and secondary suites. What makes a suite legal, what it rents for, how lenders count the income, and current suited listings.",
     "eyebrow": "Mortgage helpers & suited homes",
-    "match": { "keyword": "suite" },
+    "match": {
+      "keyword": "suite"
+    },
     "intro": [
-      "A legal basement suite is the difference between qualifying and not qualifying for a great many Regina buyers, and it is one of the most-searched and least-understood features in this market.",
-      "The word doing the heavy lifting is legal. A finished basement with a kitchenette is not a suite, and a lender will not treat it like one."
+      "A legal basement suite is what gets a lot of Regina buyers over the qualifying line, and it's one of the most searched and least understood things in this market.",
+      "The word doing all the work there is legal. A finished basement with a kitchenette isn't a suite, and no lender will treat it like one."
     ],
     "sections": [
       {
-        "h": "What makes a suite legal in Regina",
-        "p": "A secondary suite has to satisfy the National Building Code as adopted by the City of Regina and be permitted by the City. In practice that means a separate entrance, minimum ceiling height, egress windows in every bedroom, fire separation between units, interconnected smoke alarms, and adequate ventilation and parking. Ask for the permit and the final inspection paperwork. If the seller cannot produce it, treat the suite as unpermitted and price accordingly."
+        "h": "What makes a suite legal here",
+        "p": "It has to meet the National Building Code as Regina has adopted it, and the City has to have permitted it. In practice that means a separate entrance, minimum ceiling height, egress windows in every bedroom, fire separation between units, interconnected smoke alarms, and enough ventilation and parking. Ask for the permit and the final inspection paperwork. If the seller can't produce it, treat the suite as unpermitted and price it that way."
       },
       {
-        "h": "How lenders treat suite income",
-        "p": "Most lenders will count between 50% and 100% of documented suite rent toward your qualifying income, and the treatment varies materially between institutions. A legal, permitted, currently tenanted suite with a lease gets the best treatment. An unpermitted suite often gets nothing at all. If the suite income is what makes your purchase work, confirm the specific lender's policy in writing before you write an offer, not after."
+        "h": "How lenders count the rent",
+        "p": "Most will use somewhere between 50% and 100% of documented suite rent toward your qualifying income, and it varies a lot between institutions. A legal, permitted, currently tenanted suite with a lease gets the best treatment. An unpermitted one often gets nothing at all. If suite income is what makes your purchase work, get the specific lender's policy in writing before you write an offer, not after."
       },
       {
-        "h": "What a Regina suite actually rents for",
-        "p": "A legal one-bedroom basement suite in a newer south-end neighbourhood currently runs roughly $1,100 to $1,250 including utilities. Two-bedroom suites and those in Cathedral or the university area can reach higher. Against a median mortgage payment, that income covers a substantial share of the carrying cost — which is exactly why suited homes attract multiple offers and rarely need a reduction."
+        "h": "What a suite rents for in Regina",
+        "p": "A legal one-bedroom in a newer south-end neighbourhood runs roughly $1,100 to $1,250 with utilities. Two-bedrooms, and anything near the university or in Cathedral, go higher. Against a median mortgage payment that covers a serious chunk of the carrying cost, which is why suited houses draw multiple offers and rarely need a reduction."
       },
       {
-        "h": "The obligations you are taking on",
-        "p": "You become a landlord, governed by The Residential Tenancies Act. That means rules about entry notice, deposits, rent increases and eviction, and it means a tenant sharing your building. Insurance also changes: a standard homeowner policy may not cover a rental suite, and failing to disclose it can void a claim. Budget for higher insurance and read the policy."
+        "h": "What you're signing up for",
+        "p": "You become a landlord under The Residential Tenancies Act. Rules about entry notice, deposits, rent increases, eviction. And someone else living in your building. Insurance changes too: a standard homeowner policy may not cover a rental suite, and not disclosing it can void a claim. Budget for a higher premium and actually read the policy."
       }
     ],
     "faqs": [
       {
         "q": "Are basement suites legal in Regina?",
-        "a": "Yes, secondary suites are permitted in Regina where they meet building code requirements and are approved by the City. Legality turns on separate entrance, egress windows, fire separation, alarms, ceiling height, ventilation and parking — and on the permit actually existing."
+        "a": "Yes, secondary suites are allowed where they meet building code and the City has approved them. Legality comes down to separate entrance, egress windows, fire separation, alarms, ceiling height, ventilation and parking. And to the permit actually existing."
       },
       {
         "q": "How much does a basement suite rent for in Regina?",
-        "a": "Roughly $1,100 to $1,250 per month including utilities for a legal one-bedroom in a newer neighbourhood, with two-bedroom and university-area suites reaching higher."
+        "a": "Roughly $1,100 to $1,250 a month with utilities for a legal one-bedroom in a newer neighbourhood. Two-bedroom and university-area suites go higher."
       },
       {
         "q": "Will the bank count my basement suite rent?",
-        "a": "Typically 50% to 100% of documented rent from a legal, permitted suite, depending on the lender. Unpermitted suites are frequently disregarded entirely. Get the policy in writing from your specific lender before making an offer."
+        "a": "Typically 50% to 100% of documented rent from a legal permitted suite, depending on the lender. Unpermitted suites often get ignored entirely. Get your lender's policy in writing before making an offer."
       },
       {
         "q": "Does a suite affect my home insurance?",
-        "a": "Yes. A rented secondary suite is a material change your insurer must know about. A standard homeowner policy may not cover it, and non-disclosure can void a claim. Expect a somewhat higher premium and confirm coverage in writing."
+        "a": "Yes. A rented secondary suite is a material change your insurer needs to know about. A standard homeowner policy may not cover it, and not disclosing can void a claim. Expect a higher premium and get the coverage confirmed in writing."
       }
     ],
-    "related": ["regina-revenue-and-investment-properties", "harbour-landing-homes-for-sale", "first-time-home-buyers-regina"]
+    "related": [
+      "regina-revenue-and-investment-properties",
+      "harbour-landing-homes-for-sale",
+      "first-time-home-buyers-regina"
+    ]
   },
   {
     "slug": "regina-revenue-and-investment-properties",
@@ -379,44 +428,53 @@
     "title": "Regina Investment Properties for Sale | Duplexes & Revenue Homes",
     "description": "Revenue duplexes, suited homes and investment condos in Regina. Real yield maths, financing rules for rentals, and what the numbers have to clear before we recommend a purchase.",
     "eyebrow": "Investors",
-    "match": { "types": ["multi-family", "condo"] },
+    "match": {
+      "types": [
+        "multi-family",
+        "condo"
+      ]
+    },
     "intro": [
-      "Regina produces some of the better residential rental yields in Canada, largely because purchase prices never ran up the way they did in Ontario and British Columbia while rents kept pace with the rest of the country.",
-      "That does not make every listing a good buy. We run the numbers before you write, and we say so when they do not clear."
+      "Regina throws off some of the better residential rental yields in the country, mostly because prices never ran up here the way they did in Ontario and BC while rents kept pace with everywhere else.",
+      "That doesn't make every listing a good buy. We work through the numbers first, and we say so when they don't clear."
     ],
     "sections": [
       {
-        "h": "The numbers we run before you write an offer",
-        "p": "Purchase price and realistic rent for the unit type and neighbourhood, not the optimistic number in the listing remarks. Then property tax from the SAMA assessment, insurance quoted for a rental rather than an owner-occupied policy, condo fee or a maintenance reserve of roughly 1% of value annually, a vacancy allowance of 4% to 6%, management at 8% to 10% if you are not self-managing, and financing at your actual approved rate. If it does not clear after all of that, we tell you."
+        "h": "The numbers we work through before you write",
+        "p": "Price, and what the place realistically rents for in that neighbourhood, not the optimistic figure in the remarks. Then tax off the SAMA assessment, insurance quoted as a rental rather than owner-occupied, condo fee or a maintenance reserve of about 1% of value a year, vacancy at 4% to 6%, management at 8% to 10% if you're not doing it yourself, and financing at your actual approved rate. If it doesn't clear after all that, we'll tell you."
       },
       {
         "h": "Financing a rental is a different product",
-        "p": "Expect a minimum 20% down payment on a non-owner-occupied property — CMHC insurance is not available for a pure rental — and a rate typically a quarter to a half point above an owner-occupied mortgage. Lenders also apply a rental offset or add-back formula to the projected income that varies by institution and materially changes what you qualify for. Sort the financing structure before you shop."
+        "p": "Expect 20% down minimum on a non-owner-occupied property, since CMHC insurance isn't available for a pure rental. The rate usually sits a quarter to a half point above an owner-occupied mortgage. Lenders also apply a rental offset or add-back formula to projected income, and it varies enough between institutions to change what you qualify for. Sort the financing structure before you start shopping."
       },
       {
-        "h": "Where the yield actually is in Regina",
-        "p": "Three segments, in rough order of gross yield: downtown one-bedroom condos, side-by-side duplexes in Cathedral and the older core, and suited single-family homes in the newer south end. The condos produce the highest gross yield and the most condo-corporation risk. The duplexes give you separated mechanical systems and full control of the building. The suited houses give you the best resale liquidity, because you can sell them to an owner-occupier rather than only to another investor."
+        "h": "Where the yield actually is",
+        "p": "Three segments, roughly in order of gross yield. Downtown one-bedroom condos, side-by-side duplexes in Cathedral and the older core, and suited single-family houses in the newer south end. The condos give the highest gross yield and the most condo-corporation risk. The duplexes give you separated mechanical systems and full control of the building. The suited houses resell best, because you can sell them to someone who wants to live there rather than only to another investor."
       },
       {
-        "h": "Inherited tenants are an asset or a liability, never neutral",
-        "p": "Buying a tenanted property in Saskatchewan means taking on the existing tenancies under The Residential Tenancies Act, including below-market rents you cannot simply reset. Always review the leases, the rent roll, the deposit ledger and the payment history during your condition period. A property at gross rent well below market is an opportunity only if you have a realistic, lawful path to turnover."
+        "h": "Inherited tenants cut both ways",
+        "p": "Buying tenanted in Saskatchewan means taking on the existing tenancies under The Residential Tenancies Act, including below-market rents you can't just reset. Review the leases, rent roll, deposit ledger and payment history during your condition period. A building at gross rent well under market is only an opportunity if there's a realistic, lawful path to turnover."
       }
     ],
     "faqs": [
       {
         "q": "What down payment do I need for a rental property in Canada?",
-        "a": "At least 20% for a non-owner-occupied residential property. Default insurance is not available for a pure rental, so there is no low-down-payment route. Owner-occupied properties with a suite are treated differently and can go lower."
+        "a": "At least 20% for a non-owner-occupied residential property. Default insurance isn't available on a pure rental, so there's no low-down-payment route. Owner-occupied properties with a suite are treated differently and can go lower."
       },
       {
         "q": "What is a good rental yield in Regina?",
-        "a": "Gross yields in the 7% to 9% range are achievable on downtown one-bedroom condos and older core duplexes. What matters is net yield after tax, insurance, reserve, vacancy and management — that is the number we model with you."
+        "a": "Gross yields of 7% to 9% are achievable on downtown one-bedroom condos and older core duplexes. What matters is net yield after tax, insurance, reserve, vacancy and management. That's the number we model with you."
       },
       {
         "q": "Can I raise the rent after buying a tenanted property?",
-        "a": "Only within The Residential Tenancies Act: proper written notice, the required notice period, and limits on frequency. You inherit the existing tenancy and its rent. Assume the current rent for at least a year when running your numbers."
+        "a": "Only within The Residential Tenancies Act: written notice, the required notice period, and limits on how often. You inherit the tenancy and its rent, so assume the current rent for at least a year when you're working out your numbers."
       }
     ],
-    "related": ["downtown-regina-condos-for-sale", "regina-homes-with-basement-suites", "cathedral-homes-for-sale"]
+    "related": [
+      "downtown-regina-condos-for-sale",
+      "regina-homes-with-basement-suites",
+      "cathedral-homes-for-sale"
+    ]
   },
   {
     "slug": "regina-acreages-and-country-properties",
@@ -424,43 +482,54 @@
     "title": "Acreages for Sale Near Regina | Country Properties & Shops",
     "description": "Acreages and country properties within commuting distance of Regina. Wells, septic, shops and outbuildings, acreage financing, and what to verify before you fall for the yard.",
     "eyebrow": "Country properties · Commuter belt",
-    "match": { "types": ["acreage"], "hoods": ["White City"] },
+    "match": {
+      "types": [
+        "acreage"
+      ],
+      "hoods": [
+        "White City"
+      ]
+    },
     "intro": [
-      "An acreage inside the Regina commuter belt buys something the city cannot sell you: room, quiet, a shop with fourteen-foot doors, and a shelterbelt that has been growing for forty years.",
-      "It also buys a set of systems you become personally responsible for. Nobody is coming to fix your water."
+      "An acreage inside the Regina commuter belt buys something the city can't sell you. Room. Quiet. A shop with fourteen-foot doors. A shelterbelt somebody planted forty years ago.",
+      "It also buys a set of systems that are now entirely your problem. Nobody's coming to fix your water."
     ],
     "sections": [
       {
         "h": "Water is the first question, not the last",
-        "p": "Drilled well, cistern with hauled water, or a rural pipeline — each has a different cost, reliability and effect on financing. On a well, ask for a recent potability and flow test, and find out the age and type of any treatment system. On a cistern, establish the hauling cost and frequency. This is the single most common thing buyers skip and the most expensive to get wrong."
+        "p": "Drilled well, cistern with hauled water, or a rural pipeline. Each one has a different cost, a different reliability, and a different effect on financing. On a well, ask for a recent potability and flow test and find out the age and type of any treatment system. On a cistern, find out what hauling costs and how often. This is the thing buyers skip most often and the most expensive one to get wrong."
       },
       {
-        "h": "Septic systems and what to inspect",
-        "p": "Most acreages run a septic tank with a field, a mound, or a holding tank requiring pumping. Get the system inspected specifically — a standard home inspection usually excludes it. Ask when it was last pumped, whether it has ever backed up, and whether the field has been located and mapped. Replacing a failed field is a five-figure problem."
+        "h": "Septic, and getting it inspected properly",
+        "p": "Most acreages run a tank with a field, a mound, or a holding tank that needs pumping. Have the system inspected specifically, because a standard home inspection usually excludes it. Ask when it was last pumped, whether it's ever backed up, and whether the field has been located and mapped. Replacing a failed field is a five-figure problem."
       },
       {
-        "h": "Shops, outbuildings and what they are worth",
-        "p": "A heated shop is frequently the real reason a buyer wants an acreage, and it carries genuine value — but appraisers discount outbuildings more heavily than sellers expect, which can create a financing gap between the accepted price and the appraised value. If a large shop is a big share of what you are paying for, plan for that gap in advance."
+        "h": "Shops and outbuildings, and the appraisal gap",
+        "p": "A heated shop is often the real reason somebody wants an acreage, and it does carry value. But appraisers discount outbuildings harder than sellers expect, which can open a gap between the price you agreed and the value the appraisal comes back with. If a big shop is a large share of what you're paying for, plan for that gap ahead of time."
       },
       {
         "h": "Acreage financing is its own conversation",
-        "p": "Lenders treat acreages differently: many will only finance the house plus a limited number of acres, appraisals take longer and come in more conservatively, and some institutions will not lend on properties without a potable, tested water supply. Start with a lender who actually does acreage lending in Saskatchewan rather than assuming your existing pre-approval transfers."
+        "p": "Lenders treat these differently. Many will finance the house plus a limited number of acres and no more. Appraisals take longer and come back conservative. Some institutions won't lend at all without a tested potable water supply. Start with a lender who actually does acreage lending in Saskatchewan instead of assuming your existing pre-approval carries over."
       }
     ],
     "faqs": [
       {
         "q": "How far out do you have to go for an acreage near Regina?",
-        "a": "Most acreages within a comfortable commute sit twelve to twenty-five minutes out — Pilot Butte, White City, Balgonie, Lumsden, Pense and the surrounding RMs. Beyond about forty minutes the daily commute starts to dominate the decision."
+        "a": "Most acreages within a comfortable commute sit twelve to twenty-five minutes out. Pilot Butte, White City, Balgonie, Lumsden, Pense and the surrounding RMs. Past about forty minutes the commute starts running the decision."
       },
       {
         "q": "Is it harder to get a mortgage on an acreage?",
-        "a": "Generally yes. Lenders often finance only the house and a limited acreage, appraise conservatively, and may require a tested potable water supply. Use a lender experienced with Saskatchewan acreages from the start."
+        "a": "Generally yes. Lenders often finance only the house and a limited acreage, appraise conservatively, and may require tested potable water. Use a lender experienced with Saskatchewan acreages from the start."
       },
       {
         "q": "What should I check before buying an acreage?",
-        "a": "Water source and its test results, septic type and condition, the age and value of outbuildings, access and road maintenance in winter, power and gas service, and the RM's tax levy and bylaws for the parcel."
+        "a": "Water source and its test results, septic type and condition, the age and value of outbuildings, road access and who maintains it in winter, power and gas service, and the RM's tax levy and bylaws for that parcel."
       }
     ],
-    "related": ["white-city-homes-for-sale", "the-greens-on-gardiner-homes-for-sale", "lakeview-homes-for-sale"]
+    "related": [
+      "white-city-homes-for-sale",
+      "the-greens-on-gardiner-homes-for-sale",
+      "lakeview-homes-for-sale"
+    ]
   }
 ]

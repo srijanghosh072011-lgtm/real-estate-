@@ -110,7 +110,7 @@ export function testimonials(items) {
   <div class="sec-head">
     <div>
       <p class="eyebrow">Clients</p>
-      <h2 class="display" id="tst-h">What it's actually<br>like to work with us.</h2>
+      <h2 class="display" id="tst-h">What it's like<br>working with us.</h2>
     </div>
     <div class="sec-head-action">
       <div class="tst-nav">
@@ -130,8 +130,8 @@ export function ctaBanner() {
     <img class="cta-bg" src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1600&q=60"
          alt="" loading="lazy" decoding="async" aria-hidden="true" width="1600" height="700">
     <div class="cta-inner">
-      <h2 class="display">Ready to see what<br>your next move looks like?</h2>
-      <p>One call. A straight answer about price, timing and what it costs you.</p>
+      <h2 class="display">Thinking about<br>making a move?</h2>
+      <p>One call gets you a straight answer on price, timing and what it'll cost.</p>
       <a class="btn btn-cream" href="/contact/" data-track="cta_banner">
         <span>Get started</span><span class="btn-ic">${icon('arrow')}</span>
       </a>
@@ -199,7 +199,7 @@ export function leadForm(site, { id, heading, sub, kind, fields = [], cta = 'Sen
   </div>
   <label class="consent">
     <input type="checkbox" name="consent" required>
-    <span>I agree to be contacted about this enquiry and have read the <a href="/privacy/">privacy policy</a>. Consent can be withdrawn at any time.</span>
+    <span>I'm happy to be contacted about this and I've read the <a href="/privacy/">privacy policy</a>. You can withdraw that any time.</span>
   </label>
   ${site.forms.turnstileSiteKey ? `<div class="cf-turnstile" data-sitekey="${esc(site.forms.turnstileSiteKey)}"></div>` : ''}
   <button class="btn btn-dark btn-block" type="submit" data-track="form_submit" data-track-id="${esc(kind)}">

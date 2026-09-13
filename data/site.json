@@ -1,8 +1,8 @@
 {
   "name": "Everline Property Group",
   "shortName": "Everline",
-  "tagline": "Regina real estate, handled properly.",
-  "description": "Everline Property Group is a boutique Regina real estate brokerage. Live MLS listings, honest pricing advice, and a buying process that respects your time.",
+  "tagline": "Regina real estate, done properly.",
+  "description": "Everline is a small Regina brokerage. Live MLS listings, pricing advice that shows its work, and a buying process that doesn't waste your Saturdays.",
   "url": "https://www.everlineproperty.ca",
   "locale": "en_CA",
   "region": "SK",
@@ -13,7 +13,7 @@
     "name": "Avery Lindholm",
     "title": "Broker / Owner",
     "licence": "SK Licence #SK-0198442",
-    "bio": "Avery has closed more than 640 Regina transactions since 2014. She built Everline on a single idea: a client should never have to guess what happens next.",
+    "bio": "Avery's closed more than 640 Regina deals since 2014. She started Everline because too many of her clients kept telling her the same thing: nobody had explained what was coming next.",
     "photo": "https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?auto=format&fit=crop&w=900&q=70"
   },
   "contact": {
@@ -31,7 +31,10 @@
     "linkedin": "https://www.linkedin.com/",
     "youtube": "https://www.youtube.com/"
   },
-  "geo": { "lat": 50.4452, "lng": -104.6189 },
+  "geo": {
+    "lat": 50.4452,
+    "lng": -104.6189
+  },
   "serviceAreas": [
     "Regina",
     "White City",
@@ -53,26 +56,38 @@
     "plausibleDomain": ""
   },
   "stats": [
-    { "value": "640+", "label": "Regina homes sold" },
-    { "value": "99.1%", "label": "List-to-sale price ratio" },
-    { "value": "18", "label": "Median days on market" },
-    { "value": "4.9/5", "label": "Average client rating" }
+    {
+      "value": "640+",
+      "label": "Regina homes sold"
+    },
+    {
+      "value": "99.1%",
+      "label": "List-to-sale price ratio"
+    },
+    {
+      "value": "18",
+      "label": "Median days on market"
+    },
+    {
+      "value": "4.9/5",
+      "label": "Average client rating"
+    }
   ],
   "testimonials": [
     {
-      "quote": "We had two weeks to find something before our possession date. Avery booked nine showings in three days, told us plainly which two were worth an offer, and we closed on one of them under asking.",
+      "quote": "We had two weeks to find something before possession. Avery lined up nine showings in three days and told us straight which two were worth an offer. We got one of them under asking.",
       "name": "Sajjbur Rahman",
       "role": "Bought in Harbour Landing",
       "photo": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=600&q=70"
     },
     {
-      "quote": "The pricing conversation was the whole difference. We were ready to list $30k too high. The comparable report made the case, we listed right, and we had three offers in a weekend.",
+      "quote": "The pricing conversation changed everything. We were about to list $30k too high. She walked us through the comparables, we listed at the right number, and we had three offers by Sunday night.",
       "name": "Danielle Okonkwo",
       "role": "Sold in Lakeview",
       "photo": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=600&q=70"
     },
     {
-      "quote": "First-time buyers, no idea what we were doing. Every email came back the same day with an actual answer instead of a sales pitch. That is rarer than it should be.",
+      "quote": "First-time buyers, completely lost. Every email came back the same day with a real answer instead of a sales pitch. That shouldn't be rare, but it is.",
       "name": "Marc Thibault",
       "role": "Bought in Cathedral",
       "photo": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=600&q=70"
@@ -81,38 +96,38 @@
   "faqs": [
     {
       "q": "What types of property do you handle?",
-      "a": "Residential resale, new construction, condominiums, revenue duplexes and small multi-family, plus acreages inside the Regina commuter belt. We do not list commercial or agricultural land, and we will refer you to a specialist rather than learn on your file."
+      "a": "Houses, condos, townhouses, revenue duplexes, small multi-family, and acreages inside the Regina commuter belt. We don't do commercial or farmland. If you need that, we'll point you at someone who does it properly rather than learn on your file."
     },
     {
       "q": "How do I know if a property is a good investment?",
-      "a": "We run the numbers before you write an offer: purchase price, realistic Regina rent for the unit type, condo or maintenance reserve, property tax from the SAMA assessment, vacancy allowance, and financing at your actual approved rate. If the cash flow does not clear, we say so."
+      "a": "We work through the real numbers before you write anything. Price, what the unit actually rents for around here, condo fee or maintenance reserve, tax off the SAMA assessment, a vacancy allowance, and whatever rate you're actually approved at. If the math doesn't work we'll say so. We've talked people out of more deals than we'd like to admit."
     },
     {
       "q": "Do I need to hire a real estate agent to buy?",
-      "a": "No, but in Saskatchewan the seller's commission agreement almost always covers the buyer's agent, so representation typically costs a buyer nothing directly. What you get is someone whose duty of care is to you and not to the listing."
+      "a": "No. But in Saskatchewan the seller's commission usually covers the buyer's agent too, so representation typically costs you nothing directly. What you get for that is an agent working for you rather than for the listing."
     },
     {
-      "q": "What is the process for buying a property?",
-      "a": "Financing pre-approval, a written needs list, showings, offer with conditions, inspection and financing condition period, condition removal, lawyer and title transfer, then possession. Most Regina purchases run 30 to 60 days from accepted offer to keys."
+      "q": "What's the process for buying a property?",
+      "a": "Pre-approval, then a written needs list, then showings. Then an offer with conditions, an inspection and financing window, condition removal, lawyer, title, keys. Most Regina purchases run 30 to 60 days from accepted offer to possession."
     },
     {
       "q": "Can I tour a property before purchasing?",
-      "a": "Yes. Every active listing on this site can be booked directly from its page, and we will hold a video walkthrough if you are out of province. Second showings before an offer are normal and we encourage them."
+      "a": "Yes. You can book any active listing straight from its page. If you're out of province we'll do a video walkthrough. Second showings before an offer are normal and we'd rather you took one."
     },
     {
       "q": "How much does it cost to sell my home with Everline?",
-      "a": "A published commission schedule, given to you in writing before you sign anything, including exactly what the co-operating brokerage receives. Professional photography, floor plans, staging consultation and the marketing budget are included, not billed back."
+      "a": "You get the commission schedule in writing before you sign anything, including exactly what the co-operating brokerage takes. Photography, floor plans, staging consult and the marketing budget are included. We don't bill those back."
     },
     {
       "q": "How accurate is the online home valuation?",
-      "a": "The instant estimate is a starting range built from recent comparable sales in your neighbourhood. It cannot see your renovations, your lot, or your condition. Treat it as a bracket, then have us walk the property for a real number."
+      "a": "It's a starting range, not a number. It's built from recent comparable sales, so it can't see your renovations, your lot, or the state of your basement. Treat it as a bracket. Then let us walk the place for something you can actually rely on."
     }
   ],
   "neighbourhoods": [
     {
       "slug": "harbour-landing",
       "name": "Harbour Landing",
-      "blurb": "Regina's largest modern build-out. Wide streets, new schools, and the shortest walk to groceries in the city's south end.",
+      "blurb": "Regina's biggest modern build-out. Wide streets, new schools, and the shortest walk to groceries in the south end.",
       "medianPrice": 412000,
       "vibe": "New build, family-first",
       "image": "https://images.unsplash.com/photo-1580587771525-78b9dba3b914?auto=format&fit=crop&w=1200&q=70"
@@ -120,7 +135,7 @@
     {
       "slug": "cathedral",
       "name": "Cathedral",
-      "blurb": "Character homes, mature elms, and the densest stretch of independent cafés and restaurants in Saskatchewan.",
+      "blurb": "Character houses under old elms, and the best run of independent cafes and restaurants in Saskatchewan.",
       "medianPrice": 298000,
       "vibe": "Historic, walkable",
       "image": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=70"
@@ -128,7 +143,7 @@
     {
       "slug": "lakeview",
       "name": "Lakeview",
-      "blurb": "Backing onto Wascana Park. Mid-century bungalows on generous lots, tightly held and rarely on the market long.",
+      "blurb": "Backs onto Wascana Park. Mid-century bungalows on big lots. Tightly held, and they don't sit long.",
       "medianPrice": 465000,
       "vibe": "Established, parkside",
       "image": "https://images.unsplash.com/photo-1568605114967-8130f3a36994?auto=format&fit=crop&w=1200&q=70"
@@ -136,7 +151,7 @@
     {
       "slug": "the-greens-on-gardiner",
       "name": "The Greens on Gardiner",
-      "blurb": "East-end executive homes wrapped around green space, with quick access to the Ring Road and the airport run.",
+      "blurb": "East-end executive houses wrapped around green space, and the easiest commute out of town.",
       "medianPrice": 528000,
       "vibe": "Executive, quiet",
       "image": "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&w=1200&q=70"
@@ -144,7 +159,7 @@
     {
       "slug": "white-city",
       "name": "White City",
-      "blurb": "Fifteen minutes east on Highway 1. Acreage-sized lots, no city tax, and the best value per square foot in the region.",
+      "blurb": "A quarter hour east on Highway 1. Acreage-sized lots, no city tax, best value per square foot going.",
       "medianPrice": 487000,
       "vibe": "Commuter, spacious",
       "image": "https://images.unsplash.com/photo-1518780664697-55e3ad937233?auto=format&fit=crop&w=1200&q=70"
@@ -152,7 +167,7 @@
     {
       "slug": "downtown-regina",
       "name": "Downtown & Warehouse District",
-      "blurb": "Converted warehouse lofts and concrete towers. The strongest rental yields in the city for a one-bedroom hold.",
+      "blurb": "Warehouse lofts and concrete towers. The strongest rental yields in the city on a one-bedroom hold.",
       "medianPrice": 214000,
       "vibe": "Urban, investor-friendly",
       "image": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1200&q=70"

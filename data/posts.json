@@ -2,68 +2,125 @@
   {
     "slug": "regina-market-report-september-2026",
     "title": "Regina Market Report: September 2026",
-    "excerpt": "Inventory is up 11% year over year and the median days on market has stretched to 24. Here is what that actually changes for buyers and sellers this fall.",
+    "excerpt": "Inventory's up 11% year over year and median days on market has stretched to 24. Here's what that actually changes if you're buying or selling this fall.",
     "date": "2026-09-09",
     "updated": "2026-09-09",
     "category": "Market Reports",
     "readMinutes": 6,
     "image": "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=1600&q=70",
     "body": [
-      { "h": "The headline numbers", "p": "Regina closed August 2026 with 501 active residential listings, up from 451 a year earlier. Median sale price held at $342,000, essentially flat year over year, while median days on market moved from 18 to 24. Sales volume was down 4% against a strong August 2025." },
-      { "h": "What it means if you are buying", "p": "More inventory and slower absorption means your negotiating position is better than it has been in two years, but only in the segments where inventory actually grew. Detached homes between $300,000 and $450,000 are still moving in under two weeks with multiple offers. The softening is concentrated above $600,000 and in one-bedroom condos. If you are shopping in the mid band, plan for competition; if you are shopping above $600,000, take your time and write conditions." },
-      { "h": "What it means if you are selling", "p": "The pricing mistake this fall is anchoring to a spring 2026 comparable. A home that would have drawn three offers in April will sit at the same number in October. Price against sales from the last 60 days, not the last 6 months, and be honest about condition. Homes that show well and are priced inside the comparable band are still selling in under three weeks." },
-      { "h": "The rate picture", "p": "Five-year fixed offerings at the major lenders sat between 4.19% and 4.64% through August. That is roughly a hundred basis points below the 2024 peak and is the main reason the entry band has stayed competitive despite higher inventory. Nothing in the current forward curve suggests a sharp move before year end." },
-      { "h": "Our call for the fall", "p": "A normal market, which after four abnormal years reads as a slowdown. Expect flat pricing, longer marketing times, and a return of the financing condition as a standard term rather than a deal-breaker. That is a healthier market for everyone who is not trying to flip." }
+      {
+        "h": "The headline numbers",
+        "p": "Regina closed August with 501 active residential listings, up from 451 a year ago. Median sale price held at $342,000, basically flat year over year. Median days on market moved from 18 to 24. Sales volume was down 4% against a strong August 2025."
+      },
+      {
+        "h": "What it means if you're buying",
+        "p": "More inventory and slower absorption puts you in a better spot than you've been in two years. But only in the segments where inventory actually grew. Detached houses between $300,000 and $450,000 are still going in under two weeks with competing offers. The softening is all above $600,000 and in one-bedroom condos. Shopping the mid band? Plan for competition. Shopping above $600,000? Take your time and write conditions."
+      },
+      {
+        "h": "What it means if you're selling",
+        "p": "The pricing mistake this fall is anchoring to a spring comparable. A house that pulled three offers in April will sit at the same number in October. Price against the last 60 days, not the last 6 months, and be honest about condition. Houses that show well and sit inside the comparable band are still selling in under three weeks."
+      },
+      {
+        "h": "Rates",
+        "p": "Five-year fixed sat between 4.19% and 4.64% at the major lenders through August. Roughly a hundred basis points below the 2024 peak, and the main reason the entry band has stayed competitive despite more inventory. Nothing in the forward curve suggests a sharp move before year end."
+      },
+      {
+        "h": "Our call for the fall",
+        "p": "A normal market. After four abnormal years that reads as a slowdown, but it isn't one. Expect flat pricing, longer marketing times, and the financing condition back as a standard term rather than a deal-breaker. Healthier for everybody who isn't trying to flip."
+      }
     ]
   },
   {
     "slug": "first-time-home-buyer-guide-regina",
     "title": "The First-Time Buyer's Guide to Regina",
-    "excerpt": "Down payment rules, Saskatchewan land transfer costs, the inspection line items that matter here, and a realistic 60-day timeline from pre-approval to keys.",
+    "excerpt": "Down payment rules, what closing actually costs in Saskatchewan, the inspection items that matter here, and a realistic 60-day run from pre-approval to keys.",
     "date": "2026-08-18",
     "updated": "2026-09-01",
     "category": "Buying",
     "readMinutes": 11,
     "image": "https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=1600&q=70",
     "body": [
-      { "h": "What you actually need for a down payment", "p": "In Canada the minimum is 5% on the first $500,000 and 10% on the portion between $500,000 and $1,500,000. On a $350,000 Regina home that is $17,500. Anything under 20% requires CMHC, Sagen or Canada Guaranty default insurance, which is added to your mortgage rather than paid up front. Budget an additional 1.5% of purchase price for closing costs." },
-      { "h": "Saskatchewan-specific costs", "p": "Saskatchewan has no land transfer tax. What you pay instead is a title registration fee scaled to property value, typically $200 to $400 on a median Regina home, plus legal fees of roughly $1,200 to $1,800 and a title insurance premium. This is meaningfully cheaper than buying in Ontario or BC and it surprises people who move here." },
-      { "h": "The inspection items that matter in Regina", "p": "Three things: the foundation, the shingles, and the electrical panel. Regina sits on expansive clay that moves with moisture, so any inspection should include a careful look at basement walls, floor cracks and door frames that no longer close square. Hail is frequent enough that shingle age is a real budget line. And in pre-1960 housing, knob-and-tube or a 60-amp panel will affect your insurability before it affects your comfort." },
-      { "h": "A realistic timeline", "p": "Week 1: mortgage pre-approval and a written needs list. Weeks 2 to 5: showings, usually eight to fifteen properties. Week 5: offer with financing and inspection conditions, typically a 7 to 10 business day condition period. Weeks 6 to 7: inspection, lender appraisal, condition removal. Weeks 8 to 10: lawyer, title transfer, possession. Sixty days start to finish is normal and rushing any of it is where people get hurt." },
-      { "h": "Programs worth knowing about", "p": "The federal First-Time Home Buyer Incentive has wound down, but the Home Buyers' Plan still lets you withdraw up to $60,000 per person from an RRSP tax-free toward a first home, and the First Home Savings Account allows $8,000 per year to $40,000 lifetime with both a deduction going in and tax-free growth coming out. The FHSA is the single best instrument available to a Saskatchewan first-time buyer and most people under thirty have not opened one." }
+      {
+        "h": "What you actually need for a down payment",
+        "p": "The minimum is 5% on the first $500,000 and 10% on anything between $500,000 and $1,500,000. On a $350,000 Regina house that's $17,500. Under 20% you'll need CMHC, Sagen or Canada Guaranty default insurance, which gets added to your mortgage rather than paid up front. Then budget another 1.5% of the price for closing."
+      },
+      {
+        "h": "What's different about closing in Saskatchewan",
+        "p": "No land transfer tax. You pay a title registration fee scaled to property value instead, usually $200 to $400 on a median Regina house, plus $1,200 to $1,800 in legal fees and a title insurance premium. It's meaningfully cheaper than closing in Ontario or BC, and it surprises people who move here."
+      },
+      {
+        "h": "The inspection items that matter in Regina",
+        "p": "Three of them. Foundation, shingles, electrical panel. Regina sits on expansive clay that moves with moisture, so any inspection needs a careful look at basement walls, floor cracks, and doors that no longer close square. Hail comes through often enough that shingle age is a real budget line. And in anything pre-1960, knob-and-tube or a 60-amp panel will hit your insurability before it hits your comfort."
+      },
+      {
+        "h": "A realistic timeline",
+        "p": "Week one, pre-approval and a written needs list. Weeks two to five, showings, usually eight to fifteen houses. Week five, an offer with financing and inspection conditions, typically a 7 to 10 business day window. Weeks six and seven, inspection, appraisal, condition removal. Weeks eight to ten, lawyer, title, possession. Sixty days start to finish is normal, and rushing any of it is where people get hurt."
+      },
+      {
+        "h": "Programs worth knowing about",
+        "p": "The federal First-Time Home Buyer Incentive has wound down. The Home Buyers' Plan still lets you pull up to $60,000 each from an RRSP tax-free toward a first house. And the First Home Savings Account gives you $8,000 a year to a $40,000 lifetime cap, with a deduction going in and tax-free growth coming out. The FHSA is the single best tool available to a Saskatchewan first-time buyer and most people under thirty still haven't opened one."
+      }
     ]
   },
   {
     "slug": "how-to-price-your-regina-home",
     "title": "How to Price a Regina Home So It Actually Sells",
-    "excerpt": "Overpricing costs more than time. Here is the comparable method we use, why the first fourteen days decide the outcome, and what a price reduction really signals.",
+    "excerpt": "Overpricing costs you more than time. The comparable method we use, why the first fortnight decides everything, and what a price reduction really tells buyers.",
     "date": "2026-07-22",
     "updated": "2026-07-22",
     "category": "Selling",
     "readMinutes": 8,
     "image": "https://images.unsplash.com/photo-1576941089067-2de3c901e126?auto=format&fit=crop&w=1600&q=70",
     "body": [
-      { "h": "The first fourteen days are the whole game", "p": "A new listing gets its largest audience in the first two weeks. Every buyer already working with an agent in your price band sees it in that window. If it is priced above the band, they see it and pass, and you do not get a second first impression. Everything after day fourteen is scraps: new entrants to the market, plus the people who already passed and are now waiting for you to reduce." },
-      { "h": "How comparables should be selected", "p": "Same neighbourhood, same property type, sold within the last 90 days, within roughly 15% on square footage, and adjusted for garage, basement development, lot size and condition. Three to five genuine comparables beat fifteen loose ones. Active listings are not comparables, they are competition; a neighbour asking $475,000 tells you nothing except who you are bidding against." },
-      { "h": "What a price reduction signals", "p": "The first reduction reads as a correction. The second reads as motivation. The third reads as a problem with the property. Each one invites a lower offer than the last. This is why starting at the correct number beats starting high with a plan to come down: you spend the same weeks and end at a lower price." },
-      { "h": "The one exception to pricing at market", "p": "Deliberately pricing at the bottom of the comparable band to manufacture competition works in Regina, but only when inventory in your segment is genuinely tight and your property shows well enough to hold attention. We used it on 215 Tuscany View in April and it produced three offers in nine days and a sale $11,100 over asking. It is a strategy, not a default, and it fails badly on a property with a visible defect." }
+      {
+        "h": "The first two weeks are the whole game",
+        "p": "A new listing gets its biggest audience in the first fortnight. Every buyer already working with an agent in your price band sees it then. Price above the band and they see it and move on, and you don't get a second first impression. Everything after day fourteen is leftovers: people new to the market, plus the ones who already passed and are now waiting for you to drop."
+      },
+      {
+        "h": "How to pick comparables",
+        "p": "Same neighbourhood, same property type, sold in the last 90 days, within about 15% on square footage, adjusted for garage, basement development, lot size and condition. Three to five real comparables beat fifteen loose ones every time. And active listings aren't comparables. They're competition. A neighbour asking $475,000 tells you nothing except who you're bidding against."
+      },
+      {
+        "h": "What a price cut signals",
+        "p": "The first one reads as a correction. The second reads as motivation. The third reads as something wrong with the house. Each one invites a lower offer than the last. Which is why starting at the right number beats starting high and planning to come down. You spend the same weeks and end up with less."
+      },
+      {
+        "h": "When to underprice on purpose",
+        "p": "Pricing at the bottom of the comparable band to manufacture competition does work in Regina, but only when inventory in your segment is tight enough to matter and the house shows well enough to hold attention once people are through the door. We used it on 215 Tuscany View back in April. Three offers in nine days, sold $11,100 over asking. It's a strategy, not a default, and on a house with a visible defect it fails badly, because everyone who walks through prices the defect higher than you did and then waits to see whether you'll drop again."
+      }
     ]
   },
   {
     "slug": "regina-neighbourhood-comparison",
     "title": "Choosing a Regina Neighbourhood: An Honest Comparison",
-    "excerpt": "Harbour Landing versus Cathedral versus the east end. Commute times, school catchments, median prices and the trade-off nobody mentions at the showing.",
+    "excerpt": "Harbour Landing against Cathedral against the east end. Commutes, catchments, medians, and the trade-off nobody brings up during the showing.",
     "date": "2026-06-14",
     "updated": "2026-08-30",
     "category": "Neighbourhoods",
     "readMinutes": 9,
     "image": "https://images.unsplash.com/photo-1449844908441-8829872d2607?auto=format&fit=crop&w=1600&q=70",
     "body": [
-      { "h": "Harbour Landing", "p": "Median around $412,000. Everything is newer than 2008, which means fewer maintenance surprises and predictable insurance. The trade-off is lot size and tree cover: yards are small and the boulevards will not have canopy for another twenty years. Best fit for a family that wants a low-maintenance house and a short grocery run." },
-      { "h": "Cathedral", "p": "Median around $298,000, the best value per square foot in the city if you are comfortable with an older house. You get elms, front porches, 13th Avenue, and a genuine neighbourhood feel. You also get 1920s wiring, clay-affected basements and street parking. Budget $15,000 to $30,000 for the deferred items on almost any Cathedral purchase and it is still the better deal." },
-      { "h": "Lakeview", "p": "Median around $465,000 and tightly held. Backing onto Wascana Park is the single most durable value feature in Regina real estate. Inventory is thin, so you often wait months for the right property. Mid-century bungalows on large lots, many of them now rebuilt rather than renovated." },
-      { "h": "The Greens on Gardiner and the east end", "p": "Median around $528,000. Executive housing, quiet streets, fastest access to the Ring Road and the airport. The trade-off is that you are driving for everything, and the commute to the university or downtown in winter is a real fifteen to twenty minutes rather than the eight the map promises." },
-      { "h": "White City and the commuter belt", "p": "Median around $487,000 for substantially more house and land, with no city mill rate. The honest cost is two vehicles, every errand being a highway trip, and a school bus ride for younger children. Families who move out there rarely move back, and families who commute for work often wish they had not." }
+      {
+        "h": "Harbour Landing",
+        "p": "Median around $412,000. Everything is newer than 2008, so fewer surprises and predictable insurance. You trade lot size and tree cover for that: yards are small and the boulevards won't have canopy for another twenty years. Best fit for a family who wants a low-maintenance house and a short grocery run."
+      },
+      {
+        "h": "Cathedral",
+        "p": "Median around $298,000, the best value per square foot in the city if you're comfortable with an old house. You get elms, front porches, 13th Avenue, and a neighbourhood that feels like one. You also get 1920s wiring, clay-affected basements and street parking. Budget $15,000 to $30,000 for the deferred list on almost any Cathedral purchase and it's still the better deal."
+      },
+      {
+        "h": "Lakeview",
+        "p": "Median around $465,000 and tightly held. Backing onto Wascana Park is the most durable value feature in Regina real estate. Inventory is thin, so you often wait months for the right house. Mid-century bungalows on big lots, plenty of them now rebuilt rather than renovated."
+      },
+      {
+        "h": "The Greens on Gardiner and the east end",
+        "p": "Median around $528,000. Executive housing, quiet streets, quickest access to the Ring Road and the airport. The trade is that you drive for everything, and the winter run to the university or downtown is a real fifteen to twenty minutes rather than the eight the map promises."
+      },
+      {
+        "h": "White City and the commuter belt",
+        "p": "Median around $487,000 for a lot more house and land, and no city mill rate. The honest cost is two vehicles, every errand becoming a highway trip, and a bus ride for the younger kids. Families who move out there for the space rarely come back, but people who did the arithmetic purely on price per square foot and forgot to add a second vehicle to it sometimes wish they hadn't."
+      }
     ]
   }
 ]

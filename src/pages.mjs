@@ -89,8 +89,8 @@ export function home(site, listings, posts) {
 <section class="shell sec" aria-labelledby="value-h">
   ${sectionHead({
     eyebrow: 'Why Everline',
-    title: 'Most of buying a house<br>is just knowing what happens next.',
-    lede: 'Three things we do differently, and all three are boring on purpose.',
+    title: `Half of buying a house<br>is just knowing what's coming next.`,
+    lede: `Three things we do differently. All three are boring on purpose.`,
   })}
   <div class="bento">
     <article class="bento-a">
@@ -98,23 +98,23 @@ export function home(site, listings, posts) {
         <img src="https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=70"
              alt="Kitchen and living area of a Regina listing prepared for photography" loading="lazy" decoding="async" width="1200" height="900">
         <div class="bento-a-copy">
-          <h3>Priced on evidence, not optimism.</h3>
-          <p>Every valuation we give you comes with the three to five comparable sales it was built from, and the adjustments we made to each one. If you disagree with the number, you can see exactly where.</p>
+          <h3>We price on evidence, not hope.</h3>
+          <p>Every valuation comes with the three to five sales it was built from and the adjustments we made to each one. Disagree with the number? You can see exactly where we got it.</p>
         </div>
       </div>
     </article>
     <article class="bento-b">
       <div class="card-shell">
         ${icon('shield', 'bento-ic')}
-        <h3>Same-day answers.</h3>
-        <p>Email, text or call. If we cannot answer properly the same day, you get a holding reply telling you when you will hear back.</p>
+        <h3>You'll hear back today.</h3>
+        <p>Email, text, call. If we can't answer properly the same day, you'll get a note telling you when we will.</p>
       </div>
     </article>
     <article class="bento-c">
       <div class="card-shell">
         ${icon('chart', 'bento-ic')}
-        <h3>The numbers before the offer.</h3>
-        <p>Carrying costs, taxes from the SAMA assessment, condo reserve health, realistic rent. You sign after you have seen the math.</p>
+        <h3>Numbers before the offer.</h3>
+        <p>Carrying costs, tax off the SAMA assessment, condo reserve health, what it really rents for. You sign after you've seen the math, not before.</p>
       </div>
     </article>
     <article class="bento-d">
@@ -142,8 +142,8 @@ export function home(site, listings, posts) {
     </div>
     <div class="split-copy">
       <p class="eyebrow">Neighbourhoods</p>
-      <h2 class="display" id="hood-h">The same house is worth<br>three different numbers<br>in three parts of this city.</h2>
-      <p class="lede">We keep a running read on every Regina neighbourhood and the commuter belt around it: what is selling, what is sitting, and what a street actually feels like on a Tuesday evening.</p>
+      <h2 class="display" id="hood-h">The same house is worth<br>three different numbers<br>in three parts of town.</h2>
+      <p class="lede">We keep a running read on every Regina neighbourhood and the commuter belt around it. What's selling, what's sitting, and what a street actually feels like on a Tuesday evening.</p>
       <a class="btn btn-dark" href="/neighbourhoods/" data-track="home_hoods">
         <span>Compare neighbourhoods</span><span class="btn-ic">${icon('arrow')}</span>
       </a>
@@ -155,7 +155,7 @@ export function home(site, listings, posts) {
   ${sectionHead({
     eyebrow: 'Current inventory',
     title: 'Featured Regina listings',
-    lede: 'Updated from the MLS&reg; system. Every property below is one we have walked ourselves.',
+    lede: `Straight off the MLS&reg;. We've walked every one of these ourselves.`,
     action: `<a class="btn btn-ghost" href="/listings/" data-track="home_all_listings"><span>See all ${listings.filter((l) => l.status !== 'sold').length} listings</span><span class="btn-ic">${icon('arrow')}</span></a>`,
   })}
   <div class="grid-3">${featured.map((l, i) => listingCard(l, { eager: i < 3 })).join('')}</div>
@@ -165,12 +165,12 @@ export function home(site, listings, posts) {
   <div class="valuation">
     <div class="valuation-copy">
       <p class="eyebrow">Free, no obligation</p>
-      <h2 class="display" id="val-h">What is your<br>home worth today?</h2>
-      <p class="lede">Answer four questions and get a comparable-based range for your address within one business day, plus the sales it was built from.</p>
+      <h2 class="display" id="val-h">What's your place<br>worth right now?</h2>
+      <p class="lede">Four questions, and you'll have a range for your address inside a business day, with the sales it came from attached.</p>
       <ul class="ticks">
-        <li>${icon('spark')}Built from sales in the last 90 days</li>
-        <li>${icon('spark')}No sign on your lawn, no follow-up sequence</li>
-        <li>${icon('spark')}Delivered as a PDF you can keep</li>
+        <li>${icon('spark')}Built from the last 90 days of sales</li>
+        <li>${icon('spark')}No sign on your lawn, nobody chasing you</li>
+        <li>${icon('spark')}A PDF you keep either way</li>
       </ul>
     </div>
     <div class="valuation-form">
@@ -197,7 +197,7 @@ ${testimonials(site.testimonials)}
 <section class="shell sec" aria-labelledby="guide-h">
   ${sectionHead({
     eyebrow: 'Guides',
-    title: 'Read before you sign anything.',
+    title: `Worth reading before you sign anything.`,
     action: `<a class="btn btn-ghost" href="/guides/"><span>All guides</span><span class="btn-ic">${icon('arrow')}</span></a>`,
   })}
   <div class="grid-3">${posts.slice(0, 3).map(postCard).join('')}</div>
@@ -239,7 +239,7 @@ export function listingsIndex(site, listings) {
 <section class="shell page-head">
   <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a> <span aria-hidden="true">/</span> <span aria-current="page">Listings</span></nav>
   <h1 class="display">Regina homes for sale</h1>
-  <p class="lede">${listings.length} properties across Regina and the surrounding commuter belt. Filters apply instantly — nothing reloads.</p>
+  <p class="lede">${listings.length} properties across Regina and the commuter belt around it. Filters apply as you go. Nothing reloads.</p>
 </section>
 
 <section class="shell sec-tight" aria-label="Filter listings">
@@ -262,15 +262,15 @@ export function listingsIndex(site, listings) {
 
 <section class="shell sec-tight">
   <div class="grid-3" id="listing-grid">${listings.map((l, i) => listingCard(l, { eager: i < 3 })).join('')}</div>
-  <p class="empty" id="empty" hidden>No properties match those filters. <button type="button" class="linkish" data-clear>Clear them</button> and try a wider search.</p>
+  <p class="empty" id="empty" hidden>Nothing matches those filters. <button type="button" class="linkish" data-clear>Clear them</button> and try a wider search.</p>
 </section>
 
 <section class="shell sec">
   <div class="alert-box">
     <div>
       <p class="eyebrow">Property alerts</p>
-      <h2 class="display">Be first, without checking daily.</h2>
-      <p class="lede">Tell us what you are looking for and you get an email the morning anything matching hits the MLS&reg;. Unsubscribe in one click.</p>
+      <h2 class="display">Stop refreshing the listings page.</h2>
+      <p class="lede">Tell us what you're after and you'll get an email the morning something matching lands. One click to stop them.</p>
     </div>
     ${leadForm(site, {
       id: 'alerts',
@@ -394,7 +394,7 @@ export function listingDetail(site, l, all) {
           src="https://www.google.com/maps?q=${mapQ}&output=embed"
           loading="lazy" referrerpolicy="no-referrer-when-downgrade" width="1200" height="450"></iframe>
       </div>
-      <p class="fine">Approximate location. Verify boundaries, measurements and school catchments independently.</p>
+      <p class="fine">Approximate location. Check boundaries, measurements and school catchments yourself before you rely on them.</p>
     </div>
 
     <aside class="detail-side">
@@ -425,7 +425,7 @@ export function listingDetail(site, l, all) {
           <label class="fld"><span>Rate (%)</span><input type="number" data-calc="rate" value="4.49" min="0.1" max="20" step="0.01"></label>
           <label class="fld"><span>Amortization (years)</span><input type="number" data-calc="years" value="25" min="5" max="30" step="1"></label>
           <input type="hidden" data-calc="price" value="${l.price}">
-          <p class="fine">Principal and interest only. Not an offer of credit.</p>
+          <p class="fine">Principal and interest only. This isn't an offer of credit.</p>
         </div>
       </div>
     </aside>
@@ -493,12 +493,12 @@ ${similar.length ? `
 
 export function buy(site, listings) {
   const steps = [
-    ['Pre-approval', 'Before anything else. A written pre-approval fixes your budget and your rate hold, and it is the difference between an offer a seller takes seriously and one they do not.'],
-    ['The needs list', 'We write down what you actually need versus what you would like, and we both sign it. It stops the third-weekend drift where every house starts looking the same.'],
-    ['Showings', 'Typically eight to fifteen properties. We tell you what is wrong with each one, including the ones you like.'],
-    ['The offer', 'Price, possession date, inclusions, and conditions for financing and inspection. We walk you through every clause before you initial it.'],
-    ['Conditions', 'Seven to ten business days. Inspection, lender appraisal, condo documents if applicable, insurance quote. This is where problems surface and where you can still walk.'],
-    ['Possession', 'Lawyer, title transfer, funds, keys. We do a final walkthrough with you the morning of.'],
+    ['Pre-approval', `Before anything else. A written pre-approval fixes your budget and holds your rate, and it's the difference between an offer a seller takes seriously and one they don't.`],
+    ['The needs list', `We write down what you actually need against what you'd merely like, and we both sign it. It stops the third-weekend drift where every house starts blurring together.`],
+    ['Showings', `Usually eight to fifteen houses. We'll tell you what's wrong with each one, including the ones you like.`],
+    ['The offer', `Price, possession date, what stays, and conditions for financing and inspection. We walk you through every clause before you initial it.`],
+    ['Conditions', `Seven to ten business days. Inspection, appraisal, condo documents if there are any, insurance quote. This is where problems surface, and it's while you can still walk away.`],
+    ['Possession', `Lawyer, title, funds, keys. We do a final walkthrough with you that morning.`],
   ]
     .map(
       (s, i) => `
@@ -513,8 +513,8 @@ export function buy(site, listings) {
 <section class="shell page-head">
   <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a> <span aria-hidden="true">/</span> <span aria-current="page">Buy</span></nav>
   <p class="eyebrow">Buying in Regina</p>
-  <h1 class="display">Nobody should sign the<br>largest contract of their life<br>and still be guessing.</h1>
-  <p class="lede">Here is the whole process, start to finish, with the parts most people find out about too late written down in advance.</p>
+  <h1 class="display">Nobody should sign the<br>biggest contract of their life<br>while still guessing.</h1>
+  <p class="lede">Here's the whole thing, start to finish, including the parts most people only find out about when it's too late.</p>
 </section>
 
 <section class="shell sec-tight">
@@ -525,7 +525,7 @@ export function buy(site, listings) {
 </section>
 
 <section class="shell sec" aria-labelledby="steps-h">
-  ${sectionHead({ eyebrow: 'The process', title: 'Six stages, roughly sixty days.' })}
+  ${sectionHead({ eyebrow: 'The process', title: `Six stages, about sixty days.` })}
   <ol class="steps">${steps}</ol>
 </section>
 
@@ -534,7 +534,7 @@ export function buy(site, listings) {
     <div class="valuation-copy">
       <p class="eyebrow">Tools</p>
       <h2 class="display" id="calc-h">Mortgage calculator</h2>
-      <p class="lede">Principal and interest on a Canadian semi-annual compounded mortgage. Add roughly ${money(350)} a month for taxes and insurance on a median Regina home.</p>
+      <p class="lede">Principal and interest, compounded semi-annually the way Canadian mortgages actually work. Add about ${money(350)} a month for taxes and insurance on a median Regina house.</p>
       <ul class="ticks">
         <li>${icon('spark')}Saskatchewan has no land transfer tax</li>
         <li>${icon('spark')}Under 20% down requires default insurance</li>
@@ -557,7 +557,7 @@ export function buy(site, listings) {
           <div><dt>Mortgage amount</dt><dd data-calc-amount>—</dd></div>
           <div><dt>Total interest</dt><dd data-calc-interest>—</dd></div>
         </dl>
-        <p class="fine">Estimate only. Confirm figures with a licensed mortgage professional.</p>
+        <p class="fine">An estimate. Run the real numbers past a licensed mortgage professional.</p>
       </div>
     </div>
   </div>
@@ -566,7 +566,7 @@ export function buy(site, listings) {
 <section class="shell sec" aria-labelledby="buy-listings-h">
   ${sectionHead({
     eyebrow: 'Available now',
-    title: 'On the market this week',
+    title: `On the market right now`,
     action: `<a class="btn btn-ghost" href="/listings/"><span>All listings</span><span class="btn-ic">${icon('arrow')}</span></a>`,
   })}
   <div class="grid-3">${listings.filter((l) => l.status === 'for-sale').slice(0, 3).map(listingCard).join('')}</div>
@@ -578,8 +578,8 @@ ${faqSection(site.faqs.filter((f) => /buy|invest|agent|tour|process/i.test(f.q))
   <div class="alert-box">
     <div>
       <p class="eyebrow">Start here</p>
-      <h2 class="display">Tell us what you're looking for.</h2>
-      <p class="lede">We will send back a shortlist, honestly annotated, including the ones we would talk you out of.</p>
+      <h2 class="display">Tell us what you're after.</h2>
+      <p class="lede">We'll send back a shortlist with honest notes on each one, including the ones we'd talk you out of.</p>
     </div>
     ${leadForm(site, {
       id: 'buyer-intake',
@@ -626,12 +626,12 @@ ${faqSection(site.faqs.filter((f) => /buy|invest|agent|tour|process/i.test(f.q))
 export function sell(site, listings) {
   const sold = listings.filter((l) => l.status === 'sold');
   const included = [
-    ['Professional photography', 'Wide-angle interiors, twilight exterior, and a drone shot where the lot is the selling point.'],
-    ['Measured floor plans', 'Buyers spend longer on a listing with a floor plan than one without. Every listing gets one.'],
-    ['Staging consultation', 'A walkthrough with a stager before photos. Usually it is furniture removal, not rental.'],
-    ['MLS® and portal syndication', 'REALTOR.ca plus the major portals, populated from one source so nothing goes stale.'],
-    ['Paid social campaign', 'Geo-targeted to Regina and the commuter belt for the first fourteen days, when it matters.'],
-    ['Weekly written reporting', 'Views, saves, showings, and what feedback actually said. Every Monday, in writing.'],
+    ['Professional photography', `Wide interiors, a twilight exterior, and a drone shot when the lot is the thing selling it.`],
+    ['Measured floor plans', `Buyers linger on a listing with a floor plan and skim one without. So every listing gets one.`],
+    ['Staging consultation', `A walkthrough with a stager before the photographer comes. Usually it's about taking furniture out, not renting more in.`],
+    ['MLS® and portal syndication', `REALTOR.ca and the major portals, all fed from one source so nothing goes stale in a corner of the internet.`],
+    ['Paid social campaign', `Targeted at Regina and the commuter belt, running hard through the first fortnight when it counts.`],
+    ['Weekly written reporting', `Views, saves, showings, and what the feedback actually said. Every Monday, in writing.`],
   ]
     .map((i) => `<li class="inc"><h3>${icon('spark')}${esc(i[0])}</h3><p>${esc(i[1])}</p></li>`)
     .join('');
@@ -640,8 +640,8 @@ export function sell(site, listings) {
 <section class="shell page-head">
   <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a> <span aria-hidden="true">/</span> <span aria-current="page">Sell</span></nav>
   <p class="eyebrow">Selling in Regina</p>
-  <h1 class="display">The first fourteen days<br>decide what you get.</h1>
-  <p class="lede">Every buyer already working in your price band sees your listing in the first two weeks. Price it wrong and you spend the same weeks and end lower. Here is how we avoid that.</p>
+  <h1 class="display">The first two weeks<br>decide what you get.</h1>
+  <p class="lede">Every buyer already shopping your price band sees your listing in the first fortnight. Price it wrong and you'll spend those same weeks and still end up lower. Here's how we avoid that.</p>
 </section>
 
 <section class="shell sec-tight">
@@ -655,12 +655,12 @@ export function sell(site, listings) {
   <div class="valuation">
     <div class="valuation-copy">
       <p class="eyebrow">Step one</p>
-      <h2 class="display" id="val2-h">What is your home<br>actually worth?</h2>
-      <p class="lede">A comparable-based range for your address inside one business day, with the three to five sales it was built from and every adjustment we made. No sign on your lawn, no drip campaign.</p>
+      <h2 class="display" id="val2-h">So what's it<br>actually worth?</h2>
+      <p class="lede">A range for your address inside one business day, with the three to five sales behind it and every adjustment we made. No sign goes up. Nobody adds you to a mailing list.</p>
       <ul class="ticks">
-        <li>${icon('spark')}Sales from the last 90 days only</li>
-        <li>${icon('spark')}Adjusted for garage, basement, lot and condition</li>
-        <li>${icon('spark')}Delivered as a PDF you keep either way</li>
+        <li>${icon('spark')}Only sales from the last 90 days</li>
+        <li>${icon('spark')}Adjusted for garage, basement, lot, condition</li>
+        <li>${icon('spark')}A PDF you keep whatever you decide</li>
       </ul>
     </div>
     <div class="valuation-form">
@@ -685,7 +685,7 @@ export function sell(site, listings) {
 <section class="shell sec" aria-labelledby="inc-h">
   ${sectionHead({
     eyebrow: 'Included, not billed back',
-    title: 'What the commission covers.',
+    title: `What the commission actually covers.`,
     lede: 'Published in writing before you sign, including exactly what the co-operating brokerage receives.',
   })}
   <ul class="grid-3 includes">${included}</ul>
@@ -745,8 +745,8 @@ export function neighbourhoods(site, listings) {
 <section class="shell page-head">
   <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a> <span aria-hidden="true">/</span> <span aria-current="page">Neighbourhoods</span></nav>
   <p class="eyebrow">Regina &amp; area</p>
-  <h1 class="display">Six neighbourhoods,<br>honestly described.</h1>
-  <p class="lede">Including the trade-off nobody mentions during the showing. Median prices are rolling twelve-month figures for the area, updated monthly.</p>
+  <h1 class="display">Six neighbourhoods,<br>described honestly.</h1>
+  <p class="lede">Including the bit nobody brings up during the showing. Medians are rolling twelve-month figures, updated monthly.</p>
 </section>
 
 <section class="shell sec-tight"><div class="hood-list">${cards}</div></section>
@@ -783,7 +783,7 @@ export function guidesIndex(site, posts) {
   <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a> <span aria-hidden="true">/</span> <span aria-current="page">Guides</span></nav>
   <p class="eyebrow">Guides &amp; market reports</p>
   <h1 class="display">Written so you can<br>argue with us.</h1>
-  <p class="lede">Regina market data, buyer and seller guides, and the numbers behind the advice. No gated PDFs, no email wall.</p>
+  <p class="lede">Regina market data, buyer and seller guides, and the numbers behind the advice. Nothing gated, no email wall.</p>
 </section>
 
 <section class="shell sec-tight"><div class="grid-3">${posts.map(postCard).join('')}</div></section>
@@ -958,8 +958,8 @@ ${hood ? `
     eyebrow: matched.length ? 'Available now' : 'Currently available',
     title: matched.length ? `${matched.length} matching ${matched.length === 1 ? 'property' : 'properties'}` : 'Nothing matching right now',
     lede: matched.length
-      ? 'Updated from the MLS&reg; System. Every one of these is a property we have walked ourselves.'
-      : 'Inventory in this segment turns over quickly. Set an alert below and you will hear the morning something matches, or browse what is on the market today.',
+      ? `Straight off the MLS&reg;. We've walked every one of these ourselves.`
+      : `This segment turns over fast. Set an alert below and you'll hear the morning something matches, or have a look at what's on the market today.`,
     action: `<a class="btn btn-ghost" href="/listings/"><span>All listings</span><span class="btn-ic">${icon('arrow')}</span></a>`,
   })}
   <div class="grid-3">${shown.map((l, i) => listingCard(l, { eager: i < 3 })).join('')}</div>
@@ -1062,8 +1062,8 @@ export function about(site) {
 <section class="shell page-head">
   <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a> <span aria-hidden="true">/</span> <span aria-current="page">About</span></nav>
   <p class="eyebrow">About</p>
-  <h1 class="display">A brokerage built<br>around one idea.</h1>
-  <p class="lede">A client should never have to guess what happens next. Everything else follows from that.</p>
+  <h1 class="display">One idea, really.</h1>
+  <p class="lede">Nobody should have to guess what happens next. The rest of how we work follows from that.</p>
 </section>
 
 <section class="shell sec-tight">
@@ -1077,8 +1077,8 @@ export function about(site) {
       <p class="eyebrow">${esc(site.agent.title)}</p>
       <h2 class="display">${esc(site.agent.name)}</h2>
       <p class="lede">${esc(site.agent.bio)}</p>
-      <p class="prose">Before real estate, Avery spent nine years in commercial underwriting, which is where the habit of showing the arithmetic comes from. Everline has four agents and deliberately stays small: every file is handled by the person you met, not passed to a coordinator you have never spoken to.</p>
-      <p class="prose">We are members of the Saskatchewan REALTORS® Association and abide by the CREA REALTOR® Code. ${esc(site.agent.licence)}.</p>
+      <p class="prose">Before real estate Avery spent nine years in commercial underwriting, which is where the habit of showing her arithmetic comes from. Everline has four agents and stays that size on purpose. Your file is handled by the person you met, not handed off to a coordinator you've never spoken to.</p>
+      <p class="prose">We're members of the Saskatchewan REALTORS® Association and we work to the CREA REALTOR® Code. ${esc(site.agent.licence)}.</p>
       <div class="row">
         <a class="btn btn-dark" href="/contact/"><span>Book a call</span><span class="btn-ic">${icon('arrow')}</span></a>
         <a class="btn btn-ghost" href="tel:${esc(site.contact.phone)}">${icon('phone')}<span>${esc(site.contact.phoneDisplay)}</span></a>
@@ -1125,7 +1125,7 @@ export function contact(site) {
   <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a> <span aria-hidden="true">/</span> <span aria-current="page">Contact</span></nav>
   <p class="eyebrow">Contact</p>
   <h1 class="display">Ask us something<br>specific.</h1>
-  <p class="lede">Same-day answers on weekdays. If we cannot answer properly the same day, you get a holding reply telling you when.</p>
+  <p class="lede">You'll hear back the same day on weekdays. If we can't answer properly that fast, we'll tell you when we can.</p>
 </section>
 
 <section class="shell sec-tight">
@@ -1151,7 +1151,7 @@ export function contact(site) {
         id: 'general-contact',
         kind: 'general',
         heading: 'Send a message',
-        sub: 'We read every one of these ourselves.',
+        sub: 'These come to us, not to an assistant.',
         cta: 'Send message',
         fields: [
           { name: 'topic', label: 'What is this about?', type: 'select', options: ['Buying', 'Selling', 'Both', 'Investment property', 'Something else'] },
@@ -1267,7 +1267,7 @@ export function notFound(site, listings) {
 <section class="shell page-head">
   <p class="eyebrow">404</p>
   <h1 class="display">That page isn't here.</h1>
-  <p class="lede">A listing that has sold, or a link that has moved. Either way, here is somewhere useful to go.</p>
+  <p class="lede">Probably a listing that's sold, or a link that moved. Either way, here's somewhere better to be.</p>
   <div class="row">
     <a class="btn btn-dark" href="/listings/"><span>Browse listings</span><span class="btn-ic">${icon('arrow')}</span></a>
     <a class="btn btn-ghost" href="/contact/"><span>Contact us</span></a>
