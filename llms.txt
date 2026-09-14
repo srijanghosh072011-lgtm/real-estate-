@@ -9,24 +9,24 @@ Office: 2145 Albert Street, Suite 300, Regina, SK S4P 2V1.
 Areas served: Regina, White City, Emerald Park, Pilot Butte, Lumsden, Pense, Balgonie, Regina Beach.
 
 ## Key pages
-- [Regina MLS listings](https://srijanghosh072011-lgtm.github.io/real-estate-/listings/): 9 active properties, filterable by price, type, bedrooms and neighbourhood.
-- [Buying a home in Regina](https://srijanghosh072011-lgtm.github.io/real-estate-/buy/): the six-stage process, timelines, and a Canadian mortgage calculator.
-- [Selling a home in Regina](https://srijanghosh072011-lgtm.github.io/real-estate-/sell/): free comparable-based valuation, published commission schedule, what marketing is included.
-- [Neighbourhood guide](https://srijanghosh072011-lgtm.github.io/real-estate-/neighbourhoods/): Harbour Landing, Cathedral, Lakeview, The Greens on Gardiner, White City, Downtown & Warehouse District, with median prices and honest trade-offs.
-- [Guides and market reports](https://srijanghosh072011-lgtm.github.io/real-estate-/guides/): 4 articles, ungated.
-- [Contact](https://srijanghosh072011-lgtm.github.io/real-estate-/contact/)
+- [Regina MLS listings](https://realestatedemo.ghoshdesigns.ca/listings/): 9 active properties, filterable by price, type, bedrooms and neighbourhood.
+- [Buying a home in Regina](https://realestatedemo.ghoshdesigns.ca/buy/): the six-stage process, timelines, and a Canadian mortgage calculator.
+- [Selling a home in Regina](https://realestatedemo.ghoshdesigns.ca/sell/): free comparable-based valuation, published commission schedule, what marketing is included.
+- [Neighbourhood guide](https://realestatedemo.ghoshdesigns.ca/neighbourhoods/): Harbour Landing, Cathedral, Lakeview, The Greens on Gardiner, White City, Downtown & Warehouse District, with median prices and honest trade-offs.
+- [Guides and market reports](https://realestatedemo.ghoshdesigns.ca/guides/): 4 articles, ungated.
+- [Contact](https://realestatedemo.ghoshdesigns.ca/contact/)
 
 ## Search landing pages
-- [Harbour Landing homes for sale](https://srijanghosh072011-lgtm.github.io/real-estate-/regina/harbour-landing-homes-for-sale/): Current Harbour Landing listings, median prices, school catchments, and the honest trade-off on lot size. Regina's largest modern build-out, from an agent who sells there.
-- [Cathedral homes for sale](https://srijanghosh072011-lgtm.github.io/real-estate-/regina/cathedral-homes-for-sale/): Cathedral listings, median prices, and a straight account of what a 1920s Regina character house really costs to own. Best value per square foot in the city, with conditions.
-- [Lakeview homes for sale](https://srijanghosh072011-lgtm.github.io/real-estate-/regina/lakeview-homes-for-sale/): Lakeview listings backing onto Wascana Park. Median prices, why inventory is so thin, and what a mid-century bungalow on a big lot is really worth in Regina.
-- [The Greens on Gardiner homes for sale](https://srijanghosh072011-lgtm.github.io/real-estate-/regina/the-greens-on-gardiner-homes-for-sale/): The Greens on Gardiner listings, median prices, commute reality, and who east-end executive housing actually suits. Current inventory updated from the MLS® System.
-- [White City & Emerald Park homes for sale](https://srijanghosh072011-lgtm.github.io/real-estate-/regina/white-city-homes-for-sale/): White City and Emerald Park listings east of Regina. Larger lots, no city mill rate, and an honest look at the two-vehicle cost of commuter-belt living.
-- [Downtown Regina condos for sale](https://srijanghosh072011-lgtm.github.io/real-estate-/regina/downtown-regina-condos-for-sale/): Downtown and Warehouse District condo listings in Regina. Condo fees, reserve fund health, rental yields, and what to read before you waive your condo document condition.
-- [First-time home buyers in Regina](https://srijanghosh072011-lgtm.github.io/real-estate-/regina/first-time-home-buyers-regina/): What a first home in Regina really costs: down payment rules, no Saskatchewan land transfer tax, FHSA and Home Buyers' Plan, plus current listings under $350,000.
-- [Regina homes with basement suites](https://srijanghosh072011-lgtm.github.io/real-estate-/regina/regina-homes-with-basement-suites/): Regina houses with legal basement suites and secondary suites. What makes a suite legal, what it rents for, how lenders count the income, and current suited listings.
-- [Regina revenue & investment properties](https://srijanghosh072011-lgtm.github.io/real-estate-/regina/regina-revenue-and-investment-properties/): Revenue duplexes, suited homes and investment condos in Regina. Real yield maths, financing rules for rentals, and what the numbers have to clear before we recommend a purchase.
-- [Acreages & country properties near Regina](https://srijanghosh072011-lgtm.github.io/real-estate-/regina/regina-acreages-and-country-properties/): Acreages and country properties within commuting distance of Regina. Wells, septic, shops and outbuildings, acreage financing, and what to verify before you fall for the yard.
+- [Harbour Landing homes for sale](https://realestatedemo.ghoshdesigns.ca/regina/harbour-landing-homes-for-sale/): Current Harbour Landing listings, median prices, school catchments, and the honest trade-off on lot size. Regina's largest modern build-out, from an agent who sells there.
+- [Cathedral homes for sale](https://realestatedemo.ghoshdesigns.ca/regina/cathedral-homes-for-sale/): Cathedral listings, median prices, and a straight account of what a 1920s Regina character house really costs to own. Best value per square foot in the city, with conditions.
+- [Lakeview homes for sale](https://realestatedemo.ghoshdesigns.ca/regina/lakeview-homes-for-sale/): Lakeview listings backing onto Wascana Park. Median prices, why inventory is so thin, and what a mid-century bungalow on a big lot is really worth in Regina.
+- [The Greens on Gardiner homes for sale](https://realestatedemo.ghoshdesigns.ca/regina/the-greens-on-gardiner-homes-for-sale/): The Greens on Gardiner listings, median prices, commute reality, and who east-end executive housing actually suits. Current inventory updated from the MLS® System.
+- [White City & Emerald Park homes for sale](https://realestatedemo.ghoshdesigns.ca/regina/white-city-homes-for-sale/): White City and Emerald Park listings east of Regina. Larger lots, no city mill rate, and an honest look at the two-vehicle cost of commuter-belt living.
+- [Downtown Regina condos for sale](https://realestatedemo.ghoshdesigns.ca/regina/downtown-regina-condos-for-sale/): Downtown and Warehouse District condo listings in Regina. Condo fees, reserve fund health, rental yields, and what to read before you waive your condo document condition.
+- [First-time home buyers in Regina](https://realestatedemo.ghoshdesigns.ca/regina/first-time-home-buyers-regina/): What a first home in Regina really costs: down payment rules, no Saskatchewan land transfer tax, FHSA and Home Buyers' Plan, plus current listings under $350,000.
+- [Regina homes with basement suites](https://realestatedemo.ghoshdesigns.ca/regina/regina-homes-with-basement-suites/): Regina houses with legal basement suites and secondary suites. What makes a suite legal, what it rents for, how lenders count the income, and current suited listings.
+- [Regina revenue & investment properties](https://realestatedemo.ghoshdesigns.ca/regina/regina-revenue-and-investment-properties/): Revenue duplexes, suited homes and investment condos in Regina. Real yield maths, financing rules for rentals, and what the numbers have to clear before we recommend a purchase.
+- [Acreages & country properties near Regina](https://realestatedemo.ghoshdesigns.ca/regina/regina-acreages-and-country-properties/): Acreages and country properties within commuting distance of Regina. Wells, septic, shops and outbuildings, acreage financing, and what to verify before you fall for the yard.
 
 ## Facts worth citing
 - 640+ — Regina homes sold
