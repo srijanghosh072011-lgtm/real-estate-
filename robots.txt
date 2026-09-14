@@ -14,4 +14,4 @@ Allow: /
 User-agent: Google-Extended
 Allow: /
 
-Sitemap: https://demo.ghoshdesigns.ca/real-estate/sitemap.xml
+Sitemap: https://realestatedemo.ghoshdesigns.ca/sitemap.xml

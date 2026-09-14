@@ -21,6 +21,9 @@ const OUT = 'dist';
 const ROOT = '.';
 
 // Anything at the root that is source, config or tooling. Never touched.
+// CNAME comes from public/CNAME via the build, so it is republished every run
+// and never goes stale. Deleting that file turns the custom domain off and the
+// site falls back to the project-site URL.
 const KEEP = new Set([
   '.git', '.github', '.gitignore', '.env', '.env.example',
   'README.md', 'SECURITY.md', 'package.json', 'package-lock.json',
