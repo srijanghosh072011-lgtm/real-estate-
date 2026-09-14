@@ -217,6 +217,11 @@ async function main() {
   // The footer links these sitewide, so every landing page is one hop from any page.
   site.landings = landings;
 
+  // Where the site will actually live. Drives canonicals, OpenGraph, the sitemap
+  // and the JSON-LD graph, so it has to be the real public URL including any
+  // subdirectory. SITE_URL overrides data/site.json without editing content.
+  site.url = (process.env.SITE_URL || site.url).replace(/\/+$/, '');
+
   // Newest first, sold last: the default order the listings page ships with.
   const rank = { 'for-sale': 0, pending: 1, sold: 2 };
   listings.sort((a, b) => rank[a.status] - rank[b.status] || b.listedOn.localeCompare(a.listedOn));
