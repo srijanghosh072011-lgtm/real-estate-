@@ -1,0 +1,177 @@
+---
+import { site, nav } from '../data/site';
+
+const path = Astro.url.pathname.replace(/\/$/, '');
+---
+
+<header class="fixed inset-x-0 top-0 z-40 pt-4 md:pt-6" data-nav>
+  <div class="shell flex items-center justify-between gap-3">
+    <!-- Brand -->
+    <a
+      href="/"
+      class="group flex items-center gap-2.5 rounded-full border border-line/80 bg-paper/80 py-2 pl-3 pr-5 backdrop-blur-xl transition-[box-shadow,background-color] duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-paper"
+      aria-label={`${site.name} — home`}
+    >
+      <span
+        class="grid h-8 w-8 place-items-center rounded-full bg-forest text-[13px] font-semibold text-paper transition-transform duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] group-hover:rotate-[-8deg]"
+        aria-hidden="true">HL</span
+      >
+      <span class="font-display text-[15px] leading-none tracking-tight">Harbor Lane</span>
+    </a>
+
+    <!-- Desktop links -->
+    <nav
+      class="hidden items-center gap-1 rounded-full border border-line/80 bg-paper/80 px-2 py-2 backdrop-blur-xl lg:flex"
+      aria-label="Primary"
+    >
+      {
+        nav.map((item) => (
+          <a
+            href={item.href}
+            aria-current={path === item.href ? 'page' : undefined}
+            class:list={[
+              'rounded-full px-4 py-2 text-[13.5px] font-medium transition-colors duration-500 ease-[cubic-bezier(0.32,0.72,0,1)]',
+              path === item.href ? 'bg-forest text-paper' : 'text-ink-soft hover:bg-ink/5',
+            ]}
+          >
+            {item.label}
+          </a>
+        ))
+      }
+    </nav>
+
+    <div class="flex items-center gap-2">
+      <a
+        href={site.phoneHref}
+        class="hidden rounded-full border border-line/80 bg-paper/80 px-4 py-2.5 text-[13.5px] font-semibold backdrop-blur-xl transition-colors duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-paper md:inline-flex"
+        >{site.phone}</a
+      >
+      <a href="/sell" class="btn btn-solid hidden sm:inline-flex" data-track="CTA click" data-track-label="Nav valuation">
+        Free valuation
+        <span class="btn-disc" aria-hidden="true">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M7 17 17 7M9 7h8v8" stroke-linecap="round" stroke-linejoin="round"></path>
+          </svg>
+        </span>
+      </a>
+
+      <!-- Hamburger -->
+      <button
+        type="button"
+        data-menu-toggle
+        aria-expanded="false"
+        aria-controls="mobile-menu"
+        class="relative grid h-11 w-11 place-items-center rounded-full border border-line/80 bg-paper/80 backdrop-blur-xl lg:hidden"
+      >
+        <span class="sr-only">Open menu</span>
+        <span
+          data-bar
+          class="absolute h-px w-4 -translate-y-[3px] bg-ink transition-transform duration-500 ease-[cubic-bezier(0.32,0.72,0,1)]"
+        ></span>
+        <span
+          data-bar
+          class="absolute h-px w-4 translate-y-[3px] bg-ink transition-transform duration-500 ease-[cubic-bezier(0.32,0.72,0,1)]"
+        ></span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<!-- Full-screen menu -->
+<div
+  id="mobile-menu"
+  data-menu
+  hidden
+  class="fixed inset-0 z-50 flex flex-col bg-paper/95 backdrop-blur-3xl lg:hidden"
+>
+  <div class="shell flex items-center justify-between pt-4 md:pt-6">
+    <span class="font-display text-[15px]">Harbor Lane</span>
+    <button
+      type="button"
+      data-menu-close
+      class="grid h-11 w-11 place-items-center rounded-full border border-line bg-paper"
+      aria-label="Close menu"
+    >
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25">
+        <path d="M6 6l12 12M18 6 6 18" stroke-linecap="round"></path>
+      </svg>
+    </button>
+  </div>
+
+  <nav class="shell flex flex-1 flex-col justify-center gap-1 pb-16" aria-label="Mobile">
+    {
+      nav.map((item, i) => (
+        <a
+          href={item.href}
+          data-menu-item
+          style={`--reveal-delay:${60 + i * 45}ms`}
+          class="reveal border-b border-line/70 py-4 font-display text-4xl tracking-tight sm:text-5xl"
+        >
+          {item.label}
+        </a>
+      ))
+    }
+    <div class="mt-8 flex flex-col gap-3">
+      <a href="/sell" class="btn btn-solid justify-between" data-track="CTA click" data-track-label="Menu valuation">
+        Free home valuation
+        <span class="btn-disc" aria-hidden="true">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M7 17 17 7M9 7h8v8" stroke-linecap="round" stroke-linejoin="round"></path>
+          </svg>
+        </span>
+      </a>
+      <a href={site.phoneHref} class="btn btn-ghost justify-between">
+        Call {site.phone}
+        <span class="btn-disc" aria-hidden="true">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M7 17 17 7M9 7h8v8" stroke-linecap="round" stroke-linejoin="round"></path>
+          </svg>
+        </span>
+      </a>
+    </div>
+  </nav>
+</div>
+
+<script is:inline>
+  (function () {
+    var toggle = document.querySelector('[data-menu-toggle]');
+    var menu = document.querySelector('[data-menu]');
+    var close = document.querySelector('[data-menu-close]');
+    var bars = toggle ? toggle.querySelectorAll('[data-bar]') : [];
+    if (!toggle || !menu) return;
+
+    function setOpen(open) {
+      menu.hidden = !open;
+      toggle.setAttribute('aria-expanded', String(open));
+      document.body.style.overflow = open ? 'hidden' : '';
+      bars[0].style.transform = open ? 'rotate(45deg)' : '';
+      bars[1].style.transform = open ? 'rotate(-45deg)' : '';
+      if (open) {
+        requestAnimationFrame(function () {
+          menu.querySelectorAll('[data-menu-item]').forEach(function (el) {
+            el.classList.add('is-in');
+          });
+        });
+      } else {
+        menu.querySelectorAll('[data-menu-item]').forEach(function (el) {
+          el.classList.remove('is-in');
+        });
+      }
+    }
+
+    toggle.addEventListener('click', function () {
+      setOpen(menu.hidden);
+    });
+    if (close) {
+      close.addEventListener('click', function () {
+        setOpen(false);
+      });
+    }
+    menu.addEventListener('click', function (e) {
+      if (e.target.closest('a')) setOpen(false);
+    });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && !menu.hidden) setOpen(false);
+    });
+  })();
+</script>

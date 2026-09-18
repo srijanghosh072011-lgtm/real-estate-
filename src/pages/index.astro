@@ -1,0 +1,524 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import ListingCard from '../components/ListingCard.astro';
+import Faq from '../components/Faq.astro';
+import CtaBand from '../components/CtaBand.astro';
+import { site, stats, services, process, differentiators, testimonials, faqs } from '../data/site';
+import { formatPrice, formatDate } from '../lib/format';
+
+const listings = await getCollection('listings');
+const featured = listings
+  .filter((l) => l.data.status === 'for-sale')
+  .sort((a, b) => Number(b.data.featured) - Number(a.data.featured) || +b.data.listedOn - +a.data.listedOn)
+  .slice(0, 3);
+const sold = listings.filter((l) => l.data.status === 'sold').sort((a, b) => +(b.data.soldOn ?? 0) - +(a.data.soldOn ?? 0));
+const hoods = (await getCollection('neighborhoods')).sort((a, b) => a.data.order - b.data.order).slice(0, 4);
+const guides = (await getCollection('guides')).sort((a, b) => +b.data.published - +a.data.published).slice(0, 3);
+
+const schema = [
+  {
+    '@type': 'FAQPage',
+    mainEntity: faqs.map((f) => ({
+      '@type': 'Question',
+      name: f.q,
+      acceptedAnswer: { '@type': 'Answer', text: f.a },
+    })),
+  },
+  {
+    '@type': 'ItemList',
+    name: 'Featured homes for sale in Wilmington, NC',
+    itemListElement: featured.map((l, i) => ({
+      '@type': 'ListItem',
+      position: i + 1,
+      url: `${site.url}/listings/${l.id}`,
+      name: `${l.data.address}, ${l.data.city}`,
+    })),
+  },
+];
+---
+
+<Base
+  title={`${site.name} — Wilmington NC real estate agents`}
+  description={site.description}
+  schema={schema}
+>
+  <!-- ══ Hero ══ -->
+  <section class="relative pt-32 md:pt-44">
+    <div class="shell grid items-end gap-14 lg:grid-cols-12">
+      <div class="lg:col-span-6">
+        <span class="eyebrow reveal">Wilmington · Wrightsville · Leland</span>
+        <h1 class="reveal mt-7 max-w-[13ch] text-[clamp(2.75rem,5.4vw,4.5rem)] leading-[0.98]" style="--reveal-delay:80ms">
+          Coastal Carolina homes, handled{' '}
+          <em class="italic text-forest" style="font-variation-settings:'SOFT' 20,'WONK' 1">properly.</em>
+        </h1>
+        <p class="reveal mt-8 max-w-lg text-[16.5px] leading-relaxed text-muted" style="--reveal-delay:160ms">
+          A brokerage that prices from last week's sales, fronts the cost of getting your home ready, and gets you to
+          contract in a median of 12 days — against a county median of 31.
+        </p>
+
+        <div class="reveal mt-10 flex flex-col gap-3 sm:flex-row" style="--reveal-delay:240ms">
+          <a href="/sell" class="btn btn-solid justify-between" data-track="CTA click" data-track-label="Hero valuation">
+            What is my home worth?
+            <span class="btn-disc" aria-hidden="true">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M7 17 17 7M9 7h8v8" stroke-linecap="round" stroke-linejoin="round"></path>
+              </svg>
+            </span>
+          </a>
+          <a href="/listings" class="btn btn-ghost justify-between" data-track="CTA click" data-track-label="Hero listings">
+            Browse homes
+            <span class="btn-disc" aria-hidden="true">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M7 17 17 7M9 7h8v8" stroke-linecap="round" stroke-linejoin="round"></path>
+              </svg>
+            </span>
+          </a>
+        </div>
+
+        <div class="reveal mt-12 flex flex-wrap items-center gap-x-8 gap-y-4 text-sm text-muted" style="--reveal-delay:320ms">
+          <span class="flex items-center gap-2">
+            <span class="text-brass" aria-hidden="true">★★★★★</span>
+            {site.ratings.value} from {site.ratings.count} reviews
+          </span>
+          <span>{site.license}</span>
+        </div>
+      </div>
+
+      <!-- Z-axis cascade -->
+      <div class="relative lg:col-span-6">
+        <div class="bezel reveal" style="--reveal-delay:200ms">
+          <div class="bezel-core overflow-hidden">
+            <div class="photo aspect-[4/5] w-full md:aspect-[5/5]">
+              <img
+                src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1400&q=72"
+                alt="Sunlit coastal home with white siding and a wide covered porch in Wilmington, North Carolina"
+                width="1120"
+                height="1120"
+                fetchpriority="high"
+                decoding="async"
+                class="h-full w-full object-cover"
+              />
+            </div>
+          </div>
+        </div>
+
+        <div
+          class="reveal absolute -left-2 bottom-8 hidden w-60 md:-left-10 md:block"
+          style="--reveal-delay:420ms"
+        >
+          <div class="bezel">
+            <div class="bezel-core p-5">
+              <p class="font-display text-4xl leading-none">12</p>
+              <p class="mt-2 text-xs leading-relaxed text-muted">
+                median days to contract across our listings this year
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="reveal absolute -right-3 top-10 hidden w-52 md:block" style="--reveal-delay:500ms">
+          <div class="bezel bezel-dark">
+            <div class="bezel-core p-5">
+              <p class="text-xs uppercase tracking-[0.18em] text-brass-soft">Just sold</p>
+              <p class="mt-2 text-sm text-paper">108 Oyster Bay Ct</p>
+              <p class="mt-1 text-xs text-paper/60">$502,500 — 2.8% over list</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ Stat bar ══ -->
+  <section class="shell pt-24 md:pt-32">
+    <dl class="grid gap-px overflow-hidden rounded-[2rem] border border-line bg-line sm:grid-cols-2 lg:grid-cols-4">
+      {
+        stats.map((s, i) => (
+          <div class="reveal bg-paper px-7 py-10" style={`--reveal-delay:${i * 70}ms`}>
+            <dt class="sr-only">{s.label}</dt>
+            <dd>
+              <span class="block font-display text-5xl leading-none tracking-tight">{s.value}</span>
+              <span class="mt-3 block text-[13px] leading-relaxed text-muted">{s.label}</span>
+            </dd>
+          </div>
+        ))
+      }
+    </dl>
+  </section>
+
+  <!-- ══ Services ══ -->
+  <section class="shell py-24 md:py-32" id="services">
+    <div class="grid gap-10 md:grid-cols-12 md:items-end">
+      <div class="md:col-span-7">
+        <span class="eyebrow">What we do</span>
+        <h2 class="mt-5 text-4xl leading-[1.05] md:text-6xl">Three ways people<br />usually find us.</h2>
+      </div>
+      <p class="text-[15px] leading-relaxed text-muted md:col-span-5">
+        Whichever side of the table you are on, the work is the same: get the number right, remove the friction, and
+        keep you told. No dashboards you will never log into.
+      </p>
+    </div>
+
+    <div class="mt-14 grid gap-5 lg:grid-cols-3">
+      {
+        services.map((s, i) => (
+          <a href={s.href} class="reveal bezel group block" style={`--reveal-delay:${i * 90}ms`}>
+            <div class="bezel-core flex h-full flex-col p-8">
+              <span class="font-display text-[42px] leading-none text-line">0{i + 1}</span>
+              <h3 class="mt-8 text-2xl tracking-tight">{s.title}</h3>
+              <p class="mt-4 flex-1 text-[15px] leading-relaxed text-muted">{s.summary}</p>
+              <ul class="mt-7 space-y-2.5 border-t border-line pt-6 text-sm text-ink-soft">
+                {s.points.map((p) => (
+                  <li class="flex items-start gap-2.5">
+                    <svg
+                      class="mt-1 shrink-0 text-forest"
+                      width="13"
+                      height="13"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="1.5"
+                      aria-hidden="true"
+                    >
+                      <path d="M4 12.5 9 17.5 20 6.5" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                    {p}
+                  </li>
+                ))}
+              </ul>
+              <span class="mt-8 inline-flex items-center gap-2 text-sm font-semibold text-forest">
+                Learn more
+                <span class="transition-transform duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] group-hover:translate-x-1">
+                  →
+                </span>
+              </span>
+            </div>
+          </a>
+        ))
+      }
+    </div>
+  </section>
+
+  <!-- ══ Featured listings ══ -->
+  <section class="shell py-8 md:py-12" id="featured">
+    <div class="flex flex-wrap items-end justify-between gap-6">
+      <div>
+        <span class="eyebrow">On the market</span>
+        <h2 class="mt-5 text-4xl leading-[1.05] md:text-5xl">Homes we are<br />showing this week.</h2>
+      </div>
+      <a href="/listings" class="btn btn-ghost">
+        All {listings.filter((l) => l.data.status !== 'sold').length} listings
+        <span class="btn-disc" aria-hidden="true">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M7 17 17 7M9 7h8v8" stroke-linecap="round" stroke-linejoin="round"></path>
+          </svg>
+        </span>
+      </a>
+    </div>
+
+    <div class="mt-12 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+      {featured.map((l, i) => <ListingCard listing={l} delay={i * 90} />)}
+    </div>
+  </section>
+
+  <!-- ══ Valuation split ══ -->
+  <section class="shell py-24 md:py-32">
+    <div class="bezel reveal">
+      <div class="bezel-core grid gap-0 overflow-hidden lg:grid-cols-2">
+        <div class="p-8 md:p-14">
+          <span class="eyebrow">Sellers</span>
+          <h2 class="mt-6 text-4xl leading-[1.05] md:text-5xl">Find out what<br />your home is worth.</h2>
+          <p class="mt-6 max-w-md text-[15px] leading-relaxed text-muted">
+            Answer four questions and get an instant range from recent sales in your neighborhood. A real broker then
+            reviews it and sends the corrected figure with the comparable sales attached — usually the same day.
+          </p>
+          <ul class="mt-8 space-y-3 text-sm text-ink-soft">
+            {
+              ['No obligation and no drip campaign', 'Comparable sales attached, not just a number', 'Prep costs fronted if you decide to list'].map(
+                (t) => (
+                  <li class="flex items-start gap-3">
+                    <span class="mt-2 h-1 w-1 shrink-0 rounded-full bg-brass" aria-hidden="true" />
+                    {t}
+                  </li>
+                )
+              )
+            }
+          </ul>
+          <a href="/sell" class="btn btn-solid mt-10" data-track="CTA click" data-track-label="Valuation split">
+            Start my valuation
+            <span class="btn-disc" aria-hidden="true">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M7 17 17 7M9 7h8v8" stroke-linecap="round" stroke-linejoin="round"></path>
+              </svg>
+            </span>
+          </a>
+        </div>
+
+        <div class="photo relative min-h-[22rem] lg:min-h-full">
+          <img
+            src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=72"
+            alt="Living room of a recently sold Wilmington home with hardwood floors and large windows"
+            width="1200"
+            height="900"
+            loading="lazy"
+            decoding="async"
+            class="absolute inset-0 h-full w-full object-cover"
+          />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ Why us (bento) ══ -->
+  <section class="shell py-8 md:py-12">
+    <div class="grid gap-10 md:grid-cols-12 md:items-end">
+      <div class="md:col-span-6">
+        <span class="eyebrow">Why people stay</span>
+        <h2 class="mt-5 text-4xl leading-[1.05] md:text-6xl">The parts other<br />agents leave out.</h2>
+      </div>
+    </div>
+
+    <div class="mt-14 grid gap-5 md:grid-cols-6">
+      <div class="reveal bezel md:col-span-4">
+        <div class="bezel-core relative overflow-hidden p-8 md:p-12">
+          <h3 class="text-3xl tracking-tight md:text-4xl">{differentiators[0].title}</h3>
+          <p class="mt-5 max-w-md text-[15px] leading-relaxed text-muted">{differentiators[0].body}</p>
+          <div class="mt-10 grid grid-cols-3 gap-4 border-t border-line pt-8 text-sm">
+            <div><p class="font-display text-3xl">98.7%</p><p class="mt-1 text-xs text-muted">list-to-sale ratio</p></div>
+            <div><p class="font-display text-3xl">31</p><p class="mt-1 text-xs text-muted">county median DOM</p></div>
+            <div><p class="font-display text-3xl">12</p><p class="mt-1 text-xs text-muted">our median DOM</p></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="reveal bezel bezel-dark md:col-span-2" style="--reveal-delay:90ms">
+        <div class="bezel-core flex h-full flex-col justify-between p-8">
+          <h3 class="text-2xl tracking-tight text-paper">{differentiators[1].title}</h3>
+          <p class="mt-5 text-[15px] leading-relaxed text-paper/70">{differentiators[1].body}</p>
+        </div>
+      </div>
+
+      {
+        differentiators.slice(2).map((d, i) => (
+          <div class="reveal bezel md:col-span-3" style={`--reveal-delay:${(i + 2) * 90}ms`}>
+            <div class="bezel-core h-full p-8">
+              <h3 class="text-2xl tracking-tight">{d.title}</h3>
+              <p class="mt-4 text-[15px] leading-relaxed text-muted">{d.body}</p>
+            </div>
+          </div>
+        ))
+      }
+    </div>
+  </section>
+
+  <!-- ══ Process ══ -->
+  <section class="shell py-24 md:py-32">
+    <div class="grid gap-14 md:grid-cols-12">
+      <div class="md:col-span-4">
+        <span class="eyebrow">How it runs</span>
+        <h2 class="mt-5 text-4xl leading-[1.05] md:text-5xl">Four steps,<br />no mystery.</h2>
+        <p class="mt-6 text-[15px] leading-relaxed text-muted">
+          Every client gets the same sequence and the same access to the person running it.
+        </p>
+      </div>
+
+      <ol class="md:col-span-8">
+        {
+          process.map((p, i) => (
+            <li
+              class="reveal grid grid-cols-[auto_1fr] gap-6 border-t border-line py-8 last:border-b"
+              style={`--reveal-delay:${i * 70}ms`}
+            >
+              <span class="font-display text-2xl text-brass">{p.step}</span>
+              <div>
+                <h3 class="text-2xl tracking-tight">{p.title}</h3>
+                <p class="mt-3 max-w-xl text-[15px] leading-relaxed text-muted">{p.body}</p>
+              </div>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </section>
+
+  <!-- ══ Recent sales ══ -->
+  <section class="shell py-8 md:py-12">
+    <div class="flex flex-wrap items-end justify-between gap-6">
+      <div>
+        <span class="eyebrow">Proof</span>
+        <h2 class="mt-5 text-4xl leading-[1.05] md:text-5xl">Recently closed.</h2>
+      </div>
+      <p class="max-w-sm text-sm leading-relaxed text-muted">
+        Both of these sold above asking in under ten days. The prep work is why.
+      </p>
+    </div>
+
+    <div class="mt-12 grid gap-5 md:grid-cols-2">
+      {
+        sold.map((l, i) => (
+          <article class="reveal bezel" style={`--reveal-delay:${i * 90}ms`}>
+            <div class="bezel-core overflow-hidden">
+              <div class="photo aspect-[16/10]">
+                <img
+                  src={l.data.heroImage}
+                  alt={l.data.heroAlt}
+                  width="900"
+                  height="562"
+                  loading="lazy"
+                  decoding="async"
+                  class="h-full w-full object-cover"
+                />
+              </div>
+              <div class="p-8">
+                <div class="flex flex-wrap items-baseline justify-between gap-3">
+                  <h3 class="font-display text-2xl tracking-tight">{l.data.address}</h3>
+                  <span class="text-sm text-muted">{l.data.soldOn && formatDate(l.data.soldOn)}</span>
+                </div>
+                <div class="mt-6 grid grid-cols-3 gap-4 border-t border-line pt-6 text-sm">
+                  <div>
+                    <p class="text-xs text-muted">Listed</p>
+                    <p class="mt-1 font-semibold">{formatPrice(l.data.price)}</p>
+                  </div>
+                  <div>
+                    <p class="text-xs text-muted">Sold</p>
+                    <p class="mt-1 font-semibold text-forest">{formatPrice(l.data.soldPrice ?? l.data.price)}</p>
+                  </div>
+                  <div>
+                    <p class="text-xs text-muted">Days</p>
+                    <p class="mt-1 font-semibold">{l.data.daysOnMarket}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </article>
+        ))
+      }
+    </div>
+  </section>
+
+  <!-- ══ Neighborhoods ══ -->
+  <section class="shell py-24 md:py-32">
+    <div class="flex flex-wrap items-end justify-between gap-6">
+      <div>
+        <span class="eyebrow">Local knowledge</span>
+        <h2 class="mt-5 text-4xl leading-[1.05] md:text-5xl">Where we work,<br />street by street.</h2>
+      </div>
+      <a href="/neighborhoods" class="btn btn-ghost">
+        All neighborhoods
+        <span class="btn-disc" aria-hidden="true">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M7 17 17 7M9 7h8v8" stroke-linecap="round" stroke-linejoin="round"></path>
+          </svg>
+        </span>
+      </a>
+    </div>
+
+    <div class="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+      {
+        hoods.map((h, i) => (
+          <a href={`/neighborhoods/${h.id}`} class="reveal bezel group" style={`--reveal-delay:${i * 70}ms`}>
+            <div class="bezel-core h-full overflow-hidden">
+              <div class="photo aspect-[5/4] overflow-hidden">
+                <img
+                  src={h.data.heroImage}
+                  alt={h.data.heroAlt}
+                  width="600"
+                  height="480"
+                  loading="lazy"
+                  decoding="async"
+                  class="h-full w-full object-cover transition-transform duration-[1200ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.05]"
+                />
+              </div>
+              <div class="p-6">
+                <h3 class="text-xl tracking-tight">{h.data.title}</h3>
+                <p class="mt-2 text-sm text-muted">Median {formatPrice(h.data.medianPrice)}</p>
+                <p class="mt-1 text-xs text-muted">{h.data.medianDom} days on market · {h.data.priceTrend}</p>
+              </div>
+            </div>
+          </a>
+        ))
+      }
+    </div>
+  </section>
+
+  <!-- ══ Testimonials ══ -->
+  <section class="shell py-8 md:py-12">
+    <span class="eyebrow">In their words</span>
+    <h2 class="mt-5 max-w-2xl text-4xl leading-[1.05] md:text-5xl">
+      The reviews that made us stop running ads.
+    </h2>
+
+    <div class="mt-14 grid gap-5 lg:grid-cols-3">
+      {
+        testimonials.map((t, i) => (
+          <figure class="reveal bezel" style={`--reveal-delay:${i * 90}ms`}>
+            <div class="bezel-core flex h-full flex-col p-8">
+              <span class="text-brass" aria-hidden="true">
+                ★★★★★
+              </span>
+              <blockquote class="mt-6 flex-1 text-[15px] leading-relaxed text-ink-soft">“{t.quote}”</blockquote>
+              <figcaption class="mt-8 flex items-center gap-3 border-t border-line pt-6">
+                <img
+                  src={t.photo}
+                  alt=""
+                  width="44"
+                  height="44"
+                  loading="lazy"
+                  decoding="async"
+                  class="h-11 w-11 rounded-full object-cover"
+                />
+                <span>
+                  <span class="block text-sm font-semibold">{t.name}</span>
+                  <span class="block text-xs text-muted">{t.role}</span>
+                </span>
+              </figcaption>
+            </div>
+          </figure>
+        ))
+      }
+    </div>
+  </section>
+
+  <!-- ══ Guides ══ -->
+  <section class="shell py-24 md:py-32">
+    <div class="flex flex-wrap items-end justify-between gap-6">
+      <div>
+        <span class="eyebrow">Read first</span>
+        <h2 class="mt-5 text-4xl leading-[1.05] md:text-5xl">Answers, before<br />you need an agent.</h2>
+      </div>
+      <a href="/guides" class="btn btn-ghost">
+        All guides
+        <span class="btn-disc" aria-hidden="true">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M7 17 17 7M9 7h8v8" stroke-linecap="round" stroke-linejoin="round"></path>
+          </svg>
+        </span>
+      </a>
+    </div>
+
+    <div class="mt-12 grid gap-5 lg:grid-cols-3">
+      {
+        guides.map((g, i) => (
+          <a href={`/guides/${g.id}`} class="reveal bezel group" style={`--reveal-delay:${i * 80}ms`}>
+            <div class="bezel-core flex h-full flex-col p-8">
+              <span class="text-xs uppercase tracking-[0.18em] text-brass-deep">{g.data.category}</span>
+              <h3 class="mt-5 text-2xl leading-snug tracking-tight">{g.data.title}</h3>
+              <p class="mt-4 flex-1 text-[15px] leading-relaxed text-muted">{g.data.description}</p>
+              <span class="mt-8 text-xs text-muted">
+                {formatDate(g.data.published)} · {g.data.readMinutes} min read
+              </span>
+            </div>
+          </a>
+        ))
+      }
+    </div>
+  </section>
+
+  <Faq
+    items={faqs}
+    intro="If the answer you need is not here, call and ask. We would rather have the conversation than send you a brochure."
+  />
+
+  <CtaBand />
+</Base>

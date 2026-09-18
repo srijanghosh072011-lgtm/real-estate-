@@ -1,0 +1,116 @@
+# Sveltia CMS configuration.
+# Point `repo` at your GitHub repository, then agents publish at /admin with no code access.
+backend:
+  name: github
+  repo: your-org/harbor-lane-realty
+  branch: main
+  # Sveltia can use its own hosted OAuth for public repos; private repos need
+  # a small OAuth relay (Cloudflare Worker) — see README.
+  site_domain: www.harborlane.realestate
+
+publish_mode: editorial_workflow
+media_folder: public/uploads
+public_folder: /uploads
+
+collections:
+  - name: listings
+    label: Listings
+    label_singular: Listing
+    folder: src/content/listings
+    create: true
+    slug: '{{fields.address | slugify}}'
+    summary: '{{address}} — {{city}} ({{status}})'
+    sortable_fields: [listedOn, price, status]
+    fields:
+      - { name: title, label: Headline, widget: string, hint: 'One line a buyer would repeat to their partner' }
+      - { name: address, label: Street address, widget: string }
+      - { name: city, label: City, widget: string }
+      - { name: region, label: State, widget: string, default: NC }
+      - { name: postalCode, label: ZIP, widget: string }
+      - { name: neighborhood, label: Neighborhood, widget: string, required: false }
+      - { name: price, label: List price, widget: number, value_type: int }
+      - name: status
+        label: Status
+        widget: select
+        default: for-sale
+        options: [for-sale, pending, sold, coming-soon]
+      - name: propertyType
+        label: Property type
+        widget: select
+        default: house
+        options: [house, condo, townhouse, land, multifamily]
+      - { name: beds, label: Bedrooms, widget: number, value_type: int }
+      - { name: baths, label: Bathrooms, widget: number, value_type: float, step: 0.5 }
+      - { name: sqft, label: Square feet, widget: number, value_type: int }
+      - { name: lotAcres, label: Lot (acres), widget: number, value_type: float, required: false }
+      - { name: yearBuilt, label: Year built, widget: number, value_type: int, required: false }
+      - { name: hoaMonthly, label: HOA per month, widget: number, value_type: int, required: false }
+      - { name: taxesAnnual, label: Annual taxes, widget: number, value_type: int, required: false }
+      - { name: mls, label: MLS number, widget: string, required: false }
+      - { name: featured, label: Feature on the homepage, widget: boolean, default: false }
+      - { name: listedOn, label: Listed on, widget: datetime, date_format: 'YYYY-MM-DD', time_format: false }
+      - { name: soldOn, label: Closed on, widget: datetime, date_format: 'YYYY-MM-DD', time_format: false, required: false }
+      - { name: soldPrice, label: Sale price, widget: number, value_type: int, required: false }
+      - { name: daysOnMarket, label: Days on market, widget: number, value_type: int, required: false }
+      - { name: agent, label: Listing agent, widget: string, default: Avery Sinclair }
+      - { name: heroImage, label: Main photo, widget: image }
+      - { name: heroAlt, label: Main photo description, widget: string, hint: 'Required — describes the photo for screen readers and search' }
+      - name: gallery
+        label: Gallery
+        widget: list
+        required: false
+        fields:
+          - { name: src, label: Photo, widget: image }
+          - { name: alt, label: Description, widget: string }
+      - { name: highlights, label: Highlights, widget: list, required: false }
+      - { name: tourUrl, label: 3D tour URL, widget: string, required: false }
+      - { name: body, label: Description, widget: markdown }
+
+  - name: neighborhoods
+    label: Neighborhoods
+    folder: src/content/neighborhoods
+    create: true
+    slug: '{{fields.title | slugify}}'
+    fields:
+      - { name: title, label: Neighborhood, widget: string }
+      - { name: city, label: City, widget: string }
+      - { name: summary, label: Summary, widget: text }
+      - { name: medianPrice, label: Median sale price, widget: number, value_type: int }
+      - { name: medianDom, label: Median days on market, widget: number, value_type: int }
+      - { name: pricePerSqft, label: Price per square foot, widget: number, value_type: int }
+      - { name: priceTrend, label: Year over year, widget: string }
+      - { name: heroImage, label: Photo, widget: image }
+      - { name: heroAlt, label: Photo description, widget: string }
+      - { name: goodFor, label: Good for, widget: list, required: false }
+      - { name: schools, label: Assigned schools, widget: list, required: false }
+      - { name: order, label: Sort order, widget: number, value_type: int, default: 10 }
+      - { name: updated, label: Figures updated, widget: datetime, date_format: 'YYYY-MM-DD', time_format: false }
+      - { name: body, label: Commentary, widget: markdown }
+
+  - name: guides
+    label: Guides
+    folder: src/content/guides
+    create: true
+    slug: '{{fields.title | slugify}}'
+    fields:
+      - { name: title, label: Title, widget: string }
+      - { name: description, label: Meta description, widget: text, hint: 'Under 160 characters — this is what shows in search results' }
+      - name: category
+        label: Category
+        widget: select
+        options: [Selling, Buying, Market report, Investing]
+      - { name: author, label: Author, widget: string, default: Avery Sinclair }
+      - { name: published, label: Published, widget: datetime, date_format: 'YYYY-MM-DD', time_format: false }
+      - { name: updated, label: Updated, widget: datetime, date_format: 'YYYY-MM-DD', time_format: false, required: false }
+      - { name: heroImage, label: Photo, widget: image }
+      - { name: heroAlt, label: Photo description, widget: string }
+      - { name: readMinutes, label: Read time (minutes), widget: number, value_type: int, default: 6 }
+      - name: faqs
+        label: Questions this answers
+        widget: list
+        required: false
+        hint: 'These become FAQ rich results and are what AI assistants quote'
+        fields:
+          - { name: q, label: Question, widget: string }
+          - { name: a, label: Answer, widget: text }
+      - { name: body, label: Article, widget: markdown }

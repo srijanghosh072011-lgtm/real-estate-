@@ -1,0 +1,109 @@
+---
+import { site, nav } from '../data/site';
+
+const year = new Date().getFullYear();
+---
+
+<footer class="mt-24 bg-ink text-paper/80">
+  <div class="shell grid gap-12 py-20 md:grid-cols-12 md:py-24">
+    <div class="md:col-span-5">
+      <span class="font-display text-2xl text-paper">{site.name}</span>
+      <p class="mt-4 max-w-sm text-sm leading-relaxed">{site.tagline} {site.description}</p>
+
+      <address class="mt-8 not-italic text-sm leading-relaxed">
+        <span class="block text-paper">{site.address.street}</span>
+        <span class="block">{site.address.city}, {site.address.region} {site.address.postalCode}</span>
+        <a href={site.phoneHref} class="mt-3 block link-underline text-paper">{site.phone}</a>
+        <a href={`mailto:${site.email}`} class="block link-underline text-paper">{site.email}</a>
+      </address>
+
+      <div class="mt-8 flex gap-2">
+        {
+          Object.entries(site.social).map(([label, href]) => (
+            <a
+              href={href}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="rounded-full border border-paper/15 px-4 py-2 text-xs capitalize transition-colors duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-paper/10"
+            >
+              {label}
+            </a>
+          ))
+        }
+      </div>
+    </div>
+
+    <div class="md:col-span-3">
+      <h2 class="text-xs font-semibold uppercase tracking-[0.2em] text-brass-soft">Explore</h2>
+      <ul class="mt-5 space-y-3 text-sm">
+        {
+          nav.map((item) => (
+            <li>
+              <a href={item.href} class="link-underline">
+                {item.label}
+              </a>
+            </li>
+          ))
+        }
+        <li><a href="/contact" class="link-underline">Contact</a></li>
+      </ul>
+
+      <h2 class="mt-10 text-xs font-semibold uppercase tracking-[0.2em] text-brass-soft">Office hours</h2>
+      <ul class="mt-5 space-y-2 text-sm">
+        {
+          site.hours.map((h) => (
+            <li class="flex justify-between gap-4">
+              <span>{h.days}</span>
+              <span class="text-paper/60">{h.time}</span>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+
+    <div class="md:col-span-4">
+      <h2 class="text-xs font-semibold uppercase tracking-[0.2em] text-brass-soft">Areas we cover</h2>
+      <ul class="mt-5 flex flex-wrap gap-2 text-sm">
+        {
+          site.serviceAreas.map((area) => (
+            <li class="rounded-full border border-paper/12 px-3 py-1.5 text-paper/70">{area}</li>
+          ))
+        }
+      </ul>
+
+      <div class="bezel bezel-dark mt-8">
+        <div class="bezel-core p-6">
+          <p class="font-display text-lg text-paper">Thinking about this year?</p>
+          <p class="mt-2 text-sm text-paper/70">
+            Get a valuation with the comparable sales attached — no obligation, no drip campaign.
+          </p>
+          <a
+            href="/sell"
+            class="btn btn-brass mt-5 w-full justify-between"
+            data-track="CTA click"
+            data-track-label="Footer valuation"
+          >
+            Start my valuation
+            <span class="btn-disc" aria-hidden="true">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M7 17 17 7M9 7h8v8" stroke-linecap="round" stroke-linejoin="round"></path>
+              </svg>
+            </span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="border-t border-paper/10">
+    <div class="shell flex flex-col gap-4 py-8 text-xs text-paper/55 md:flex-row md:items-center md:justify-between">
+      <p>&copy; {year} {site.legalName}. {site.license}. All rights reserved.</p>
+      <div class="flex flex-wrap gap-5">
+        <a href="/privacy" class="link-underline">Privacy</a>
+        <a href="/terms" class="link-underline">Terms</a>
+        <a href="/accessibility" class="link-underline">Accessibility</a>
+        <span>Equal Housing Opportunity</span>
+      </div>
+    </div>
+  </div>
+</footer>

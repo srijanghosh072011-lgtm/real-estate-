@@ -1,0 +1,287 @@
+---
+import { getCollection, render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import ListingCard from '../../components/ListingCard.astro';
+import LeadForm from '../../components/LeadForm.astro';
+import { site } from '../../data/site';
+import { formatPrice, formatDate, statusLabel } from '../../lib/format';
+
+export async function getStaticPaths() {
+  const listings = await getCollection('listings');
+  return listings.map((listing) => ({
+    params: { slug: listing.id },
+    props: { listing, siblings: listings.filter((l) => l.id !== listing.id) },
+  }));
+}
+
+const { listing, siblings } = Astro.props;
+const d = listing.data;
+const { Content } = await render(listing);
+
+const related = siblings
+  .filter((l) => l.data.status !== 'sold')
+  .sort((a, b) => Number(b.data.city === d.city) - Number(a.data.city === d.city))
+  .slice(0, 3);
+
+const images = [{ src: d.heroImage, alt: d.heroAlt }, ...d.gallery];
+const pricePerSqft = Math.round((d.soldPrice ?? d.price) / d.sqft);
+
+// 20% down, 30-year fixed at 6.5% — labelled as an estimate on the page too.
+const monthly = Math.round(
+  ((d.price * 0.8 * (0.065 / 12)) / (1 - Math.pow(1 + 0.065 / 12, -360)) +
+    (d.taxesAnnual ?? d.price * 0.0055) / 12 +
+    (d.hoaMonthly ?? 0) +
+    (d.price * 0.004) / 12) /
+    5
+) * 5;
+
+const schema = [
+  {
+    '@type': ['SingleFamilyResidence', 'Product'],
+    name: `${d.address}, ${d.city}, ${d.region} ${d.postalCode}`,
+    description: d.title,
+    image: images.map((i) => i.src),
+    numberOfBedrooms: d.beds,
+    numberOfBathroomsTotal: d.baths,
+    yearBuilt: d.yearBuilt,
+    floorSize: { '@type': 'QuantitativeValue', value: d.sqft, unitCode: 'FTK' },
+    address: {
+      '@type': 'PostalAddress',
+      streetAddress: d.address,
+      addressLocality: d.city,
+      addressRegion: d.region,
+      postalCode: d.postalCode,
+      addressCountry: 'US',
+    },
+    offers: {
+      '@type': 'Offer',
+      price: d.soldPrice ?? d.price,
+      priceCurrency: 'USD',
+      availability: d.status === 'sold' ? 'https://schema.org/SoldOut' : 'https://schema.org/InStock',
+      url: `${site.url}/listings/${listing.id}`,
+      seller: { '@id': `${site.url}/#organization` },
+    },
+  },
+];
+
+const specs = [
+  { label: 'Bedrooms', value: String(d.beds) },
+  { label: 'Bathrooms', value: String(d.baths) },
+  { label: 'Interior', value: `${d.sqft.toLocaleString('en-US')} sq ft` },
+  ...(d.lotAcres ? [{ label: 'Lot', value: `${d.lotAcres} acres` }] : []),
+  ...(d.yearBuilt ? [{ label: 'Year built', value: String(d.yearBuilt) }] : []),
+  { label: 'Price / sq ft', value: `$${pricePerSqft}` },
+  ...(d.hoaMonthly ? [{ label: 'HOA', value: `$${d.hoaMonthly}/mo` }] : []),
+  ...(d.taxesAnnual ? [{ label: 'Taxes', value: `${formatPrice(d.taxesAnnual)}/yr` }] : []),
+  ...(d.mls ? [{ label: 'MLS #', value: d.mls }] : []),
+];
+---
+
+<Base
+  title={`${d.address}, ${d.city} NC — ${formatPrice(d.price)}`}
+  description={`${d.beds} bed, ${d.baths} bath, ${d.sqft.toLocaleString('en-US')} sq ft ${d.propertyType} at ${d.address} in ${d.city}, ${d.region}. ${d.title}`}
+  image={d.heroImage}
+  schema={schema}
+  breadcrumbs={[
+    { name: 'Home', href: '/' },
+    { name: 'Listings', href: '/listings' },
+    { name: d.address, href: `/listings/${listing.id}` },
+  ]}
+>
+  <section class="shell pt-32 md:pt-40">
+    <nav class="text-xs text-muted" aria-label="Breadcrumb">
+      <a href="/listings" class="link-underline">Listings</a> <span aria-hidden="true">/</span>
+      {d.city}
+    </nav>
+
+    <div class="mt-6 flex flex-wrap items-end justify-between gap-6">
+      <div>
+        <span
+          class:list={[
+            'eyebrow',
+            d.status === 'sold' ? 'border-ink/20 bg-ink/5 text-ink' : '',
+          ]}>{statusLabel(d.status)}{d.mls ? ` · MLS ${d.mls}` : ''}</span
+        >
+        <h1 class="mt-5 max-w-3xl text-[clamp(2.25rem,5vw,3.75rem)] leading-[1]">{d.address}</h1>
+        <p class="mt-3 text-[15px] text-muted">
+          {d.neighborhood ? `${d.neighborhood} · ` : ''}{d.city}, {d.region} {d.postalCode}
+        </p>
+      </div>
+      <div class="text-right">
+        <p class="font-display text-4xl tracking-tight md:text-5xl">
+          {formatPrice(d.soldPrice ?? d.price)}
+        </p>
+        {
+          d.status === 'sold' && d.soldOn && (
+            <p class="mt-2 text-sm text-muted">
+              Closed {formatDate(d.soldOn)} · listed at {formatPrice(d.price)}
+            </p>
+          )
+        }
+        {d.status !== 'sold' && <p class="mt-2 text-sm text-muted">Est. {formatPrice(monthly)}/mo with 20% down</p>}
+      </div>
+    </div>
+  </section>
+
+  <!-- Gallery -->
+  <section class="shell mt-10">
+    <div class="grid gap-4 lg:grid-cols-12">
+      <div class="reveal bezel lg:col-span-8">
+        <div class="bezel-core overflow-hidden">
+          <div class="photo aspect-[16/11]">
+            <img
+              src={images[0].src}
+              alt={images[0].alt}
+              width="1400"
+              height="962"
+              fetchpriority="high"
+              decoding="async"
+              class="h-full w-full object-cover"
+            />
+          </div>
+        </div>
+      </div>
+
+      <div class="grid gap-4 lg:col-span-4">
+        {
+          images.slice(1, 3).map((img, i) => (
+            <div class="reveal bezel" style={`--reveal-delay:${(i + 1) * 90}ms`}>
+              <div class="bezel-core overflow-hidden">
+                <div class="photo aspect-[16/11] lg:aspect-auto lg:h-full">
+                  <img
+                    src={img.src}
+                    alt={img.alt}
+                    width="700"
+                    height="481"
+                    loading="lazy"
+                    decoding="async"
+                    class="h-full w-full object-cover"
+                  />
+                </div>
+              </div>
+            </div>
+          ))
+        }
+        {
+          images.length < 2 && (
+            <div class="bezel">
+              <div class="bezel-core flex h-full min-h-48 items-center justify-center p-8 text-center text-sm text-muted">
+                Full photo set and floor plan available on request.
+              </div>
+            </div>
+          )
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- Body + sticky enquiry -->
+  <section class="shell grid gap-12 py-20 lg:grid-cols-12 md:py-24">
+    <div class="lg:col-span-7">
+      <h2 class="text-3xl tracking-tight md:text-4xl">{d.title}</h2>
+
+      <dl class="mt-10 grid grid-cols-2 gap-px overflow-hidden rounded-2xl border border-line bg-line sm:grid-cols-3">
+        {
+          specs.map((s) => (
+            <div class="bg-paper px-5 py-5">
+              <dt class="text-xs uppercase tracking-[0.14em] text-muted">{s.label}</dt>
+              <dd class="mt-1.5 text-lg font-semibold">{s.value}</dd>
+            </div>
+          ))
+        }
+      </dl>
+
+      {
+        d.highlights.length > 0 && (
+          <ul class="mt-10 grid gap-3 sm:grid-cols-2">
+            {d.highlights.map((h) => (
+              <li class="flex items-start gap-3 text-[15px] text-ink-soft">
+                <svg
+                  class="mt-1.5 shrink-0 text-forest"
+                  width="13"
+                  height="13"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  aria-hidden="true"
+                >
+                  <path d="M4 12.5 9 17.5 20 6.5" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+                {h}
+              </li>
+            ))}
+          </ul>
+        )
+      }
+
+      <div
+        class="mt-12 max-w-none text-[16px] leading-relaxed text-ink-soft [&_h3]:mt-10 [&_h3]:font-display [&_h3]:text-2xl [&_h3]:tracking-tight [&_h3]:text-ink [&_p]:mt-5"
+      >
+        <Content />
+      </div>
+
+      {
+        d.tourUrl && (
+          <a href={d.tourUrl} target="_blank" rel="noopener noreferrer" class="btn btn-ghost mt-10">
+            Open 3D tour
+            <span class="btn-disc" aria-hidden="true">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M7 17 17 7M9 7h8v8" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+            </span>
+          </a>
+        )
+      }
+    </div>
+
+    <aside class="lg:col-span-5">
+      <div class="lg:sticky lg:top-28">
+        <div class="bezel">
+          <div class="bezel-core p-8">
+            <p class="text-xs uppercase tracking-[0.18em] text-muted">Your contact</p>
+            <p class="mt-2 font-display text-2xl tracking-tight">{d.agent}</p>
+            <p class="mt-1 text-sm text-muted">{site.brokerage} · {site.license}</p>
+
+            <div class="mt-6 border-t border-line pt-6">
+              <LeadForm
+                formName="Listing enquiry"
+                subject={`I would like to see ${d.address}, ${d.city}. My preferred times are:`}
+                compact={true}
+              />
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-4 grid grid-cols-2 gap-3">
+          <a href={site.phoneHref} class="btn btn-ghost justify-center text-center">Call now</a>
+          <a href={`mailto:${site.email}?subject=${encodeURIComponent(d.address)}`} class="btn btn-ghost justify-center"
+            >Email</a
+          >
+        </div>
+
+        {
+          d.status !== 'sold' && (
+            <p class="mt-5 text-xs leading-relaxed text-muted">
+              Estimated payment of {formatPrice(monthly)}/mo assumes 20% down, a 30-year fixed at 6.5%, taxes, insurance
+              and HOA. Your quote will differ — <a href="/buy#calculator" class="link-underline text-ink">run your own numbers</a>.
+            </p>
+          )
+        }
+      </div>
+    </aside>
+  </section>
+
+  {
+    related.length > 0 && (
+      <section class="shell pb-24 md:pb-32">
+        <h2 class="text-3xl tracking-tight md:text-4xl">Other homes nearby</h2>
+        <div class="mt-10 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+          {related.map((l, i) => (
+            <ListingCard listing={l} delay={i * 80} />
+          ))}
+        </div>
+      </section>
+    )
+  }
+</Base>

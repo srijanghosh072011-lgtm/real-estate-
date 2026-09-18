@@ -1,0 +1,59 @@
+---
+import { formatPrice, statusLabel } from '../lib/format';
+
+interface Props {
+  listing: { id: string; data: any };
+  eager?: boolean;
+  delay?: number;
+}
+
+const { listing, eager = false, delay = 0 } = Astro.props;
+const d = listing.data;
+const href = `/listings/${listing.id}`;
+---
+
+<article class="reveal bezel group h-full" style={`--reveal-delay:${delay}ms`}>
+  <div class="bezel-core flex h-full flex-col overflow-hidden">
+    <a href={href} class="relative block overflow-hidden rounded-[calc(var(--radius-core)-2px)]" tabindex="-1" aria-hidden="true">
+      <div class="photo aspect-[4/3] w-full">
+        <img
+          src={d.heroImage}
+          alt={d.heroAlt}
+          width="800"
+          height="600"
+          loading={eager ? 'eager' : 'lazy'}
+          decoding="async"
+          class="h-full w-full object-cover transition-transform duration-[1200ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.04]"
+        />
+      </div>
+      <span
+        class:list={[
+          'absolute left-4 top-4 rounded-full px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[0.18em] backdrop-blur-md',
+          d.status === 'sold' ? 'bg-ink/80 text-paper' : d.status === 'pending' ? 'bg-brass/90 text-ink' : 'bg-paper/90 text-forest',
+        ]}>{statusLabel(d.status)}</span
+      >
+    </a>
+
+    <div class="flex flex-1 flex-col p-6">
+      <div class="flex items-baseline justify-between gap-3">
+        <p class="font-display text-2xl tracking-tight">{formatPrice(d.status === 'sold' ? d.soldPrice ?? d.price : d.price)}</p>
+        {d.status === 'sold' && d.daysOnMarket && <span class="text-xs text-muted">{d.daysOnMarket} days</span>}
+      </div>
+
+      <h3 class="mt-2 text-[15px] font-semibold leading-snug">
+        <a href={href} class="link-underline" data-track="Listing click" data-track-label={d.address}>
+          {d.address}
+        </a>
+      </h3>
+      <p class="mt-1 text-sm text-muted">{d.neighborhood ? `${d.neighborhood}, ` : ''}{d.city}, {d.region} {d.postalCode}</p>
+
+      <dl class="mt-5 flex flex-wrap items-center gap-x-5 gap-y-2 border-t border-line pt-5 text-sm text-ink-soft">
+        <div class="flex gap-1.5"><dt class="text-muted">Beds</dt><dd class="font-semibold">{d.beds}</dd></div>
+        <div class="flex gap-1.5"><dt class="text-muted">Baths</dt><dd class="font-semibold">{d.baths}</dd></div>
+        <div class="flex gap-1.5">
+          <dt class="text-muted">Sq ft</dt><dd class="font-semibold">{d.sqft.toLocaleString('en-US')}</dd>
+        </div>
+      </dl>
+    </div>
+  </div>
+</article>

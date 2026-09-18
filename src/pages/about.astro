@@ -1,0 +1,173 @@
+---
+import Base from '../layouts/Base.astro';
+import CtaBand from '../components/CtaBand.astro';
+import { site, team, testimonials, stats, differentiators } from '../data/site';
+
+const schema = [
+  {
+    '@type': 'AboutPage',
+    name: `About ${site.name}`,
+    mainEntity: { '@id': `${site.url}/#organization` },
+  },
+  ...team.map((t) => ({
+    '@type': 'Person',
+    name: t.name,
+    jobTitle: t.role,
+    image: t.photo,
+    email: t.email,
+    worksFor: { '@id': `${site.url}/#organization` },
+  })),
+];
+---
+
+<Base
+  title={`About ${site.name}`}
+  description="A three-broker firm in downtown Wilmington. Former appraiser, listing specialist and buyer advocate — one of whom stays with you from first call to closing table."
+  schema={schema}
+  breadcrumbs={[{ name: 'Home', href: '/' }, { name: 'About', href: '/about' }]}
+>
+  <section class="shell pt-32 md:pt-44">
+    <div class="grid items-end gap-14 lg:grid-cols-12">
+      <div class="lg:col-span-7">
+        <span class="eyebrow reveal">Since 2016</span>
+        <h1 class="reveal mt-6 text-[clamp(2.5rem,6vw,4.75rem)] leading-[0.98]" style="--reveal-delay:80ms">
+          Three brokers, one county, no call centre.
+        </h1>
+        <p class="reveal mt-7 max-w-xl text-[16px] leading-relaxed text-muted" style="--reveal-delay:140ms">
+          Harbor Lane was started by an appraiser who got tired of watching homes listed at numbers nobody could defend.
+          We stayed small on purpose: the person you meet is the person at your inspection and your closing.
+        </p>
+      </div>
+      <div class="reveal lg:col-span-5" style="--reveal-delay:200ms">
+        <div class="bezel">
+          <div class="bezel-core overflow-hidden">
+            <div class="photo aspect-[4/3]">
+              <img
+                src="https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?auto=format&fit=crop&w=1200&q=72"
+                alt="Interior of the Harbor Lane Realty office in downtown Wilmington"
+                width="1000"
+                height="750"
+                fetchpriority="high"
+                decoding="async"
+                class="h-full w-full object-cover"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="shell mt-24">
+    <dl class="grid gap-px overflow-hidden rounded-[2rem] border border-line bg-line sm:grid-cols-2 lg:grid-cols-4">
+      {
+        stats.map((s, i) => (
+          <div class="reveal bg-paper px-7 py-10" style={`--reveal-delay:${i * 70}ms`}>
+            <dt class="sr-only">{s.label}</dt>
+            <dd>
+              <span class="block font-display text-5xl leading-none tracking-tight">{s.value}</span>
+              <span class="mt-3 block text-[13px] leading-relaxed text-muted">{s.label}</span>
+            </dd>
+          </div>
+        ))
+      }
+    </dl>
+  </section>
+
+  <section class="shell py-24 md:py-32">
+    <div class="grid gap-14 md:grid-cols-12">
+      <div class="md:col-span-4">
+        <span class="eyebrow">The team</span>
+        <h2 class="mt-5 text-4xl leading-[1.05] md:text-5xl">Who you<br />actually get.</h2>
+        <p class="mt-6 text-[15px] leading-relaxed text-muted">
+          No transaction coordinator you have never met, no assistant returning your calls. Three brokers, and whichever
+          one takes your first call takes it through closing.
+        </p>
+      </div>
+
+      <div class="md:col-span-8 grid gap-5 sm:grid-cols-3">
+        {
+          team.map((t, i) => (
+            <article class="reveal bezel" style={`--reveal-delay:${i * 80}ms`}>
+              <div class="bezel-core h-full overflow-hidden">
+                <div class="photo aspect-[4/5]">
+                  <img
+                    src={t.photo}
+                    alt={`${t.name}, ${t.role} at ${site.name}`}
+                    width="600"
+                    height="750"
+                    loading="lazy"
+                    decoding="async"
+                    class="h-full w-full object-cover"
+                  />
+                </div>
+                <div class="p-6">
+                  <h3 class="text-xl tracking-tight">{t.name}</h3>
+                  <p class="mt-1 text-xs uppercase tracking-[0.14em] text-brass-deep">{t.role}</p>
+                  <p class="mt-4 text-sm leading-relaxed text-muted">{t.bio}</p>
+                  <a href={`mailto:${t.email}`} class="mt-5 inline-block text-sm link-underline">
+                    {t.email}
+                  </a>
+                </div>
+              </div>
+            </article>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="shell pb-8">
+    <div class="grid gap-5 md:grid-cols-2">
+      {
+        differentiators.map((d, i) => (
+          <div class="reveal bezel" style={`--reveal-delay:${i * 70}ms`}>
+            <div class="bezel-core h-full p-8">
+              <h2 class="text-2xl tracking-tight">{d.title}</h2>
+              <p class="mt-4 text-[15px] leading-relaxed text-muted">{d.body}</p>
+            </div>
+          </div>
+        ))
+      }
+    </div>
+  </section>
+
+  <section class="shell py-24 md:py-32">
+    <span class="eyebrow">Clients</span>
+    <h2 class="mt-5 max-w-2xl text-4xl leading-[1.05] md:text-5xl">What people say when we are not in the room.</h2>
+    <div class="mt-14 grid gap-5 lg:grid-cols-3">
+      {
+        testimonials.map((t, i) => (
+          <figure class="reveal bezel" style={`--reveal-delay:${i * 80}ms`}>
+            <div class="bezel-core flex h-full flex-col p-8">
+              <span class="text-brass" aria-hidden="true">
+                ★★★★★
+              </span>
+              <blockquote class="mt-6 flex-1 text-[15px] leading-relaxed text-ink-soft">“{t.quote}”</blockquote>
+              <figcaption class="mt-8 border-t border-line pt-6 text-sm">
+                <span class="block font-semibold">{t.name}</span>
+                <span class="block text-xs text-muted">{t.role}</span>
+              </figcaption>
+            </div>
+          </figure>
+        ))
+      }
+    </div>
+  </section>
+
+  <section class="shell pb-8">
+    <div class="rounded-[2rem] border border-line p-8 text-sm leading-relaxed text-muted md:p-12">
+      <h2 class="font-display text-2xl tracking-tight text-ink">Licensing and disclosures</h2>
+      <p class="mt-4 max-w-3xl">
+        {site.legalName} is a licensed real estate brokerage in North Carolina ({site.license}), operating from {
+          site.address.street
+        }, {site.address.city}, {site.address.region} {site.address.postalCode}. All brokers are members of the
+        Cape Fear REALTORS® association. We subscribe to the REALTOR® Code of Ethics and comply with the Fair Housing
+        Act — we do not steer clients toward or away from neighborhoods on the basis of race, color, religion, sex,
+        disability, familial status or national origin.
+      </p>
+    </div>
+  </section>
+
+  <CtaBand />
+</Base>

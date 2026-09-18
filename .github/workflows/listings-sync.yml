@@ -1,0 +1,38 @@
+# Nightly listing sync. Optional — only runs once LISTINGS_CSV_URL is set.
+#
+# Point the secret at any CSV your MLS, CRM or Google Sheet can publish
+# (Sheets: File → Share → Publish to web → CSV). Rows become markdown files,
+# and a commit here triggers your host's normal deploy.
+name: Sync listings
+
+on:
+  schedule:
+    - cron: '17 6 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Fetch feed
+        env:
+          FEED: ${{ secrets.LISTINGS_CSV_URL }}
+        run: |
+          if [ -z "$FEED" ]; then echo "LISTINGS_CSV_URL not set — nothing to do."; exit 0; fi
+          curl -fsSL "$FEED" -o /tmp/listings.csv
+          node scripts/import-listings.mjs /tmp/listings.csv
+      - name: Commit changes
+        run: |
+          if [ -z "$(git status --porcelain src/content/listings)" ]; then echo "No changes."; exit 0; fi
+          git config user.name "listings-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add src/content/listings
+          git commit -m "Sync listings from feed"
+          git push

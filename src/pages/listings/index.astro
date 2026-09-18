@@ -1,0 +1,190 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import ListingCard from '../../components/ListingCard.astro';
+import CtaBand from '../../components/CtaBand.astro';
+import { site } from '../../data/site';
+
+const all = (await getCollection('listings')).sort(
+  (a, b) => Number(b.data.featured) - Number(a.data.featured) || +b.data.listedOn - +a.data.listedOn
+);
+const active = all.filter((l) => l.data.status !== 'sold');
+
+const schema = [
+  {
+    '@type': 'ItemList',
+    name: 'Homes for sale in Wilmington and coastal New Hanover County',
+    numberOfItems: active.length,
+    itemListElement: active.map((l, i) => ({
+      '@type': 'ListItem',
+      position: i + 1,
+      url: `${site.url}/listings/${l.id}`,
+      name: `${l.data.address}, ${l.data.city}, ${l.data.region}`,
+    })),
+  },
+];
+---
+
+<Base
+  title="Homes for sale in Wilmington, NC"
+  description="Every Harbor Lane listing across Wilmington, Wrightsville Beach, Carolina Beach, Leland and Hampstead — filter by price, bedrooms and property type."
+  schema={schema}
+  breadcrumbs={[{ name: 'Home', href: '/' }, { name: 'Listings', href: '/listings' }]}
+>
+  <section class="shell pt-32 md:pt-44">
+    <span class="eyebrow reveal">Current inventory</span>
+    <h1 class="reveal mt-6 max-w-3xl text-[clamp(2.5rem,6vw,4.5rem)] leading-[0.98]" style="--reveal-delay:80ms">
+      Homes for sale across coastal New Hanover County.
+    </h1>
+    <p class="reveal mt-7 max-w-xl text-[16px] leading-relaxed text-muted" style="--reveal-delay:140ms">
+      Updated as listings go live. If you want to hear about a street before it reaches this page, tell us which one —
+      about a third of what we sell never gets syndicated.
+    </p>
+  </section>
+
+  <!-- Filters -->
+  <section class="shell mt-14">
+    <form class="bezel reveal" data-filters role="search" aria-label="Filter listings">
+      <div class="bezel-core grid gap-4 p-6 md:grid-cols-5 md:items-end">
+        <div class="md:col-span-2">
+          <label class="label" for="q">Search</label>
+          <input class="field" id="q" name="q" type="search" placeholder="Street, city or neighborhood" />
+        </div>
+        <div>
+          <label class="label" for="type">Type</label>
+          <select class="field" id="type" name="type">
+            <option value="">Any</option>
+            <option value="house">House</option>
+            <option value="condo">Condo</option>
+            <option value="townhouse">Townhouse</option>
+            <option value="multifamily">Multifamily</option>
+            <option value="land">Land</option>
+          </select>
+        </div>
+        <div>
+          <label class="label" for="beds">Beds</label>
+          <select class="field" id="beds" name="beds">
+            <option value="0">Any</option>
+            <option value="2">2+</option>
+            <option value="3">3+</option>
+            <option value="4">4+</option>
+            <option value="5">5+</option>
+          </select>
+        </div>
+        <div>
+          <label class="label" for="max">Max price</label>
+          <select class="field" id="max" name="max">
+            <option value="0">Any</option>
+            <option value="500000">$500k</option>
+            <option value="750000">$750k</option>
+            <option value="1000000">$1M</option>
+            <option value="2000000">$2M</option>
+          </select>
+        </div>
+      </div>
+    </form>
+
+    <div class="mt-6 flex flex-wrap items-center justify-between gap-4">
+      <p class="text-sm text-muted"><span data-count>{active.length}</span> homes available</p>
+      <button type="button" class="text-sm text-forest link-underline" data-reset hidden>Clear filters</button>
+    </div>
+  </section>
+
+  <!-- Grid -->
+  <section class="shell mt-8">
+    <div class="grid gap-5 md:grid-cols-2 lg:grid-cols-3" data-grid>
+      {
+        active.map((l, i) => (
+          <div
+            data-card
+            data-text={`${l.data.address} ${l.data.city} ${l.data.neighborhood ?? ''} ${l.data.postalCode}`.toLowerCase()}
+            data-type={l.data.propertyType}
+            data-beds={l.data.beds}
+            data-price={l.data.price}
+          >
+            <ListingCard listing={l} delay={(i % 3) * 80} eager={i < 3} />
+          </div>
+        ))
+      }
+    </div>
+
+    <p class="hidden py-24 text-center text-[15px] text-muted" data-empty>
+      Nothing matches that combination right now. <a href="/contact" class="link-underline text-ink">Tell us what you
+      are after</a> and we will watch for it.
+    </p>
+  </section>
+
+  <!-- Sold proof -->
+  <section class="shell py-24 md:py-32">
+    <span class="eyebrow">Recently closed</span>
+    <h2 class="mt-5 text-4xl leading-[1.05] md:text-5xl">Sold in the last 90 days.</h2>
+    <div class="mt-12 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+      {all.filter((l) => l.data.status === 'sold').map((l, i) => <ListingCard listing={l} delay={i * 80} />)}
+    </div>
+  </section>
+
+  <CtaBand
+    title="Want the ones that never get listed?"
+    body="Roughly a third of what we sell trades privately. Tell us the street, the price band and the timeline, and you will hear before it reaches the portals."
+    primary={{ label: 'Get off-market alerts', href: '/contact' }}
+  />
+
+  <script is:inline>
+    (function () {
+      var form = document.querySelector('[data-filters]');
+      if (!form) return;
+      var cards = Array.prototype.slice.call(document.querySelectorAll('[data-card]'));
+      var count = document.querySelector('[data-count]');
+      var empty = document.querySelector('[data-empty]');
+      var reset = document.querySelector('[data-reset]');
+
+      function apply() {
+        var q = form.q.value.trim().toLowerCase();
+        var type = form.type.value;
+        var beds = Number(form.beds.value);
+        var max = Number(form.max.value);
+        var shown = 0;
+
+        cards.forEach(function (card) {
+          var ok =
+            (!q || card.dataset.text.indexOf(q) > -1) &&
+            (!type || card.dataset.type === type) &&
+            Number(card.dataset.beds) >= beds &&
+            (!max || Number(card.dataset.price) <= max);
+          card.hidden = !ok;
+          if (ok) shown++;
+        });
+
+        count.textContent = String(shown);
+        empty.classList.toggle('hidden', shown > 0);
+        reset.hidden = !(q || type || beds || max);
+      }
+
+      form.addEventListener('input', apply);
+      form.addEventListener('change', function () {
+        if (window.track) {
+          window.track('Listing filter', {
+            type: form.type.value || 'any',
+            beds: form.beds.value || 'any',
+            max: form.max.value || 'any',
+          });
+        }
+      });
+      form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        apply();
+      });
+      reset.addEventListener('click', function () {
+        form.reset();
+        apply();
+      });
+
+      // Deep link support: /listings?q=wrightsville
+      var params = new URLSearchParams(location.search);
+      ['q', 'type', 'beds', 'max'].forEach(function (k) {
+        if (params.get(k)) form[k].value = params.get(k);
+      });
+      if (location.search) apply();
+    })();
+  </script>
+</Base>

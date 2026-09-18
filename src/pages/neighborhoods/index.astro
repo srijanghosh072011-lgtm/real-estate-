@@ -1,0 +1,86 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import CtaBand from '../../components/CtaBand.astro';
+import { site } from '../../data/site';
+import { formatPrice } from '../../lib/format';
+
+const hoods = (await getCollection('neighborhoods')).sort((a, b) => a.data.order - b.data.order);
+---
+
+<Base
+  title="Wilmington NC neighborhood guides"
+  description="Median prices, days on market, price per square foot and what to check before buying in Historic Downtown, Wrightsville Beach, Sunset Park and Brunswick Forest."
+  breadcrumbs={[{ name: 'Home', href: '/' }, { name: 'Neighborhoods', href: '/neighborhoods' }]}
+  schema={[
+    {
+      '@type': 'ItemList',
+      name: 'Neighborhood guides for Wilmington and coastal New Hanover County',
+      itemListElement: hoods.map((h, i) => ({
+        '@type': 'ListItem',
+        position: i + 1,
+        url: `${site.url}/neighborhoods/${h.id}`,
+        name: h.data.title,
+      })),
+    },
+  ]}
+>
+  <section class="shell pt-32 md:pt-44">
+    <span class="eyebrow reveal">Local knowledge</span>
+    <h1 class="reveal mt-6 max-w-3xl text-[clamp(2.5rem,6vw,4.5rem)] leading-[0.98]" style="--reveal-delay:80ms">
+      What each neighborhood actually costs, and what to check first.
+    </h1>
+    <p class="reveal mt-7 max-w-xl text-[16px] leading-relaxed text-muted" style="--reveal-delay:140ms">
+      Numbers refreshed monthly from closed sales across New Hanover, Brunswick and Pender counties. The commentary
+      comes from having written offers on these streets, not from a data feed.
+    </p>
+  </section>
+
+  <section class="shell mt-16 grid gap-5 md:grid-cols-2">
+    {
+      hoods.map((h, i) => (
+        <a href={`/neighborhoods/${h.id}`} class="reveal bezel group" style={`--reveal-delay:${i * 80}ms`}>
+          <div class="bezel-core h-full overflow-hidden">
+            <div class="photo aspect-[16/9] overflow-hidden">
+              <img
+                src={h.data.heroImage}
+                alt={h.data.heroAlt}
+                width="900"
+                height="506"
+                loading={i < 2 ? 'eager' : 'lazy'}
+                decoding="async"
+                class="h-full w-full object-cover transition-transform duration-[1200ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.04]"
+              />
+            </div>
+            <div class="p-8">
+              <h2 class="text-2xl tracking-tight">{h.data.title}</h2>
+              <p class="mt-1 text-sm text-muted">{h.data.city}, NC</p>
+              <p class="mt-4 text-[15px] leading-relaxed text-muted">{h.data.summary}</p>
+
+              <dl class="mt-7 grid grid-cols-3 gap-4 border-t border-line pt-6 text-sm">
+                <div>
+                  <dt class="text-xs text-muted">Median</dt>
+                  <dd class="mt-1 font-semibold">{formatPrice(h.data.medianPrice)}</dd>
+                </div>
+                <div>
+                  <dt class="text-xs text-muted">$ / sq ft</dt>
+                  <dd class="mt-1 font-semibold">${h.data.pricePerSqft}</dd>
+                </div>
+                <div>
+                  <dt class="text-xs text-muted">Days on market</dt>
+                  <dd class="mt-1 font-semibold">{h.data.medianDom}</dd>
+                </div>
+              </dl>
+            </div>
+          </div>
+        </a>
+      ))
+    }
+  </section>
+
+  <CtaBand
+    title="Not sure which one fits?"
+    body="Tell us the commute, the budget and whether you want a yard or a boat slip. We will tell you which three streets to look at and which to skip."
+    primary={{ label: 'Ask us directly', href: '/contact' }}
+  />
+</Base>

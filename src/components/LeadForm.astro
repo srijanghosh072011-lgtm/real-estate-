@@ -1,0 +1,119 @@
+---
+import { site } from '../data/site';
+
+interface Props {
+  /** Shows up in the inbox subject line and in analytics. */
+  formName: string;
+  heading?: string;
+  /** Pre-fills the message box, e.g. from a listing page. */
+  subject?: string;
+  compact?: boolean;
+}
+
+const { formName, heading, subject = '', compact = false } = Astro.props;
+---
+
+<form
+  action={site.formEndpoint}
+  method="POST"
+  data-track-form={formName}
+  data-lead-form
+  class="grid gap-4"
+  novalidate={false}
+>
+  {heading && <h3 class="font-display text-2xl tracking-tight">{heading}</h3>}
+
+  <!-- Formspree/Web3Forms routing + redirect. Harmless on other backends. -->
+  <input type="hidden" name="_subject" value={`${formName} — ${site.name}`} />
+  <input type="hidden" name="form_name" value={formName} />
+  <input type="hidden" name="_next" value={`${site.url}/thanks`} />
+  <input type="hidden" name="page" value={Astro.url.pathname} />
+
+  <!-- Spam traps: a field bots fill, and a clock humans cannot beat. -->
+  <div class="absolute left-[-9999px] h-0 w-0 overflow-hidden" aria-hidden="true">
+    <label>Do not fill this in<input type="text" name="_gotcha" tabindex="-1" autocomplete="off" /></label>
+    <input type="text" name="form_loaded_at" data-loaded-at value="" tabindex="-1" autocomplete="off" />
+  </div>
+
+  <div class={compact ? 'grid gap-4' : 'grid gap-4 sm:grid-cols-2'}>
+    <div>
+      <label class="label" for={`${formName}-name`}>Name</label>
+      <input class="field" id={`${formName}-name`} name="name" type="text" required autocomplete="name" placeholder="Jordan Ellis" />
+    </div>
+    <div>
+      <label class="label" for={`${formName}-phone`}>Phone</label>
+      <input
+        class="field"
+        id={`${formName}-phone`}
+        name="phone"
+        type="tel"
+        required
+        autocomplete="tel"
+        inputmode="tel"
+        placeholder="(910) 555-0148"
+      />
+    </div>
+  </div>
+
+  <div>
+    <label class="label" for={`${formName}-email`}>Email</label>
+    <input
+      class="field"
+      id={`${formName}-email`}
+      name="email"
+      type="email"
+      required
+      autocomplete="email"
+      placeholder="you@email.com"
+    />
+  </div>
+
+  <div>
+    <label class="label" for={`${formName}-message`}>What can we help with?</label>
+    <textarea class="field min-h-28" id={`${formName}-message`} name="message" rows="4" required>{subject}</textarea>
+  </div>
+
+  <label class="flex items-start gap-3 text-xs leading-relaxed text-muted">
+    <input type="checkbox" name="consent" required class="mt-0.5 h-4 w-4 shrink-0 accent-[#16332b]" />
+    <span>
+      I agree to be contacted by {site.name} about my enquiry by phone, text or email. Message rates may apply, and I can
+      opt out any time. <a href="/privacy" class="link-underline text-ink">Privacy policy</a>.
+    </span>
+  </label>
+
+  <button type="submit" class="btn btn-solid mt-1 w-full justify-between">
+    <span data-submit-text>Send it over</span>
+    <span class="btn-disc" aria-hidden="true">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <path d="M7 17 17 7M9 7h8v8" stroke-linecap="round" stroke-linejoin="round"></path>
+      </svg>
+    </span>
+  </button>
+
+  <p class="text-xs text-muted" data-form-note>
+    Replies within one business hour during office hours. Prefer to talk now?
+    <a href={site.phoneHref} class="link-underline text-ink">{site.phone}</a>.
+  </p>
+</form>
+
+<script is:inline>
+  (function () {
+    document.querySelectorAll('[data-lead-form]').forEach(function (form) {
+      var stamp = form.querySelector('[data-loaded-at]');
+      if (stamp) stamp.value = String(Date.now());
+
+      form.addEventListener('submit', function (e) {
+        // Under 3 seconds start to finish is a bot, not a buyer. Say so rather
+        // than failing silently, so a fast human is never stuck.
+        if (stamp && Date.now() - Number(stamp.value) < 3000) {
+          e.preventDefault();
+          var note = form.querySelector('[data-form-note]');
+          if (note) note.textContent = 'One moment — press send again.';
+          return;
+        }
+        var btn = form.querySelector('[data-submit-text]');
+        if (btn) btn.textContent = 'Sending…';
+      });
+    });
+  })();
+</script>

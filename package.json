@@ -1,0 +1,30 @@
+{
+  "name": "harbor-lane-realty",
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "check": "node scripts/check-build.mjs",
+    "test": "node scripts/import-listings.mjs --selftest && node scripts/check-build.mjs",
+    "import": "node scripts/import-listings.mjs"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/srijanghosh072011-lgtm/real-estate-.git"
+  },
+  "bugs": {
+    "url": "https://github.com/srijanghosh072011-lgtm/real-estate-/issues"
+  },
+  "homepage": "https://github.com/srijanghosh072011-lgtm/real-estate-#readme",
+  "dependencies": {
+    "@astrojs/sitemap": "^3.7.4",
+    "@fontsource-variable/fraunces": "^5.3.0",
+    "@fontsource-variable/plus-jakarta-sans": "^5.3.0",
+    "@tailwindcss/vite": "^4.3.3",
+    "astro": "^7.3.3",
+    "tailwindcss": "^4.3.3"
+  },
+  "private": true,
+  "type": "module"
+}

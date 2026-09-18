@@ -1,0 +1,60 @@
+---
+import { site } from '../data/site';
+
+interface Props {
+  title?: string;
+  body?: string;
+  primary?: { label: string; href: string };
+  secondary?: { label: string; href: string };
+}
+
+const {
+  title = 'Two conversations, then a plan.',
+  body = 'Tell us the timeline and the number you have in mind. We will tell you what the last ninety days of sales on your street say about it — before you commit to anything.',
+  primary = { label: 'Get my home valuation', href: '/sell' },
+  secondary = { label: `Call ${site.phone}`, href: site.phoneHref },
+} = Astro.props;
+---
+
+<section class="shell py-24 md:py-28">
+  <div class="bezel bezel-dark reveal">
+    <div class="bezel-core relative overflow-hidden px-6 py-16 md:px-16 md:py-24">
+      <div
+        class="pointer-events-none absolute -right-24 -top-24 h-72 w-72 rounded-full opacity-40 blur-3xl"
+        style="background: radial-gradient(circle, rgba(217,189,138,0.35), transparent 70%)"
+        aria-hidden="true"
+      >
+      </div>
+
+      <div class="relative max-w-2xl">
+        <span class="eyebrow eyebrow-dark">Next step</span>
+        <h2 class="mt-6 text-4xl leading-[1.05] text-paper md:text-6xl">{title}</h2>
+        <p class="mt-6 max-w-xl text-[15px] leading-relaxed text-paper/70">{body}</p>
+
+        <div class="mt-10 flex flex-col gap-3 sm:flex-row">
+          <a href={primary.href} class="btn btn-brass justify-between" data-track="CTA click" data-track-label={primary.label}>
+            {primary.label}
+            <span class="btn-disc" aria-hidden="true">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M7 17 17 7M9 7h8v8" stroke-linecap="round" stroke-linejoin="round"></path>
+              </svg>
+            </span>
+          </a>
+          <a
+            href={secondary.href}
+            class="btn justify-between border border-paper/15 text-paper hover:bg-paper/10"
+            data-track="CTA click"
+            data-track-label={secondary.label}
+          >
+            {secondary.label}
+            <span class="btn-disc" aria-hidden="true">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M7 17 17 7M9 7h8v8" stroke-linecap="round" stroke-linejoin="round"></path>
+              </svg>
+            </span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

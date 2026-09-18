@@ -1,0 +1,98 @@
+---
+import { site } from '../data/site';
+
+const { plausibleDomain, ga4Id } = site.analytics;
+---
+
+{
+  plausibleDomain && (
+    <script
+      is:inline
+      defer
+      data-domain={plausibleDomain}
+      src="https://plausible.io/js/script.outbound-links.tagged-events.js"
+    />
+  )
+}
+{
+  ga4Id && (
+    <Fragment>
+      <script is:inline async src={`https://www.googletagmanager.com/gtag/js?id=${ga4Id}`} />
+      <script is:inline define:vars={{ ga4Id }}>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() {
+          window.dataLayer.push(arguments);
+        }
+        window.gtag = gtag;
+        gtag('js', new Date());
+        gtag('config', ga4Id, { anonymize_ip: true });
+      </script>
+    </Fragment>
+  )
+}
+
+<!--
+  One event layer for both providers. Nothing personal is collected: names and
+  emails typed into forms never leave the page through this path.
+-->
+<script is:inline>
+  (function () {
+    function track(name, props) {
+      try {
+        if (window.plausible) window.plausible(name, props ? { props } : undefined);
+        if (window.gtag) window.gtag('event', name, props || {});
+      } catch (e) {
+        /* analytics must never break the page */
+      }
+    }
+    window.track = track;
+
+    document.addEventListener(
+      'click',
+      function (e) {
+        var el = e.target && e.target.closest && e.target.closest('[data-track], a[href^="tel:"], a[href^="mailto:"]');
+        if (!el) return;
+        if (el.dataset && el.dataset.track) {
+          track(el.dataset.track, { label: el.dataset.trackLabel || el.textContent.trim().slice(0, 60) });
+        } else {
+          track(el.href.indexOf('tel:') === 0 ? 'Phone click' : 'Email click', { page: location.pathname });
+        }
+      },
+      { passive: true }
+    );
+
+    document.addEventListener('submit', function (e) {
+      var f = e.target;
+      if (f.dataset && f.dataset.trackForm) track('Lead submitted', { form: f.dataset.trackForm });
+    });
+
+    // Scroll depth + engaged time, the two signals that tell you whether a page works.
+    var marks = [25, 50, 75, 100];
+    var hit = {};
+    var ticking = false;
+    function depth() {
+      ticking = false;
+      var h = document.documentElement;
+      var pct = ((h.scrollTop + window.innerHeight) / h.scrollHeight) * 100;
+      for (var i = 0; i < marks.length; i++) {
+        if (pct >= marks[i] && !hit[marks[i]]) {
+          hit[marks[i]] = true;
+          track('Scroll depth', { depth: marks[i] + '%', page: location.pathname });
+        }
+      }
+    }
+    window.addEventListener(
+      'scroll',
+      function () {
+        if (!ticking) {
+          ticking = true;
+          requestAnimationFrame(depth);
+        }
+      },
+      { passive: true }
+    );
+    setTimeout(function () {
+      track('Engaged 30s', { page: location.pathname });
+    }, 30000);
+  })();
+</script>

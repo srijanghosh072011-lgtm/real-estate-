@@ -1,0 +1,325 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import ListingCard from '../components/ListingCard.astro';
+import Faq from '../components/Faq.astro';
+import LeadForm from '../components/LeadForm.astro';
+import CtaBand from '../components/CtaBand.astro';
+import { site } from '../data/site';
+
+const listings = await getCollection('listings');
+const open = listings.filter((l) => l.data.status === 'for-sale').slice(0, 3);
+
+const buyFaqs = [
+  {
+    q: 'How much do I need for a down payment in North Carolina?',
+    a: 'Conventional loans start at 3% down for qualified first-time buyers, FHA at 3.5%, and VA and USDA at 0% for those eligible. On a $450,000 Wilmington home that is roughly $13,500 to $15,750 plus closing costs of 2% to 3%. NC Home Advantage offers down payment assistance up to $15,000 for buyers under the income limits.',
+  },
+  {
+    q: 'What is the due diligence fee and is it refundable?',
+    a: 'North Carolina buyers pay a non-refundable due diligence fee directly to the seller in exchange for a set window — usually 14 to 21 days — in which they can terminate for any reason and recover their earnest money. The fee itself is not returned if you walk, but it is credited toward your purchase at closing if you proceed.',
+  },
+  {
+    q: 'Who pays the buyer agent in 2026?',
+    a: 'Since the 2024 NAR settlement, buyer-agent compensation is negotiated in a written buyer agency agreement before touring. It may be offered by the seller, paid by the buyer, or split. We quote our fee in writing up front and negotiate seller contribution toward it in every offer we write.',
+  },
+  {
+    q: 'How long does closing take in Wilmington?',
+    a: 'Thirty to forty-five days from accepted contract is typical with financing, and two to three weeks for cash. North Carolina uses attorney-supervised closings, so your attorney handles title search, the settlement statement and recording.',
+  },
+  {
+    q: 'Should I get pre-approved before touring homes?',
+    a: 'Yes. Sellers in competitive price bands will not consider an offer without it, and pre-approval tells you the actual payment at your price rather than a payment you assumed. It takes about 48 hours and does not commit you to that lender.',
+  },
+];
+
+const schema = [
+  {
+    '@type': 'Service',
+    name: 'Buyer representation in Wilmington and coastal North Carolina',
+    provider: { '@id': `${site.url}/#organization` },
+    areaServed: site.serviceAreas.map((a) => ({ '@type': 'City', name: a })),
+    description:
+      'Buyer agency including off-market access, narrated walkthrough videos for remote buyers, inspection review and repair credit negotiation.',
+  },
+  {
+    '@type': 'FAQPage',
+    mainEntity: buyFaqs.map((f) => ({
+      '@type': 'Question',
+      name: f.q,
+      acceptedAnswer: { '@type': 'Answer', text: f.a },
+    })),
+  },
+];
+
+const steps = [
+  { t: 'Get pre-approved', b: 'Two days, one lender introduction, and a number you can actually write offers against.' },
+  { t: 'Build the shortlist', b: 'Including the third of our inventory that never reaches the portals.' },
+  { t: 'Tour or watch', b: 'In person, or a narrated video that points the camera at what the photos avoid.' },
+  { t: 'Write with terms', b: 'Price is one lever. Due diligence length, fee size and closing date are the others.' },
+  { t: 'Inspect and negotiate', b: 'We read the report line by line and go back for the credits worth asking for.' },
+  { t: 'Close', b: 'Attorney closing, remote notary if you need it, keys the same day.' },
+];
+---
+
+<Base
+  title="Buying a home in Wilmington, NC"
+  description="Buyer representation across Wilmington, Wrightsville Beach, Carolina Beach and Leland — off-market access, honest walkthrough notes, and repair credits most buyers leave on the table."
+  schema={schema}
+  breadcrumbs={[{ name: 'Home', href: '/' }, { name: 'Buy', href: '/buy' }]}
+>
+  <section class="shell pt-32 md:pt-44">
+    <div class="grid items-end gap-14 lg:grid-cols-12">
+      <div class="lg:col-span-7">
+        <span class="eyebrow reveal">Buyers</span>
+        <h1 class="reveal mt-6 text-[clamp(2.5rem,6vw,4.75rem)] leading-[0.98]" style="--reveal-delay:80ms">
+          Someone on your side of the table.
+        </h1>
+        <p class="reveal mt-7 max-w-xl text-[16px] leading-relaxed text-muted" style="--reveal-delay:140ms">
+          We tour the house before you fly in, tell you what the listing photos are framed to hide, and treat the
+          inspection report as leverage rather than paperwork. Last year our buyers averaged $9,200 in negotiated
+          credits after inspection.
+        </p>
+        <div class="reveal mt-10 flex flex-col gap-3 sm:flex-row" style="--reveal-delay:200ms">
+          <a href="#alerts" class="btn btn-solid justify-between" data-track="CTA click" data-track-label="Buy alerts">
+            Get off-market alerts
+            <span class="btn-disc" aria-hidden="true">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M7 17 17 7M9 7h8v8" stroke-linecap="round" stroke-linejoin="round"></path>
+              </svg>
+            </span>
+          </a>
+          <a href="#calculator" class="btn btn-ghost justify-between">
+            Run the numbers
+            <span class="btn-disc" aria-hidden="true">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M7 17 17 7M9 7h8v8" stroke-linecap="round" stroke-linejoin="round"></path>
+              </svg>
+            </span>
+          </a>
+        </div>
+      </div>
+
+      <div class="reveal lg:col-span-5" style="--reveal-delay:220ms">
+        <div class="bezel">
+          <div class="bezel-core overflow-hidden">
+            <div class="photo aspect-[4/3]">
+              <img
+                src="https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=72"
+                alt="Buyers touring a bright kitchen in a Wilmington home"
+                width="1000"
+                height="750"
+                fetchpriority="high"
+                decoding="async"
+                class="h-full w-full object-cover"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Mortgage calculator -->
+  <section class="shell py-24 md:py-32" id="calculator">
+    <div class="grid gap-12 lg:grid-cols-12">
+      <div class="lg:col-span-4">
+        <span class="eyebrow">Payment calculator</span>
+        <h2 class="mt-5 text-4xl leading-[1.05] md:text-5xl">What it costs<br />each month.</h2>
+        <p class="mt-6 text-[15px] leading-relaxed text-muted">
+          Principal, interest, property tax, insurance and HOA — the whole payment, not the part lenders advertise.
+          Coastal insurance is the line most buyers underestimate.
+        </p>
+      </div>
+
+      <div class="lg:col-span-8">
+        <div class="bezel reveal">
+          <div class="bezel-core grid gap-8 p-7 md:grid-cols-2 md:p-10">
+            <form class="grid gap-5" data-calc>
+              <div>
+                <label class="label" for="c-price">Home price</label>
+                <input class="field" id="c-price" type="number" value="450000" min="50000" step="5000" inputmode="numeric" />
+              </div>
+              <div class="grid grid-cols-2 gap-4">
+                <div>
+                  <label class="label" for="c-down">Down payment %</label>
+                  <input class="field" id="c-down" type="number" value="20" min="0" max="100" step="1" inputmode="numeric" />
+                </div>
+                <div>
+                  <label class="label" for="c-rate">Rate %</label>
+                  <input class="field" id="c-rate" type="number" value="6.5" min="0.5" max="15" step="0.05" inputmode="decimal" />
+                </div>
+              </div>
+              <div class="grid grid-cols-2 gap-4">
+                <div>
+                  <label class="label" for="c-years">Term (years)</label>
+                  <select class="field" id="c-years">
+                    <option value="30" selected>30</option>
+                    <option value="20">20</option>
+                    <option value="15">15</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="label" for="c-hoa">HOA $/mo</label>
+                  <input class="field" id="c-hoa" type="number" value="0" min="0" step="5" inputmode="numeric" />
+                </div>
+              </div>
+              <div class="grid grid-cols-2 gap-4">
+                <div>
+                  <label class="label" for="c-tax">Tax rate %</label>
+                  <input class="field" id="c-tax" type="number" value="0.55" min="0" max="5" step="0.01" inputmode="decimal" />
+                </div>
+                <div>
+                  <label class="label" for="c-ins">Insurance $/yr</label>
+                  <input class="field" id="c-ins" type="number" value="2400" min="0" step="100" inputmode="numeric" />
+                </div>
+              </div>
+            </form>
+
+            <div class="flex flex-col justify-center rounded-2xl bg-paper-2 p-7">
+              <p class="text-xs uppercase tracking-[0.18em] text-muted">Estimated monthly</p>
+              <p class="mt-3 font-display text-5xl tracking-tight" data-calc-total>$3,015</p>
+              <dl class="mt-8 space-y-3 border-t border-line pt-6 text-sm">
+                <div class="flex justify-between"><dt class="text-muted">Principal &amp; interest</dt><dd data-calc-pi></dd></div>
+                <div class="flex justify-between"><dt class="text-muted">Property tax</dt><dd data-calc-tax></dd></div>
+                <div class="flex justify-between"><dt class="text-muted">Insurance</dt><dd data-calc-ins></dd></div>
+                <div class="flex justify-between"><dt class="text-muted">HOA</dt><dd data-calc-hoa></dd></div>
+                <div class="flex justify-between border-t border-line pt-3">
+                  <dt class="text-muted">Cash at closing (est.)</dt><dd data-calc-cash></dd>
+                </div>
+              </dl>
+              <p class="mt-6 text-xs leading-relaxed text-muted">
+                An estimate, not a quote. Flood insurance on barrier islands and AE zones can add $1,500 to $4,000 a
+                year and is not included here.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Buying steps -->
+  <section class="shell pb-8">
+    <span class="eyebrow">The sequence</span>
+    <h2 class="mt-5 max-w-2xl text-4xl leading-[1.05] md:text-5xl">Six steps from pre-approval to keys.</h2>
+
+    <ol class="mt-14 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+      {
+        steps.map((s, i) => (
+          <li class="reveal bezel" style={`--reveal-delay:${i * 70}ms`}>
+            <div class="bezel-core h-full p-7">
+              <span class="font-display text-2xl text-brass">0{i + 1}</span>
+              <h3 class="mt-4 text-xl tracking-tight">{s.t}</h3>
+              <p class="mt-3 text-sm leading-relaxed text-muted">{s.b}</p>
+            </div>
+          </li>
+        ))
+      }
+    </ol>
+  </section>
+
+  <!-- Current listings -->
+  <section class="shell py-24 md:py-32">
+    <div class="flex flex-wrap items-end justify-between gap-6">
+      <h2 class="text-4xl leading-[1.05] md:text-5xl">Available now.</h2>
+      <a href="/listings" class="btn btn-ghost">
+        All listings
+        <span class="btn-disc" aria-hidden="true">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M7 17 17 7M9 7h8v8" stroke-linecap="round" stroke-linejoin="round"></path>
+          </svg>
+        </span>
+      </a>
+    </div>
+    <div class="mt-12 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+      {open.map((l, i) => <ListingCard listing={l} delay={i * 80} />)}
+    </div>
+  </section>
+
+  <!-- Alerts -->
+  <section class="shell pb-8" id="alerts">
+    <div class="bezel reveal">
+      <div class="bezel-core grid gap-10 p-7 md:grid-cols-2 md:p-12">
+        <div>
+          <span class="eyebrow">Off-market list</span>
+          <h2 class="mt-5 text-3xl leading-[1.08] md:text-4xl">Hear about it before the portals do.</h2>
+          <p class="mt-5 text-[15px] leading-relaxed text-muted">
+            Tell us the streets, the price band and the timeline. When something matches — including the listings we
+            take that never get syndicated — you get a text, not a newsletter.
+          </p>
+          <ul class="mt-8 space-y-3 text-sm text-ink-soft">
+            {
+              ['No automated drip sequences', 'Text or email, your choice', 'Unsubscribe with one word'].map((t) => (
+                <li class="flex items-start gap-3">
+                  <span class="mt-2 h-1 w-1 shrink-0 rounded-full bg-brass" aria-hidden="true" />
+                  {t}
+                </li>
+              ))
+            }
+          </ul>
+        </div>
+        <LeadForm
+          formName="Buyer alerts"
+          subject="I am looking for: (price band, beds, areas, timeline)"
+          compact={true}
+        />
+      </div>
+    </div>
+  </section>
+
+  <Faq items={buyFaqs} title="Buying questions, answered straight" />
+  <CtaBand
+    title="Start with a conversation."
+    body="Twenty minutes on the phone will tell you more than a weekend of scrolling. No pressure to sign anything."
+    primary={{ label: 'Book a buyer call', href: '/contact' }}
+  />
+
+  <script is:inline>
+    (function () {
+      var form = document.querySelector('[data-calc]');
+      if (!form) return;
+      var usd = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 });
+      var out = {
+        total: document.querySelector('[data-calc-total]'),
+        pi: document.querySelector('[data-calc-pi]'),
+        tax: document.querySelector('[data-calc-tax]'),
+        ins: document.querySelector('[data-calc-ins]'),
+        hoa: document.querySelector('[data-calc-hoa]'),
+        cash: document.querySelector('[data-calc-cash]'),
+      };
+
+      function num(id, fallback) {
+        var v = Number(document.getElementById(id).value);
+        return isFinite(v) && v >= 0 ? v : fallback;
+      }
+
+      function run() {
+        var price = num('c-price', 450000);
+        var downPct = Math.min(num('c-down', 20), 100);
+        var rate = num('c-rate', 6.5) / 100 / 12;
+        var months = num('c-years', 30) * 12;
+        var principal = price * (1 - downPct / 100);
+        // r = 0 would divide by zero; straight-line repayment is the honest fallback.
+        var pi = rate > 0 ? (principal * rate) / (1 - Math.pow(1 + rate, -months)) : principal / months;
+        var tax = (price * (num('c-tax', 0.55) / 100)) / 12;
+        var ins = num('c-ins', 2400) / 12;
+        var hoa = num('c-hoa', 0);
+
+        out.pi.textContent = usd.format(pi);
+        out.tax.textContent = usd.format(tax);
+        out.ins.textContent = usd.format(ins);
+        out.hoa.textContent = usd.format(hoa);
+        out.total.textContent = usd.format(pi + tax + ins + hoa);
+        // Down payment + roughly 2.5% closing costs.
+        out.cash.textContent = usd.format(price * (downPct / 100) + price * 0.025);
+      }
+
+      form.addEventListener('input', run);
+      form.addEventListener('change', function () {
+        if (window.track) window.track('Calculator used', { page: '/buy' });
+      });
+      run();
+    })();
+  </script>
+</Base>

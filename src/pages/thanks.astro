@@ -1,0 +1,44 @@
+---
+import Base from '../layouts/Base.astro';
+import { site } from '../data/site';
+---
+
+<Base
+  title="Thanks — we have your message"
+  description="Your message reached Harbor Lane Realty. A broker replies within one business hour during office hours — or call us now if it is urgent."
+  noindex={true}
+>
+  <section class="shell flex min-h-[70svh] flex-col justify-center py-32">
+    <span class="eyebrow">Received</span>
+    <h1 class="mt-6 max-w-2xl text-[clamp(2.5rem,6vw,4.5rem)] leading-[0.98]">
+      Got it. A broker will reply shortly.
+    </h1>
+    <p class="mt-7 max-w-lg text-[16px] leading-relaxed text-muted">
+      Messages sent during office hours get a human reply within the hour. Outside them, first thing the next business
+      morning. If it is urgent, call <a href={site.phoneHref} class="link-underline text-ink">{site.phone}</a>.
+    </p>
+
+    <div class="mt-12 flex flex-col gap-3 sm:flex-row">
+      <a href="/listings" class="btn btn-solid justify-between">
+        Browse listings
+        <span class="btn-disc" aria-hidden="true">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M7 17 17 7M9 7h8v8" stroke-linecap="round" stroke-linejoin="round"></path>
+          </svg>
+        </span>
+      </a>
+      <a href="/guides" class="btn btn-ghost justify-between">
+        Read the guides
+        <span class="btn-disc" aria-hidden="true">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M7 17 17 7M9 7h8v8" stroke-linecap="round" stroke-linejoin="round"></path>
+          </svg>
+        </span>
+      </a>
+    </div>
+  </section>
+
+  <script is:inline>
+    if (window.track) window.track('Lead confirmed', { page: '/thanks' });
+  </script>
+</Base>

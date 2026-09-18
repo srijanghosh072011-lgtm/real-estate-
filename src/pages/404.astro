@@ -1,0 +1,36 @@
+---
+import Base from '../layouts/Base.astro';
+import { site } from '../data/site';
+---
+
+<Base title="Page not found" description="That page has moved or never existed. Browse current Wilmington listings, or call Harbor Lane Realty and we will point you to the right place." noindex={true}>
+  <section class="shell flex min-h-[70svh] flex-col justify-center py-32">
+    <span class="eyebrow">404</span>
+    <h1 class="mt-6 max-w-2xl text-[clamp(2.5rem,6vw,4.5rem)] leading-[0.98]">
+      That address is off the market.
+    </h1>
+    <p class="mt-7 max-w-lg text-[16px] leading-relaxed text-muted">
+      The page moved or never existed. Listings come down when they close, so an old link to a sold home will land here
+      too.
+    </p>
+
+    <div class="mt-12 flex flex-col gap-3 sm:flex-row">
+      <a href="/listings" class="btn btn-solid justify-between">
+        See current listings
+        <span class="btn-disc" aria-hidden="true">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M7 17 17 7M9 7h8v8" stroke-linecap="round" stroke-linejoin="round"></path>
+          </svg>
+        </span>
+      </a>
+      <a href={site.phoneHref} class="btn btn-ghost justify-between">
+        Call {site.phone}
+        <span class="btn-disc" aria-hidden="true">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M7 17 17 7M9 7h8v8" stroke-linecap="round" stroke-linejoin="round"></path>
+          </svg>
+        </span>
+      </a>
+    </div>
+  </section>
+</Base>

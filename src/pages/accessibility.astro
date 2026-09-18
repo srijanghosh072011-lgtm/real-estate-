@@ -1,0 +1,56 @@
+---
+import Base from '../layouts/Base.astro';
+import { site } from '../data/site';
+
+const prose =
+  'mt-12 max-w-3xl text-[16px] leading-relaxed text-ink-soft [&_h2]:mt-12 [&_h2]:font-display [&_h2]:text-2xl [&_h2]:tracking-tight [&_h2]:text-ink [&_p]:mt-5 [&_ul]:mt-5 [&_ul]:list-disc [&_ul]:space-y-2 [&_ul]:pl-5 [&_a]:underline';
+---
+
+<Base
+  title="Accessibility statement"
+  description={`How ${site.name} works to keep this website usable for everyone, and how to tell us when it falls short.`}
+  breadcrumbs={[{ name: 'Home', href: '/' }, { name: 'Accessibility', href: '/accessibility' }]}
+>
+  <section class="shell pt-32 md:pt-44">
+    <span class="eyebrow">Commitment</span>
+    <h1 class="mt-6 text-[clamp(2.25rem,5vw,3.75rem)] leading-[1]">Accessibility</h1>
+
+    <div class={prose}>
+      <p>
+        Housing information should be reachable by everyone. This site is built to meet
+        <strong>WCAG 2.2 Level AA</strong>, and we treat accessibility defects as bugs rather than enhancements.
+      </p>
+
+      <h2>What we have done</h2>
+      <ul>
+        <li>Semantic HTML with one main landmark, real headings and a skip link to the content.</li>
+        <li>Full keyboard operation, including the menu, filters, valuation steps and calculator.</li>
+        <li>Visible focus outlines that are never removed.</li>
+        <li>Text and interface contrast checked against AA thresholds.</li>
+        <li>Meaningful alternative text on photographs, and decorative images marked as decorative.</li>
+        <li>All motion disabled automatically when your device requests reduced motion.</li>
+        <li>Form fields with real labels, and errors announced by the browser rather than colour alone.</li>
+      </ul>
+
+      <h2>Known limitations</h2>
+      <p>
+        The embedded map is provided by a third party and its internal controls are outside our control. Address,
+        directions and parking information are always available as text next to it so nothing depends on the map
+        itself.
+      </p>
+
+      <h2>Tell us when something breaks</h2>
+      <p>
+        If any part of this site is difficult to use, email <a href={`mailto:${site.email}`}>{site.email}</a> or call
+        <a href={site.phoneHref}>{site.phone}</a>. Describe the page and what happened. We aim to respond within two
+        business days and to fix confirmed issues within ten.
+      </p>
+      <p>
+        If you need listing details, a valuation or any document in another format — large print, plain text, or read
+        aloud over the phone — ask and we will provide it at no charge.
+      </p>
+    </div>
+  </section>
+
+  <div class="pb-24"></div>
+</Base>

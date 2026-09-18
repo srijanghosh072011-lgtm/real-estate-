@@ -1,0 +1,404 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import Faq from '../components/Faq.astro';
+import CtaBand from '../components/CtaBand.astro';
+import { site, process } from '../data/site';
+import { formatPrice } from '../lib/format';
+
+const hoods = (await getCollection('neighborhoods')).sort((a, b) => a.data.order - b.data.order);
+const ppsf = Object.fromEntries(hoods.map((h) => [h.data.title, h.data.pricePerSqft]));
+
+const sellFaqs = [
+  {
+    q: 'How is the instant home valuation calculated?',
+    a: 'It multiplies your reported square footage by the current price per square foot for your neighborhood, then adjusts for condition and shows a range rather than a single figure. It is a starting point, not an appraisal — a broker reviews every submission and sends a corrected number with the comparable sales attached.',
+  },
+  {
+    q: 'What does it cost to sell a home with Harbor Lane Realty?',
+    a: 'Listing fees start at 2.5% of the sale price. Photography, floor plans, drone, staging consultation and the pre-list inspection are included at no extra charge. Buyer-agent compensation is negotiated separately on each transaction.',
+  },
+  {
+    q: 'Do I really pay nothing up front for repairs and staging?',
+    a: 'Correct. We front prep costs up to $12,000 — paint, staging, landscaping, cleaning and minor repairs — and recover them from proceeds at closing with no interest or markup. If the home does not sell, you owe nothing for work we commissioned.',
+  },
+  {
+    q: 'How quickly can my home be on the market?',
+    a: 'Ten to fourteen days is typical from first call to live listing: two days for the pricing analysis and agreement, five to eight for prep work, one for photography, then launch. Homes that need no prep can go live within 72 hours.',
+  },
+  {
+    q: 'What if my home does not sell?',
+    a: 'Our listing agreements can be cancelled with 24 hours notice before an offer is accepted. You are not locked into six months with an agent who is not performing, and you owe nothing for prep work we fronted.',
+  },
+];
+
+const schema = [
+  {
+    '@type': 'Service',
+    name: 'Home selling and listing services in Wilmington, NC',
+    provider: { '@id': `${site.url}/#organization` },
+    areaServed: site.serviceAreas.map((a) => ({ '@type': 'City', name: a })),
+    description:
+      'Full-service listing representation including pricing analysis, fronted prep costs, professional photography, MLS launch and offer negotiation.',
+  },
+  {
+    '@type': 'FAQPage',
+    mainEntity: sellFaqs.map((f) => ({
+      '@type': 'Question',
+      name: f.q,
+      acceptedAnswer: { '@type': 'Answer', text: f.a },
+    })),
+  },
+];
+---
+
+<Base
+  title="What is my home worth? Free Wilmington NC home valuation"
+  description="Get an instant estimate from recent neighborhood sales, then a broker-reviewed valuation with the comparable sales attached. Prep costs fronted, 12-day median time to contract."
+  schema={schema}
+  breadcrumbs={[{ name: 'Home', href: '/' }, { name: 'Sell', href: '/sell' }]}
+>
+  <section class="shell grid items-start gap-14 pt-32 lg:grid-cols-12 md:pt-44">
+    <div class="lg:col-span-5">
+      <span class="eyebrow reveal">Sellers</span>
+      <h1 class="reveal mt-6 text-[clamp(2.5rem,6vw,4.5rem)] leading-[0.98]" style="--reveal-delay:80ms">
+        What is your home actually worth?
+      </h1>
+      <p class="reveal mt-7 max-w-md text-[16px] leading-relaxed text-muted" style="--reveal-delay:140ms">
+        Four questions gets you an instant range built from this quarter's sales in your neighborhood. A broker then
+        checks it against the specific homes that closed near you and sends the real number — usually the same day, with
+        the comparable sales attached so you can see the reasoning.
+      </p>
+
+      <dl class="reveal mt-12 grid grid-cols-2 gap-6" style="--reveal-delay:200ms">
+        <div>
+          <dt class="font-display text-4xl">12</dt>
+          <dd class="mt-2 text-sm text-muted">median days to contract</dd>
+        </div>
+        <div>
+          <dt class="font-display text-4xl">98.7%</dt>
+          <dd class="mt-2 text-sm text-muted">of list price achieved</dd>
+        </div>
+        <div>
+          <dt class="font-display text-4xl">$12k</dt>
+          <dd class="mt-2 text-sm text-muted">prep costs fronted per home</dd>
+        </div>
+        <div>
+          <dt class="font-display text-4xl">2.5%</dt>
+          <dd class="mt-2 text-sm text-muted">listing fee, from</dd>
+        </div>
+      </dl>
+    </div>
+
+    <!-- Valuation tool -->
+    <div class="lg:col-span-7">
+      <div class="bezel reveal" style="--reveal-delay:120ms">
+        <div class="bezel-core p-7 md:p-10">
+          <form action={site.formEndpoint} method="POST" data-valuation data-track-form="Home valuation" class="grid gap-5">
+            <input type="hidden" name="_subject" value={`Home valuation request — ${site.name}`} />
+            <input type="hidden" name="form_name" value="Home valuation" />
+            <input type="hidden" name="_next" value={`${site.url}/thanks`} />
+            <input type="hidden" name="instant_estimate" data-estimate-field value="" />
+            <div class="absolute left-[-9999px] h-0 w-0 overflow-hidden" aria-hidden="true">
+              <label>Leave blank<input type="text" name="_gotcha" tabindex="-1" autocomplete="off" /></label>
+            </div>
+
+            <div class="flex items-center justify-between">
+              <p class="text-xs uppercase tracking-[0.18em] text-muted">
+                Step <span data-step-now>1</span> of 3
+              </p>
+              <div class="flex gap-1.5" aria-hidden="true">
+                <span class="h-1 w-8 rounded-full bg-forest" data-dot></span>
+                <span class="h-1 w-8 rounded-full bg-line" data-dot></span>
+                <span class="h-1 w-8 rounded-full bg-line" data-dot></span>
+              </div>
+            </div>
+
+            <!-- Step 1 -->
+            <fieldset data-step="1" class="grid gap-4">
+              <legend class="mb-2 font-display text-2xl tracking-tight">Where is the home?</legend>
+              <div>
+                <label class="label" for="v-address">Street address</label>
+                <input class="field" id="v-address" name="address" type="text" required placeholder="1412 Chestnut Street" autocomplete="street-address" />
+              </div>
+              <div class="grid gap-4 sm:grid-cols-2">
+                <div>
+                  <label class="label" for="v-hood">Neighborhood</label>
+                  <select class="field" id="v-hood" name="neighborhood" required>
+                    <option value="">Select one</option>
+                    {hoods.map((h) => <option value={h.data.title}>{h.data.title}</option>)}
+                    <option value="Other">Somewhere else nearby</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="label" for="v-type">Property type</label>
+                  <select class="field" id="v-type" name="property_type">
+                    <option value="house">House</option>
+                    <option value="condo">Condo</option>
+                    <option value="townhouse">Townhouse</option>
+                    <option value="multifamily">Multifamily</option>
+                  </select>
+                </div>
+              </div>
+            </fieldset>
+
+            <!-- Step 2 -->
+            <fieldset data-step="2" class="grid gap-4" hidden>
+              <legend class="mb-2 font-display text-2xl tracking-tight">Tell us about it.</legend>
+              <div class="grid gap-4 sm:grid-cols-3">
+                <div>
+                  <label class="label" for="v-sqft">Square feet</label>
+                  <input class="field" id="v-sqft" name="sqft" type="number" min="250" max="20000" required placeholder="1980" inputmode="numeric" />
+                </div>
+                <div>
+                  <label class="label" for="v-beds">Beds</label>
+                  <input class="field" id="v-beds" name="beds" type="number" min="0" max="12" required placeholder="3" inputmode="numeric" />
+                </div>
+                <div>
+                  <label class="label" for="v-baths">Baths</label>
+                  <input class="field" id="v-baths" name="baths" type="number" min="0" max="12" step="0.5" required placeholder="2" inputmode="decimal" />
+                </div>
+              </div>
+              <div>
+                <label class="label" for="v-condition">Condition</label>
+                <select class="field" id="v-condition" name="condition" required>
+                  <option value="1">Renovated in the last 5 years</option>
+                  <option value="0.92" selected>Well kept, some dated finishes</option>
+                  <option value="0.84">Original throughout</option>
+                  <option value="0.72">Needs significant work</option>
+                </select>
+              </div>
+            </fieldset>
+
+            <!-- Step 3 -->
+            <fieldset data-step="3" class="grid gap-4" hidden>
+              <legend class="mb-2 font-display text-2xl tracking-tight">Where do we send it?</legend>
+
+              <div data-estimate hidden class="rounded-2xl border border-forest/15 bg-forest/5 p-6">
+                <p class="text-xs uppercase tracking-[0.18em] text-forest">Instant estimate</p>
+                <p class="mt-2 font-display text-3xl tracking-tight" data-estimate-range></p>
+                <p class="mt-2 text-xs leading-relaxed text-muted">
+                  Based on neighborhood price per square foot and condition. Waterfront, historic and heavily renovated
+                  homes need a human eye — that is the next step.
+                </p>
+              </div>
+
+              <div class="grid gap-4 sm:grid-cols-2">
+                <div>
+                  <label class="label" for="v-name">Name</label>
+                  <input class="field" id="v-name" name="name" type="text" required autocomplete="name" />
+                </div>
+                <div>
+                  <label class="label" for="v-phone">Phone</label>
+                  <input class="field" id="v-phone" name="phone" type="tel" required autocomplete="tel" />
+                </div>
+              </div>
+              <div>
+                <label class="label" for="v-email">Email</label>
+                <input class="field" id="v-email" name="email" type="email" required autocomplete="email" />
+              </div>
+              <div>
+                <label class="label" for="v-timeline">Timeline</label>
+                <select class="field" id="v-timeline" name="timeline">
+                  <option>Ready now</option>
+                  <option selected>Next 3 months</option>
+                  <option>6 to 12 months</option>
+                  <option>Just curious</option>
+                </select>
+              </div>
+              <label class="flex items-start gap-3 text-xs leading-relaxed text-muted">
+                <input type="checkbox" name="consent" required class="mt-0.5 h-4 w-4 shrink-0 accent-[#16332b]" />
+                <span>
+                  I agree to be contacted about this valuation. No newsletter, no drip campaign.
+                  <a href="/privacy" class="link-underline text-ink">Privacy policy</a>.
+                </span>
+              </label>
+            </fieldset>
+
+            <div class="mt-2 flex gap-3">
+              <button type="button" class="btn btn-ghost" data-back hidden>Back</button>
+              <button type="button" class="btn btn-solid flex-1 justify-between" data-next>
+                Continue
+                <span class="btn-disc" aria-hidden="true">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <path d="M7 17 17 7M9 7h8v8" stroke-linecap="round" stroke-linejoin="round"></path>
+                  </svg>
+                </span>
+              </button>
+              <button type="submit" class="btn btn-solid flex-1 justify-between" data-submit hidden>
+                Send my valuation
+                <span class="btn-disc" aria-hidden="true">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <path d="M7 17 17 7M9 7h8v8" stroke-linecap="round" stroke-linejoin="round"></path>
+                  </svg>
+                </span>
+              </button>
+            </div>
+
+            <p class="text-xs text-muted">
+              Takes about 40 seconds. Prefer to talk it through?{' '}
+              <a href={site.phoneHref} class="link-underline text-ink">{site.phone}</a>
+            </p>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Prep economics -->
+  <section class="shell py-24 md:py-32">
+    <div class="grid gap-14 md:grid-cols-12">
+      <div class="md:col-span-5">
+        <span class="eyebrow">The prep argument</span>
+        <h2 class="mt-5 text-4xl leading-[1.05] md:text-5xl">$8,900 in. <br />$13,500 back.</h2>
+        <p class="mt-6 text-[15px] leading-relaxed text-muted">
+          That is one real listing: 108 Oyster Bay Court in Hampstead. Paint, landscaping, staging and a pre-list
+          inspection, all fronted by us, settled at closing. It sold in six days at 102.8% of list.
+        </p>
+        <a href="/listings/108-oyster-bay-court" class="btn btn-ghost mt-8">
+          See the numbers
+          <span class="btn-disc" aria-hidden="true">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M7 17 17 7M9 7h8v8" stroke-linecap="round" stroke-linejoin="round"></path>
+            </svg>
+          </span>
+        </a>
+      </div>
+
+      <div class="md:col-span-7">
+        <ol class="grid gap-4 sm:grid-cols-2">
+          {
+            process.map((p, i) => (
+              <li class="reveal bezel" style={`--reveal-delay:${i * 80}ms`}>
+                <div class="bezel-core h-full p-7">
+                  <span class="font-display text-2xl text-brass">{p.step}</span>
+                  <h3 class="mt-4 text-xl tracking-tight">{p.title}</h3>
+                  <p class="mt-3 text-sm leading-relaxed text-muted">{p.body}</p>
+                </div>
+              </li>
+            ))
+          }
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <!-- Neighborhood price table: local SEO + genuinely useful -->
+  <section class="shell pb-8">
+    <div class="bezel reveal">
+      <div class="bezel-core overflow-hidden p-7 md:p-10">
+        <h2 class="text-3xl tracking-tight md:text-4xl">This quarter, by neighborhood</h2>
+        <p class="mt-3 text-sm text-muted">Median sale price, days on market and price per square foot. Updated monthly.</p>
+
+        <div class="mt-8 overflow-x-auto">
+          <table class="w-full min-w-[34rem] border-collapse text-left text-sm">
+            <thead>
+              <tr class="border-b border-line text-xs uppercase tracking-[0.14em] text-muted">
+                <th scope="col" class="pb-3 pr-4 font-medium">Neighborhood</th>
+                <th scope="col" class="pb-3 pr-4 font-medium">Median price</th>
+                <th scope="col" class="pb-3 pr-4 font-medium">$ / sq ft</th>
+                <th scope="col" class="pb-3 pr-4 font-medium">Days on market</th>
+                <th scope="col" class="pb-3 font-medium">Year over year</th>
+              </tr>
+            </thead>
+            <tbody>
+              {
+                hoods.map((h) => (
+                  <tr class="border-b border-line/70">
+                    <th scope="row" class="py-4 pr-4 font-medium">
+                      <a href={`/neighborhoods/${h.id}`} class="link-underline">
+                        {h.data.title}
+                      </a>
+                    </th>
+                    <td class="py-4 pr-4">{formatPrice(h.data.medianPrice)}</td>
+                    <td class="py-4 pr-4">${h.data.pricePerSqft}</td>
+                    <td class="py-4 pr-4">{h.data.medianDom}</td>
+                    <td class="py-4 text-forest">{h.data.priceTrend}</td>
+                  </tr>
+                ))
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <Faq items={sellFaqs} title="Selling questions, answered straight" />
+  <CtaBand
+    title="Start with the number."
+    body="No listing agreement, no pressure and no obligation to use us. Plenty of people take our valuation and stay put another year — that is a perfectly good outcome."
+  />
+
+  <script is:inline define:vars={{ ppsf }}>
+    (function () {
+      var form = document.querySelector('[data-valuation]');
+      if (!form) return;
+      var steps = form.querySelectorAll('[data-step]');
+      var dots = form.querySelectorAll('[data-dot]');
+      var now = form.querySelector('[data-step-now]');
+      var next = form.querySelector('[data-next]');
+      var back = form.querySelector('[data-back]');
+      var submit = form.querySelector('[data-submit]');
+      var box = form.querySelector('[data-estimate]');
+      var range = form.querySelector('[data-estimate-range]');
+      var hidden = form.querySelector('[data-estimate-field]');
+      var i = 0;
+
+      var usd = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 });
+
+      function show() {
+        steps.forEach(function (s, n) {
+          s.hidden = n !== i;
+        });
+        dots.forEach(function (d, n) {
+          d.className = 'h-1 w-8 rounded-full ' + (n <= i ? 'bg-forest' : 'bg-line');
+        });
+        now.textContent = String(i + 1);
+        back.hidden = i === 0;
+        next.hidden = i === steps.length - 1;
+        submit.hidden = i !== steps.length - 1;
+      }
+
+      function valid() {
+        var fields = steps[i].querySelectorAll('input, select');
+        for (var n = 0; n < fields.length; n++) {
+          if (!fields[n].checkValidity()) {
+            fields[n].reportValidity();
+            return false;
+          }
+        }
+        return true;
+      }
+
+      function estimate() {
+        var sqft = Number(form.sqft.value);
+        var rate = ppsf[form.neighborhood.value] || 265;
+        var condition = Number(form.condition.value);
+        if (!sqft || !rate) return;
+        var mid = sqft * rate * condition;
+        var low = Math.round((mid * 0.94) / 5000) * 5000;
+        var high = Math.round((mid * 1.06) / 5000) * 5000;
+        range.textContent = usd.format(low) + ' – ' + usd.format(high);
+        hidden.value = usd.format(low) + ' to ' + usd.format(high);
+        box.hidden = false;
+        if (window.track) window.track('Valuation estimate', { neighborhood: form.neighborhood.value });
+      }
+
+      next.addEventListener('click', function () {
+        if (!valid()) return;
+        i++;
+        if (i === steps.length - 1) estimate();
+        show();
+        if (window.track) window.track('Valuation step', { step: i + 1 });
+      });
+
+      back.addEventListener('click', function () {
+        i--;
+        show();
+      });
+
+      show();
+    })();
+  </script>
+</Base>

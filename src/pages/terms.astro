@@ -1,0 +1,100 @@
+---
+import Base from '../layouts/Base.astro';
+import { site } from '../data/site';
+
+const updated = 'September 1, 2026';
+const prose =
+  'mt-12 max-w-3xl text-[16px] leading-relaxed text-ink-soft [&_h2]:mt-12 [&_h2]:font-display [&_h2]:text-2xl [&_h2]:tracking-tight [&_h2]:text-ink [&_p]:mt-5 [&_ul]:mt-5 [&_ul]:list-disc [&_ul]:space-y-2 [&_ul]:pl-5 [&_a]:underline';
+---
+
+<Base
+  title="Terms of use"
+  description={`Terms governing use of the ${site.name} website, including listing accuracy, valuation estimates and fair housing commitments.`}
+  breadcrumbs={[{ name: 'Home', href: '/' }, { name: 'Terms', href: '/terms' }]}
+>
+  <section class="shell pt-32 md:pt-44">
+    <span class="eyebrow">Legal</span>
+    <h1 class="mt-6 text-[clamp(2.25rem,5vw,3.75rem)] leading-[1]">Terms of use</h1>
+    <p class="mt-4 text-sm text-muted">Last updated {updated}</p>
+
+    <div class={prose}>
+      <h2>Who we are</h2>
+      <p>
+        This website is operated by {site.legalName}, a real estate brokerage licensed in North Carolina ({site.license}).
+        Using the site means you accept these terms.
+      </p>
+
+      <h2>Property information</h2>
+      <p>
+        Listing details — price, square footage, lot size, year built, taxes, HOA dues and school assignments — come
+        from the seller, public records and the local MLS. We publish them in good faith but cannot guarantee their
+        accuracy. Square footage in particular varies by measurement standard. Verify anything that matters to your
+        decision independently, and treat photographs as representative rather than current.
+      </p>
+      <p>
+        Listings are removed or marked as sold when their status changes, but there may be a lag. A property shown as
+        available may already be under contract.
+      </p>
+
+      <h2>Valuation estimates</h2>
+      <p>
+        The instant estimate produced by the valuation tool is an automated calculation based on neighborhood price per
+        square foot and the details you enter. It is not an appraisal, not a formal opinion of value, and must not be
+        relied on for lending, tax, insurance or legal purposes. Only a licensed appraiser can provide an appraisal.
+      </p>
+
+      <h2>Mortgage calculator</h2>
+      <p>
+        Payment figures on this site are illustrative estimates. They are not loan offers, they exclude costs such as
+        flood insurance and private mortgage insurance unless stated, and actual terms depend entirely on your lender
+        and your circumstances.
+      </p>
+
+      <h2>No agency relationship</h2>
+      <p>
+        Browsing this site or sending an enquiry does not create a brokerage relationship. In North Carolina, agency
+        begins when a written agreement is signed. Until then, information you share may not be treated as confidential
+        in the way it would be for a client.
+      </p>
+
+      <h2>Fair housing</h2>
+      <p>
+        We comply with the Fair Housing Act and the North Carolina State Fair Housing Act. We do not discriminate on the
+        basis of race, color, religion, sex, disability, familial status, national origin, or any other protected
+        characteristic, and we do not answer questions that would require us to steer you toward or away from a
+        neighborhood on those grounds. Demographic questions about an area are ones we will point you to public data to
+        answer yourself.
+      </p>
+
+      <h2>Acceptable use</h2>
+      <p>
+        Do not scrape, republish or resell listing content from this site, attempt to interfere with its operation, or
+        submit forms for any purpose other than a genuine enquiry. Automated harvesting of contact details is
+        prohibited.
+      </p>
+
+      <h2>Third-party links</h2>
+      <p>
+        Links to lenders, inspectors, mapping services and government resources are provided for convenience. We do not
+        control those sites and are not responsible for their content or privacy practices.
+      </p>
+
+      <h2>Limitation of liability</h2>
+      <p>
+        The site is provided as is. To the extent permitted by law, {site.legalName} is not liable for losses arising
+        from reliance on information published here. Nothing in these terms limits liability for fraud or for anything
+        that cannot lawfully be limited.
+      </p>
+
+      <h2>Governing law</h2>
+      <p>These terms are governed by the laws of the State of North Carolina.</p>
+
+      <h2>Contact</h2>
+      <p>
+        <a href={`mailto:${site.email}`}>{site.email}</a> · <a href={site.phoneHref}>{site.phone}</a>
+      </p>
+    </div>
+  </section>
+
+  <div class="pb-24"></div>
+</Base>

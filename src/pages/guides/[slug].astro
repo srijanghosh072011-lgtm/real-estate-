@@ -1,0 +1,145 @@
+---
+import { getCollection, render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import Faq from '../../components/Faq.astro';
+import CtaBand from '../../components/CtaBand.astro';
+import { site } from '../../data/site';
+import { formatDate } from '../../lib/format';
+
+export async function getStaticPaths() {
+  const guides = await getCollection('guides');
+  return guides.map((guide) => ({
+    params: { slug: guide.id },
+    props: { guide, more: guides.filter((g) => g.id !== guide.id).slice(0, 2) },
+  }));
+}
+
+const { guide, more } = Astro.props;
+const d = guide.data;
+const { Content } = await render(guide);
+
+const schema = [
+  {
+    '@type': 'Article',
+    headline: d.title,
+    description: d.description,
+    image: d.heroImage,
+    datePublished: d.published.toISOString(),
+    dateModified: (d.updated ?? d.published).toISOString(),
+    author: { '@type': 'Person', name: d.author, worksFor: { '@id': `${site.url}/#organization` } },
+    publisher: { '@id': `${site.url}/#organization` },
+    mainEntityOfPage: `${site.url}/guides/${guide.id}`,
+  },
+  ...(d.faqs.length
+    ? [
+        {
+          '@type': 'FAQPage',
+          mainEntity: d.faqs.map((f) => ({
+            '@type': 'Question',
+            name: f.q,
+            acceptedAnswer: { '@type': 'Answer', text: f.a },
+          })),
+        },
+      ]
+    : []),
+];
+---
+
+<Base
+  title={d.title}
+  description={d.description}
+  image={d.heroImage}
+  schema={schema}
+  breadcrumbs={[
+    { name: 'Home', href: '/' },
+    { name: 'Guides', href: '/guides' },
+    { name: d.title, href: `/guides/${guide.id}` },
+  ]}
+>
+  <article>
+    <header class="shell pt-32 md:pt-40">
+      <nav class="text-xs text-muted" aria-label="Breadcrumb">
+        <a href="/guides" class="link-underline">Guides</a>
+        <span aria-hidden="true">/</span>
+        {d.category}
+      </nav>
+      <h1 class="mt-6 max-w-4xl text-[clamp(2.25rem,5.5vw,4rem)] leading-[1]">{d.title}</h1>
+      <p class="mt-6 max-w-2xl text-[16.5px] leading-relaxed text-muted">{d.description}</p>
+      <p class="mt-8 text-xs text-muted">
+        By {d.author} · Published {formatDate(d.published)}
+        {d.updated && ` · Updated ${formatDate(d.updated)}`} · {d.readMinutes} min read
+      </p>
+    </header>
+
+    <div class="shell mt-12">
+      <div class="bezel reveal">
+        <div class="bezel-core overflow-hidden">
+          <div class="photo aspect-[21/9]">
+            <img
+              src={d.heroImage}
+              alt={d.heroAlt}
+              width="1400"
+              height="600"
+              fetchpriority="high"
+              decoding="async"
+              class="h-full w-full object-cover"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="shell grid gap-12 py-20 lg:grid-cols-12 md:py-24">
+      <div
+        class="text-[17px] leading-[1.75] text-ink-soft lg:col-span-8 [&_h2]:mt-14 [&_h2]:font-display [&_h2]:text-3xl [&_h2]:tracking-tight [&_h2]:text-ink [&_h3]:mt-10 [&_h3]:font-display [&_h3]:text-2xl [&_h3]:text-ink [&_p]:mt-6 [&_strong]:text-ink [&_ul]:mt-6 [&_ul]:list-disc [&_ul]:space-y-2 [&_ul]:pl-5"
+      >
+        <Content />
+      </div>
+
+      <aside class="lg:col-span-4">
+        <div class="lg:sticky lg:top-28">
+          <div class="bezel">
+            <div class="bezel-core p-8">
+              <p class="text-xs uppercase tracking-[0.18em] text-muted">Written by</p>
+              <p class="mt-2 font-display text-2xl tracking-tight">{d.author}</p>
+              <p class="mt-3 text-sm leading-relaxed text-muted">
+                {site.brokerage} · {site.license}. Questions about your own situation are welcome, even if you are a
+                year or two out.
+              </p>
+              <a href="/contact" class="btn btn-solid mt-6 w-full justify-between" data-track="CTA click" data-track-label="Guide sidebar">
+                Ask a question
+                <span class="btn-disc" aria-hidden="true">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <path d="M7 17 17 7M9 7h8v8" stroke-linecap="round" stroke-linejoin="round"></path>
+                  </svg>
+                </span>
+              </a>
+            </div>
+          </div>
+
+          {
+            more.length > 0 && (
+              <div class="mt-5 rounded-[2rem] border border-line p-8">
+                <p class="text-xs uppercase tracking-[0.18em] text-muted">Read next</p>
+                <ul class="mt-5 space-y-5">
+                  {more.map((g) => (
+                    <li>
+                      <a href={`/guides/${g.id}`} class="text-[15px] font-medium leading-snug link-underline">
+                        {g.data.title}
+                      </a>
+                      <p class="mt-1 text-xs text-muted">{g.data.category}</p>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )
+          }
+        </div>
+      </aside>
+    </div>
+  </article>
+
+  {d.faqs.length > 0 && <Faq items={d.faqs} title="Related questions" />}
+
+  <CtaBand />
+</Base>

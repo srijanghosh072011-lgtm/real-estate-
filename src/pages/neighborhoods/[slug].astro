@@ -1,0 +1,165 @@
+---
+import { getCollection, render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import ListingCard from '../../components/ListingCard.astro';
+import LeadForm from '../../components/LeadForm.astro';
+import { site } from '../../data/site';
+import { formatPrice, formatDate } from '../../lib/format';
+
+export async function getStaticPaths() {
+  const hoods = await getCollection('neighborhoods');
+  const listings = await getCollection('listings');
+  return hoods.map((hood) => ({
+    params: { slug: hood.id },
+    props: {
+      hood,
+      listings: listings.filter(
+        (l) => l.data.neighborhood === hood.data.title || l.data.city === hood.data.city
+      ),
+    },
+  }));
+}
+
+const { hood, listings } = Astro.props;
+const d = hood.data;
+const { Content } = await render(hood);
+const forSale = listings.filter((l) => l.data.status !== 'sold').slice(0, 3);
+
+const schema = [
+  {
+    '@type': 'Place',
+    name: `${d.title}, ${d.city}, NC`,
+    description: d.summary,
+    image: d.heroImage,
+    address: { '@type': 'PostalAddress', addressLocality: d.city, addressRegion: 'NC', addressCountry: 'US' },
+  },
+];
+---
+
+<Base
+  title={`${d.title} homes for sale — ${d.city}, NC`}
+  description={`${d.summary} Median price ${formatPrice(d.medianPrice)}, $${d.pricePerSqft} per square foot, ${d.medianDom} median days on market.`}
+  image={d.heroImage}
+  schema={schema}
+  breadcrumbs={[
+    { name: 'Home', href: '/' },
+    { name: 'Neighborhoods', href: '/neighborhoods' },
+    { name: d.title, href: `/neighborhoods/${hood.id}` },
+  ]}
+>
+  <section class="shell pt-32 md:pt-40">
+    <nav class="text-xs text-muted" aria-label="Breadcrumb">
+      <a href="/neighborhoods" class="link-underline">Neighborhoods</a>
+      <span aria-hidden="true">/</span>
+      {d.city}
+    </nav>
+    <h1 class="mt-6 text-[clamp(2.5rem,6vw,4.75rem)] leading-[0.98]">{d.title}</h1>
+    <p class="mt-6 max-w-2xl text-[16.5px] leading-relaxed text-muted">{d.summary}</p>
+  </section>
+
+  <section class="shell mt-12">
+    <div class="bezel reveal">
+      <div class="bezel-core overflow-hidden">
+        <div class="photo aspect-[21/9]">
+          <img
+            src={d.heroImage}
+            alt={d.heroAlt}
+            width="1400"
+            height="600"
+            fetchpriority="high"
+            decoding="async"
+            class="h-full w-full object-cover"
+          />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="shell mt-10">
+    <dl class="grid gap-px overflow-hidden rounded-[2rem] border border-line bg-line sm:grid-cols-2 lg:grid-cols-4">
+      {
+        [
+          { t: 'Median sale price', v: formatPrice(d.medianPrice) },
+          { t: 'Price per sq ft', v: `$${d.pricePerSqft}` },
+          { t: 'Median days on market', v: String(d.medianDom) },
+          { t: 'Year over year', v: d.priceTrend },
+        ].map((s) => (
+          <div class="bg-paper px-7 py-8">
+            <dt class="text-xs uppercase tracking-[0.14em] text-muted">{s.t}</dt>
+            <dd class="mt-2 font-display text-3xl tracking-tight">{s.v}</dd>
+          </div>
+        ))
+      }
+    </dl>
+    <p class="mt-4 text-xs text-muted">Figures updated {formatDate(d.updated)} from closed MLS sales.</p>
+  </section>
+
+  <section class="shell grid gap-12 py-20 lg:grid-cols-12 md:py-24">
+    <div class="lg:col-span-7">
+      <div
+        class="max-w-none text-[16px] leading-relaxed text-ink-soft [&_h3]:mt-12 [&_h3]:font-display [&_h3]:text-2xl [&_h3]:tracking-tight [&_h3]:text-ink [&_p]:mt-5"
+      >
+        <Content />
+      </div>
+    </div>
+
+    <aside class="lg:col-span-5">
+      <div class="bezel">
+        <div class="bezel-core p-8">
+          <h2 class="font-display text-xl tracking-tight">Good for</h2>
+          <ul class="mt-4 flex flex-wrap gap-2">
+            {d.goodFor.map((g) => <li class="rounded-full border border-line px-3 py-1.5 text-sm text-ink-soft">{g}</li>)}
+          </ul>
+
+          {
+            d.schools.length > 0 && (
+              <>
+                <h2 class="mt-8 font-display text-xl tracking-tight">Assigned schools</h2>
+                <ul class="mt-4 space-y-2 text-sm text-muted">
+                  {d.schools.map((s) => (
+                    <li>{s}</li>
+                  ))}
+                </ul>
+                <p class="mt-3 text-xs text-muted">
+                  School assignments change. Verify with New Hanover County Schools before relying on them.
+                </p>
+              </>
+            )
+          }
+
+          <div class="mt-8 border-t border-line pt-8">
+            <LeadForm
+              formName={`${d.title} enquiry`}
+              subject={`I am interested in ${d.title}. My budget and timeline are:`}
+              compact={true}
+              heading="Ask about this area"
+            />
+          </div>
+        </div>
+      </div>
+    </aside>
+  </section>
+
+  {
+    forSale.length > 0 && (
+      <section class="shell pb-24 md:pb-32">
+        <h2 class="text-3xl tracking-tight md:text-4xl">Available in and around {d.title}</h2>
+        <div class="mt-10 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+          {forSale.map((l, i) => (
+            <ListingCard listing={l} delay={i * 80} />
+          ))}
+        </div>
+      </section>
+    )
+  }
+
+  <section class="shell pb-24">
+    <div class="rounded-[2rem] border border-line p-8 text-sm leading-relaxed text-muted md:p-10">
+      <p>
+        Thinking about {d.title}? {site.name} has written offers on these streets since 2016. Call
+        <a href={site.phoneHref} class="link-underline text-ink">{site.phone}</a> and ask what is coming up before it
+        reaches the portals.
+      </p>
+    </div>
+  </section>
+</Base>

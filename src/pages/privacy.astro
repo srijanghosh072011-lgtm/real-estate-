@@ -1,0 +1,105 @@
+---
+import Base from '../layouts/Base.astro';
+import { site } from '../data/site';
+
+const updated = 'September 1, 2026';
+const prose =
+  'mt-12 max-w-3xl text-[16px] leading-relaxed text-ink-soft [&_h2]:mt-12 [&_h2]:font-display [&_h2]:text-2xl [&_h2]:tracking-tight [&_h2]:text-ink [&_p]:mt-5 [&_ul]:mt-5 [&_ul]:list-disc [&_ul]:space-y-2 [&_ul]:pl-5 [&_a]:underline';
+---
+
+<Base
+  title="Privacy policy"
+  description={`How ${site.name} collects, uses and stores the information you submit through this website.`}
+  breadcrumbs={[{ name: 'Home', href: '/' }, { name: 'Privacy', href: '/privacy' }]}
+>
+  <section class="shell pt-32 md:pt-44">
+    <span class="eyebrow">Legal</span>
+    <h1 class="mt-6 text-[clamp(2.25rem,5vw,3.75rem)] leading-[1]">Privacy policy</h1>
+    <p class="mt-4 text-sm text-muted">Last updated {updated}</p>
+
+    <div class={prose}>
+      <p>
+        This policy describes exactly what this website collects. It is written to match how the site actually works —
+        if you find something here that does not match reality, email
+        <a href={`mailto:${site.email}`}>{site.email}</a> and we will correct it.
+      </p>
+
+      <h2>What we collect</h2>
+      <p>Only two things:</p>
+      <ul>
+        <li>
+          <strong>What you type into a form.</strong> The contact, valuation, listing enquiry and buyer alert forms ask
+          for your name, email address, phone number and whatever details you choose to include — for valuations, that
+          includes the property address, size, bedroom and bathroom count and condition.
+        </li>
+        <li>
+          <strong>Anonymous usage statistics.</strong> Page views, referring site, approximate country, device type,
+          scroll depth and which buttons are clicked. These are aggregate counts. They are not tied to your name or
+          email, and we cannot use them to identify you.
+        </li>
+      </ul>
+      <p>
+        We do not buy data about you, we do not run advertising pixels, and we do not attempt to match your form
+        submission to your browsing behaviour.
+      </p>
+
+      <h2>Cookies</h2>
+      <p>
+        This site sets no advertising or tracking cookies, which is why you are not being asked to dismiss a cookie
+        banner. Our analytics counts visits without storing a cookie or a persistent identifier on your device. If the
+        firm later enables a cookie-based analytics product, this page and a consent notice will be updated before it
+        goes live.
+      </p>
+
+      <h2>How your information is used</h2>
+      <ul>
+        <li>To reply to your enquiry, which is normally a phone call, text or email from a broker.</li>
+        <li>To prepare the valuation or property information you asked for.</li>
+        <li>To meet record-keeping obligations that apply to licensed real estate brokerages in North Carolina.</li>
+      </ul>
+      <p>
+        We do not sell your information, and we do not share it with lead-generation networks. Contractors who help us
+        deliver the service — our form provider, email host and customer relationship system — process it on our behalf
+        under their own agreements and may not use it for anything else.
+      </p>
+
+      <h2>Marketing messages</h2>
+      <p>
+        If you ask for property alerts, you get property alerts. You will not be added to a drip sequence you did not
+        request. Every message includes a way to stop, and replying STOP to a text or asking by email ends it
+        immediately.
+      </p>
+
+      <h2>How long we keep it</h2>
+      <p>
+        Enquiries that do not become clients are deleted after 24 months. Transaction records are retained for three
+        years after closing, as required by the North Carolina Real Estate Commission.
+      </p>
+
+      <h2>Your choices</h2>
+      <p>
+        You can ask us what we hold about you, ask for it to be corrected, or ask for it to be deleted, by emailing
+        <a href={`mailto:${site.email}`}>{site.email}</a>. We respond within 30 days. If you are covered by the GDPR or
+        a US state privacy law that grants additional rights, we honour those rights regardless of where you live.
+      </p>
+
+      <h2>Security</h2>
+      <p>
+        The site is served over HTTPS only. Form submissions are transmitted encrypted to our form provider and
+        forwarded to a mailbox on our own domain. No payment information is ever collected through this website.
+      </p>
+
+      <h2>Children</h2>
+      <p>This site is not directed at children under 13 and we do not knowingly collect their information.</p>
+
+      <h2>Contact</h2>
+      <p>
+        {site.legalName}, {site.address.street}, {site.address.city}, {site.address.region} {site.address.postalCode}.
+        <br />
+        <a href={`mailto:${site.email}`}>{site.email}</a> · <a href={site.phoneHref}>{site.phone}</a>
+      </p>
+    </div>
+  </section>
+
+  <div class="pb-24"></div>
+</Base>

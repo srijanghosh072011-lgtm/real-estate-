@@ -1,0 +1,126 @@
+---
+import Base from '../layouts/Base.astro';
+import LeadForm from '../components/LeadForm.astro';
+import { site } from '../data/site';
+
+const mapQuery = encodeURIComponent(
+  `${site.address.street}, ${site.address.city}, ${site.address.region} ${site.address.postalCode}`
+);
+
+const schema = [
+  {
+    '@type': 'ContactPage',
+    name: `Contact ${site.name}`,
+    mainEntity: { '@id': `${site.url}/#organization` },
+  },
+];
+---
+
+<Base
+  title={`Contact ${site.name}`}
+  description={`Call ${site.phone}, email ${site.email} or send a message. Replies within one business hour during office hours, from a broker rather than an auto-responder.`}
+  schema={schema}
+  breadcrumbs={[{ name: 'Home', href: '/' }, { name: 'Contact', href: '/contact' }]}
+>
+  <section class="shell grid gap-14 pt-32 lg:grid-cols-12 md:pt-44">
+    <div class="lg:col-span-5">
+      <span class="eyebrow reveal">Say hello</span>
+      <h1 class="reveal mt-6 text-[clamp(2.5rem,6vw,4.25rem)] leading-[0.98]" style="--reveal-delay:80ms">
+        A real person, within the hour.
+      </h1>
+      <p class="reveal mt-7 max-w-md text-[16px] leading-relaxed text-muted" style="--reveal-delay:140ms">
+        Messages sent during office hours get a reply from a broker inside 60 minutes. Nothing you send here starts an
+        automated email sequence.
+      </p>
+
+      <div class="reveal mt-12 space-y-8" style="--reveal-delay:200ms">
+        <div>
+          <p class="text-xs uppercase tracking-[0.18em] text-muted">Call or text</p>
+          <a href={site.phoneHref} class="mt-2 block font-display text-3xl tracking-tight link-underline">{site.phone}</a>
+        </div>
+        <div>
+          <p class="text-xs uppercase tracking-[0.18em] text-muted">Email</p>
+          <a href={`mailto:${site.email}`} class="mt-2 block text-lg link-underline">{site.email}</a>
+        </div>
+        <div>
+          <p class="text-xs uppercase tracking-[0.18em] text-muted">Office</p>
+          <address class="mt-2 not-italic text-[15px] leading-relaxed text-ink-soft">
+            {site.address.street}<br />
+            {site.address.city}, {site.address.region} {site.address.postalCode}
+          </address>
+        </div>
+        <div>
+          <p class="text-xs uppercase tracking-[0.18em] text-muted">Hours</p>
+          <dl class="mt-3 space-y-2 text-[15px]">
+            {
+              site.hours.map((h) => (
+                <div class="flex justify-between gap-6 border-b border-line pb-2">
+                  <dt class="text-muted">{h.days}</dt>
+                  <dd>{h.time}</dd>
+                </div>
+              ))
+            }
+          </dl>
+        </div>
+      </div>
+    </div>
+
+    <div class="lg:col-span-7">
+      <div class="bezel reveal" style="--reveal-delay:120ms">
+        <div class="bezel-core p-7 md:p-10">
+          <LeadForm formName="Contact" heading="Tell us what you are working on" />
+        </div>
+      </div>
+
+      <div class="bezel mt-5 reveal" style="--reveal-delay:180ms">
+        <div class="bezel-core overflow-hidden">
+          <iframe
+            title={`Map showing ${site.name} at ${site.address.street}`}
+            src={`https://www.openstreetmap.org/export/embed.html?bbox=-77.96%2C34.22%2C-77.93%2C34.25&layer=mapnik&marker=${site.geo.lat}%2C${site.geo.lng}`}
+            width="100%"
+            height="320"
+            loading="lazy"
+            referrerpolicy="no-referrer-when-downgrade"
+            style="border:0"></iframe>
+          <div class="flex items-center justify-between gap-4 p-5 text-sm">
+            <p class="text-muted">Street parking on Princess, garage on 2nd Street.</p>
+            <a
+              href={`https://www.google.com/maps/search/?api=1&query=${mapQuery}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="link-underline shrink-0">Directions</a
+            >
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="shell py-24 md:py-32">
+    <div class="bezel bezel-dark reveal">
+      <div class="bezel-core grid gap-8 p-8 md:grid-cols-3 md:p-12">
+        <div>
+          <h2 class="font-display text-2xl text-paper">Selling</h2>
+          <p class="mt-3 text-sm leading-relaxed text-paper/70">
+            Start with the valuation — it takes 40 seconds and gives us something concrete to talk about.
+          </p>
+          <a href="/sell" class="mt-5 inline-block text-sm text-brass-soft link-underline">Get my valuation →</a>
+        </div>
+        <div>
+          <h2 class="font-display text-2xl text-paper">Buying</h2>
+          <p class="mt-3 text-sm leading-relaxed text-paper/70">
+            Tell us the streets and the band. You will hear about matches before they reach the portals.
+          </p>
+          <a href="/buy#alerts" class="mt-5 inline-block text-sm text-brass-soft link-underline">Set up alerts →</a>
+        </div>
+        <div>
+          <h2 class="font-display text-2xl text-paper">Already under contract?</h2>
+          <p class="mt-3 text-sm leading-relaxed text-paper/70">
+            We take second-opinion calls on inspection reports and repair negotiations. No charge, no pitch.
+          </p>
+          <a href={site.phoneHref} class="mt-5 inline-block text-sm text-brass-soft link-underline">Call us →</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</Base>

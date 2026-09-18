@@ -1,0 +1,168 @@
+---
+import '../styles/global.css';
+import Nav from '../components/Nav.astro';
+import Footer from '../components/Footer.astro';
+import Analytics from '../components/Analytics.astro';
+import { site } from '../data/site';
+
+interface Props {
+  title: string;
+  description: string;
+  image?: string;
+  noindex?: boolean;
+  /** Extra JSON-LD nodes for this page (Listing, Article, FAQPage…). */
+  schema?: Record<string, unknown>[];
+  /** [{name, href}] — rendered as visible breadcrumbs is optional, schema always. */
+  breadcrumbs?: { name: string; href: string }[];
+}
+
+const { title, description, image, noindex = false, schema = [], breadcrumbs = [] } = Astro.props;
+
+const canonical = new URL(Astro.url.pathname.replace(/\/$/, '') || '/', Astro.site).href;
+const ogImage = new URL(image || site.ogImage, Astro.site).href;
+const fullTitle = title.includes(site.name) ? title : `${title} | ${site.name}`;
+
+const organization = {
+  '@type': 'RealEstateAgent',
+  '@id': `${site.url}/#organization`,
+  name: site.name,
+  legalName: site.legalName,
+  url: site.url,
+  telephone: site.phone,
+  email: site.email,
+  image: new URL(site.ogImage, Astro.site).href,
+  priceRange: '$$',
+  description: site.description,
+  address: {
+    '@type': 'PostalAddress',
+    streetAddress: site.address.street,
+    addressLocality: site.address.city,
+    addressRegion: site.address.region,
+    postalCode: site.address.postalCode,
+    addressCountry: site.address.country,
+  },
+  geo: { '@type': 'GeoCoordinates', latitude: site.geo.lat, longitude: site.geo.lng },
+  areaServed: site.serviceAreas.map((a) => ({ '@type': 'City', name: a })),
+  openingHoursSpecification: [
+    {
+      '@type': 'OpeningHoursSpecification',
+      dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
+      opens: '08:30',
+      closes: '18:30',
+    },
+    { '@type': 'OpeningHoursSpecification', dayOfWeek: ['Saturday'], opens: '09:00', closes: '16:00' },
+  ],
+  aggregateRating: {
+    '@type': 'AggregateRating',
+    ratingValue: site.ratings.value,
+    reviewCount: site.ratings.count,
+  },
+  sameAs: Object.values(site.social),
+};
+
+const website = {
+  '@type': 'WebSite',
+  '@id': `${site.url}/#website`,
+  url: site.url,
+  name: site.name,
+  publisher: { '@id': `${site.url}/#organization` },
+  potentialAction: {
+    '@type': 'SearchAction',
+    target: { '@type': 'EntryPoint', urlTemplate: `${site.url}/listings?q={search_term_string}` },
+    'query-input': 'required name=search_term_string',
+  },
+};
+
+const breadcrumbNode =
+  breadcrumbs.length > 0
+    ? [
+        {
+          '@type': 'BreadcrumbList',
+          itemListElement: breadcrumbs.map((b, i) => ({
+            '@type': 'ListItem',
+            position: i + 1,
+            name: b.name,
+            item: new URL(b.href, Astro.site).href,
+          })),
+        },
+      ]
+    : [];
+
+const graph = { '@context': 'https://schema.org', '@graph': [organization, website, ...breadcrumbNode, ...schema] };
+---
+
+<!doctype html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    {noindex && <meta name="robots" content="noindex, nofollow" />}
+    {!noindex && <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1" />}
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={site.name} />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:locale" content="en_US" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={fullTitle} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
+
+    <meta name="theme-color" content="#faf7f2" />
+    <meta name="geo.region" content="US-NC" />
+    <meta name="geo.placename" content={site.address.city} />
+    <meta name="geo.position" content={`${site.geo.lat};${site.geo.lng}`} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/favicon.svg" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+    <link rel="preconnect" href="https://images.unsplash.com" crossorigin />
+
+    <script type="application/ld+json" is:inline set:html={JSON.stringify(graph)} />
+    <Analytics />
+  </head>
+  <body>
+    <a
+      href="#main"
+      class="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-full focus:bg-forest focus:px-5 focus:py-3 focus:text-sm focus:text-paper"
+      >Skip to content</a
+    >
+    <Nav />
+    <main id="main">
+      <slot />
+    </main>
+    <Footer />
+
+    <script is:inline>
+      // Scroll reveals. IntersectionObserver only — no scroll listeners doing layout work.
+      (function () {
+        var els = document.querySelectorAll('.reveal');
+        if (!('IntersectionObserver' in window)) {
+          els.forEach(function (el) {
+            el.classList.add('is-in');
+          });
+          return;
+        }
+        var io = new IntersectionObserver(
+          function (entries) {
+            entries.forEach(function (entry) {
+              if (entry.isIntersecting) {
+                entry.target.classList.add('is-in');
+                io.unobserve(entry.target);
+              }
+            });
+          },
+          { rootMargin: '0px 0px -8% 0px', threshold: 0.12 }
+        );
+        els.forEach(function (el) {
+          io.observe(el);
+        });
+      })();
+    </script>
+  </body>
+</html>
