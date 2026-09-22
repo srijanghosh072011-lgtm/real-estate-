@@ -108,8 +108,11 @@ kbd{font-family:inherit;background:#0b0912;border:1px solid var(--gold);padding:
 #dlg.tip{background:linear-gradient(#1c1a10f2,#0b0916f2)}#dlg.tip .txt{font-style:normal;color:var(--bone)}
 #dlg .more{position:absolute;right:14px;bottom:8px;color:var(--gold);font-size:12px;animation:pulse2 .8s steps(2) infinite}
 @keyframes pulse2{50%{opacity:0}}
-#skip{position:absolute;top:calc(11vh + 10px);right:16px;font-size:12px;padding:6px 10px}
-#chapTitle{position:absolute;top:calc(11vh + 18px);left:16px;right:130px;font-family:'Pixelify Sans',monospace;color:var(--gold);font-size:14px;letter-spacing:.08em;text-shadow:0 2px 0 #000}
+#cutBtns{position:absolute;top:calc(11vh + 10px);right:16px;display:flex;gap:8px}#cutBtns button{font-size:12px;padding:6px 10px}
+#dlg .jp{font-size:12px;color:var(--dim);letter-spacing:.06em;margin-bottom:4px;min-height:0}#dlg .jp:empty{display:none}
+#bExit{position:absolute;top:calc(12px + env(safe-area-inset-top,0px));left:50%;transform:translateX(-50%);pointer-events:auto;display:flex;align-items:center;gap:6px;font-size:12px;padding:6px 12px;min-height:32px}
+#bExit:hover{transform:translateX(-50%) translateY(-2px)}#bExit svg{width:12px;height:12px}
+#chapTitle{position:absolute;top:calc(11vh + 18px);left:16px;right:190px;font-family:'Pixelify Sans',monospace;color:var(--gold);font-size:14px;letter-spacing:.08em;text-shadow:0 2px 0 #000}
 #result{background:#0b091266}
 #result .panel{text-align:center;max-width:580px}
 #result h2{font-size:clamp(36px,7vw,64px)}
@@ -133,7 +136,7 @@ kbd{font-family:inherit;background:#0b0912;border:1px solid var(--gold);padding:
   <div class="logo">
     <div class="jp">人外魔境新宿決戦</div>
     <h1>Shinjuku<br><span>Showdown</span></h1>
-    <p class="tag">December 24, 2018 · The Strongest of Today vs. The Strongest in History</p>
+    <p class="tag">From the Night Parade of 2017 to December 24, 2018 · The Strongest of Today vs. The Strongest in History</p>
   </div>
   <nav class="menu">
     <button id="bStory">Story Mode</button>
@@ -141,13 +144,15 @@ kbd{font-family:inherit;background:#0b0912;border:1px solid var(--gold);padding:
     <button id="bHelp">How to Play</button>
     <button id="bSettings">Sound &amp; Voice</button>
   </nav>
-  <p class="fine">Fan-made tribute. Jujutsu Kaisen © Gege Akutami / Shueisha. Story mode follows the manga's Shinjuku Showdown arc and contains spoilers. Music is original. Voices are generated with an open-source speech model and are not the anime cast.</p>
+  <p class="fine">Fan-made tribute. Jujutsu Kaisen © Gege Akutami / Shueisha. Story mode follows Jujutsu Kaisen 0 and the manga's Shinjuku Showdown arc and contains spoilers. Music is original. Voices (Japanese or English) are generated with an open-source speech model and are not the anime cast.</p>
 </section>
 
 <section id="story" class="screen" hidden>
   <div class="panel">
-    <h2>Story: The Shinjuku Showdown</h2>
-    <p class="info">Play as each sorcerer who stood against Sukuna, in the order they fought him, across the whole of Shinjuku. Lose and you see what really happened in the manga. Win and you get a "what if".</p>
+    <h2>Story Mode</h2>
+    <div class="row seg" id="seasons" aria-label="Season"></div>
+    <p class="info" id="seasonSub"></p>
+    <p class="info">Each chapter plays one fight from the story, in order. When the canon result is a loss, losing shows you what really happened and winning gives you a "what if".</p>
     <div class="chaps" id="chaps"></div>
     <div class="row seg" id="diffS"></div>
     <div class="row" style="margin-top:14px"><button class="back">Back</button></div>
@@ -179,10 +184,10 @@ kbd{font-family:inherit;background:#0b0912;border:1px solid var(--gold);padding:
       <tr><td><kbd>K</kbd> <kbd>L</kbd> <kbd>I</kbd></td><td>Cursed techniques and your ultimate. Heavy hits send the enemy flying through buildings.</td></tr>
       <tr><td><kbd>E</kbd></td><td>Dash. When the enemy is far away or flying, it becomes a chase that closes the gap instantly.</td></tr>
       <tr><td><kbd>O</kbd></td><td>Domain Expansion (full gold meter). If both expand, it becomes a Domain Clash: mash <kbd>O</kbd>/<kbd>J</kbd>. Afterwards your technique burns out briefly.</td></tr>
-      <tr><td><kbd>U</kbd></td><td>Sukuna only: summon Mahoraga.</td></tr>
-      <tr><td><kbd>Q</kbd> / <kbd>Esc</kbd></td><td>Hold to guard / pause. In cutscenes, <kbd>Enter</kbd> or a click advances.</td></tr>
+      <tr><td><kbd>U</kbd></td><td>Summon: Sukuna calls Mahoraga, Yuta manifests Rika, Geto calls Kuchisake-onna.</td></tr>
+      <tr><td><kbd>Q</kbd> / <kbd>Esc</kbd></td><td>Hold to guard / pause. The <b>Exit</b> button at the top of the screen pauses with Restart and Quit. In cutscenes, <kbd>Enter</kbd> or a click advances, and Exit returns to the title.</td></tr>
     </table>
-    <p class="info"><b>The real map:</b> the fight started on Nishi-Shinjuku's Chūō-dōri and ended near the Tokyo Metropolitan Government Building. The map runs from Shinjuku Central Park through Nishi-Shinjuku's towers, across the station's rail yard, to Kabukichō, Golden Gai and Shinjuku Gyoen. The minimap shows where you are.</p>
+    <p class="info"><b>The real map:</b> the fight started on Nishi-Shinjuku's Chūō-dōri and ended near the Tokyo Metropolitan Government Building. The map runs from Shinjuku Central Park through Nishi-Shinjuku's towers, across the station's rail yard, to Kabukichō, Golden Gai and Shinjuku Gyoen. The minimap shows where you are. Season 0 is fought at Tokyo Jujutsu High: timber halls, a five-storey pagoda and cedar woods in the hills.</p>
     <p class="info"><b>Lore mechanics:</b> Gojo's Infinity blocks most damage. Every blow it blocks turns Mahoraga's wheel, and after four turns Sukuna can cut through space itself. Maki is invisible to domains. Higuruma's verdict confiscates techniques.</p>
     <div class="row" style="margin-top:14px"><button class="back">Back</button></div>
   </div>
@@ -192,7 +197,7 @@ kbd{font-family:inherit;background:#0b0912;border:1px solid var(--gold);padding:
   <div class="panel" style="max-width:520px">
     <h2>Sound &amp; Voice</h2>
     <div id="setRows"></div>
-    <p class="info">The voices come from Kokoro, an open-source neural speech model, with a different voice and effects for each character. They are not the anime's voice actors and won't sound like them.</p>
+    <p class="info">The voices come from Kokoro, an open-source neural speech model. The Japanese track reads a Japanese script, like watching the anime with subtitles; the English track reads the subtitles. Each character gets their own voice, pitch and effects. They are not the anime's voice actors and are not imitations of them.</p>
     <div class="row" style="margin-top:14px"><button class="back">Back</button></div>
   </div>
 </section>
@@ -203,7 +208,8 @@ kbd{font-family:inherit;background:#0b0912;border:1px solid var(--gold);padding:
     <div class="pb r"><div class="nm" id="n2"></div><div class="bar hp"><b id="t2"></b><i id="h2"></i></div><div class="bar ce"><i id="c2"></i></div><div class="bar dmb" id="dm2w"><i id="d2"></i></div><div class="tags" id="g2"></div></div>
   </div>
   <div id="district"></div>
-  <canvas id="mini" aria-label="Map of Shinjuku"></canvas>
+  <canvas id="mini" aria-label="Map"></canvas>
+  <button id="bExit" aria-label="Pause and exit"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2 2l8 8M10 2l-8 8" stroke="currentColor" stroke-width="2" stroke-linecap="square"/></svg>Exit</button>
   <div id="moves"></div>
   <div class="hint" id="hint"></div>
 </div>
@@ -224,8 +230,8 @@ kbd{font-family:inherit;background:#0b0912;border:1px solid var(--gold);padding:
 <div id="cut" hidden>
   <div class="lb t"></div><div class="lb b"></div>
   <div id="chapTitle"></div>
-  <button id="skip">Skip ▸▸</button>
-  <div id="dlg"><img id="dimg" alt=""><div style="flex:1;min-width:0"><div class="who" id="dwho"></div><div class="txt" id="dtxt"></div></div><div class="more">▼</div></div>
+  <div id="cutBtns"><button id="skip">Skip ▸▸</button><button id="cutExit" aria-label="Exit to title">Exit</button></div>
+  <div id="dlg"><img id="dimg" alt=""><div style="flex:1;min-width:0"><div class="who" id="dwho"></div><div class="jp" id="djp" lang="ja"></div><div class="txt" id="dtxt"></div></div><div class="more">▼</div></div>
 </div>
 
 <section id="result" class="screen" hidden>
@@ -235,12 +241,13 @@ kbd{font-family:inherit;background:#0b0912;border:1px solid var(--gold);padding:
 <section id="pause" class="screen" hidden style="background:#0b0912aa">
   <div class="panel" style="max-width:360px;text-align:center">
     <h2>Paused</h2>
-    <div class="menu" style="margin:16px auto 0;flex-direction:column"><button id="bResume">Resume</button><button id="bQuit">Quit to Title</button></div>
+    <div class="menu" style="margin:16px auto 0;flex-direction:column"><button id="bResume">Resume</button><button id="bRestart">Restart</button><button id="bQuit">Quit to Title</button></div>
   </div>
 </section>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script charset="utf-8" src="js/lines.js"></script>
+<script charset="utf-8" src="js/lines-ja.js"></script>
 <script charset="utf-8" src="js/voice-manifest.js"></script>
 <script charset="utf-8" src="js/sprites.js"></script>
 <script charset="utf-8" src="js/world.js"></script>

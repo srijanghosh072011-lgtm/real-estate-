@@ -2,7 +2,7 @@
 /* Audio: an original procedural score (Web Audio synthesis), sound effects, and voice playback from pre-rendered banks. */
 window.AUDIO = (function () {
   let ctx = null, master, musicBus, sfxBus, voiceBus, verb, verbIn, noise;
-  const on = { music: true, voice: true, sfx: true };
+  const on = { music: true, voice: true, sfx: true, lang: 'ja' };
   const NOTE = n => { const m = /^([A-G])(#|b)?(-?\d)$/.exec(n); const k = { C: 0, D: 2, E: 4, F: 5, G: 7, A: 9, B: 11 }[m[1]] + (m[2] === '#' ? 1 : m[2] === 'b' ? -1 : 0); return 12 * (+m[3] + 1) + k; };
   const hz = m => 440 * Math.pow(2, (m - 69) / 12);
   const CH = { Dm: ['D3', 'F3', 'A3', 'D4'], Bb: ['Bb2', 'D3', 'F3', 'Bb3'], C: ['C3', 'E3', 'G3', 'C4'], Gm: ['G2', 'Bb2', 'D3', 'G3'], A: ['A2', 'C#3', 'E3', 'A3'], Am: ['A2', 'C3', 'E3', 'A3'], Eb: ['Eb3', 'G3', 'Bb3', 'Eb4'],
@@ -127,11 +127,13 @@ window.AUDIO = (function () {
   const banks = {}; let cur = null;
   function bank(name) { const V = window.VOICE; if (!ctx || !V || !V.banks[name]) return Promise.resolve(null);
     return banks[name] || (banks[name] = fetch(V.banks[name]).then(r => { if (!r.ok) throw 0; return r.arrayBuffer(); }).then(b => new Promise((ok, no) => ctx.decodeAudioData(b, ok, no))).catch(() => null)); }
-  function preload(list) { list.forEach(bank); }
+  // Japanese track: same line ids, banks suffixed _ja (falls back to English for a missing line)
+  const clip = id => { const V = window.VOICE; return on.lang === 'ja' && V.ja && V.ja[id] || V.clips[id]; };
+  function preload(list) { list.forEach(b => bank(on.lang === 'ja' ? b + '_ja' : b)); }
   // plays a line; resolves with its duration in seconds (0 when voice is off or missing)
   async function say(id, opts = {}) {
-    const V = window.VOICE; if (!ctx || !on.voice || !V || !V.clips[id]) return 0;
-    const [bk, start, dur] = V.clips[id], buf = await bank(bk); if (!buf) return 0;
+    const V = window.VOICE; if (!ctx || !on.voice || !V || !clip(id)) return 0;
+    const [bk, start, dur] = clip(id), buf = await bank(bk); if (!buf) return 0;
     if (opts.cut !== false && cur) { try { cur.stop(); } catch (e) { } }
     const s = ctx.createBufferSource(); s.buffer = buf; const g = ctx.createGain(); g.gain.value = opts.vol || 1; s.connect(g); g.connect(voiceBus); s.start(0, start, dur + .05); cur = s;
     if (musicBus && on.music) { const t = ctx.currentTime; musicBus.gain.cancelScheduledValues(t); musicBus.gain.setTargetAtTime(.2, t, .08); musicBus.gain.setTargetAtTime(.5, t + dur, .4); }

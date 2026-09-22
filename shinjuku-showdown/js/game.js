@@ -1,9 +1,9 @@
 'use strict';
-/* Shinjuku Showdown: fighters, techniques, Mahoraga, domains, AI, camera, cutscenes and menus. */
+/* Shinjuku Showdown: fighters, techniques, summons, domains, AI, camera, cutscenes and menus. */
 (function () {
   const $ = q => document.querySelector(q), rand = (a, b) => a + Math.random() * (b - a), clamp = (v, a, b) => Math.max(a, Math.min(b, v)), pick = a => a[Math.random() * a.length | 0];
   const V3 = THREE.Vector3, UP = new V3(0, 1, 0), RM = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const { scene, camera } = WORLD, PX2U = 1.9 / 70;
+  const { scene, camera } = WORLD, PX2U = 1.9 / 158, { OW, OH, ATW, ATH } = SPR;
 
   /* =================== ROSTER =================== */
   const RO = {
@@ -53,15 +53,39 @@
       moves: { k: { n: 'Boogie Woogie', kind: 'swap', cost: 10, cd: 2.5, stun: .7, col: '#ffb04a' },
         l: { n: 'Brute Punch', kind: 'strike', cost: 12, cd: 2.5, dmg: 80, range: 6, launch: 36, col: '#ffb04a' },
         i: { n: 'Black Flash', kind: 'strike', cost: 40, cd: 9, dmg: 75, range: 9, bf: 1, launch: 44, col: '#ff2030' } } },
-    mahoraga: { name: 'Mahoraga', jp: '魔虚羅', title: 'Divine General', hp: 700, spd: 9, fly: 1, range: 3, aura: '#f0c850', scale: 1.45,
-      moves: {} }
+    geto: { name: 'Suguru Geto', jp: '夏油傑', title: 'Curse Manipulator', hp: 1250, spd: 10.5, fly: 1, range: 8, aura: '#a88ad8', ceRegen: 11,
+      passive: 'Cursed Spirit Manipulation: he fights with the curses he has swallowed. U calls Kuchisake-onna, whose question freezes anyone near her.',
+      moves: { k: { n: 'Curse Swarm', kind: 'proj', cost: 12, cd: 1.6, dmg: 30, spd: 18, hom: 2, tex: 'curse', col: '#6a4a8a', count: 4, spread: .22, size: 1.2 },
+        l: { n: 'Rainbow Dragon', kind: 'proj', cost: 22, cd: 5, dmg: 95, spd: 22, hom: 1.4, tex: 'dragon', col: '#9adfc8', size: 2.4, launch: 36, boom: 5 },
+        i: { n: 'Maximum: Uzumaki', kind: 'beam', cost: 60, cd: 14, dmg: 260, w: 3.2, charge: 1.1, col: '#7a4ab0', len: 140, launch: 36 },
+        u: { n: 'Kuchisake-onna', kind: 'summon', sum: 'kuchisake', cost: 30, cd: 25 } } },
+    maki0: { name: "Maki Zen'in", jp: '禪院真希', title: 'Second Year · 2017', hp: 950, spd: 12.5, range: 3.5, aura: '#b8e8c8', hr: 1, ceRegen: 15,
+      passive: 'Heavenly Restriction: no cursed energy, so domains cannot lock onto her. A cursed-tool spear and a lot of nerve.',
+      moves: { k: { n: 'Spear Thrust', kind: 'strike', cost: 10, cd: 1.8, dmg: 62, range: 9, pierce: 1, col: '#dff6ff' },
+        l: { n: 'Pole Sweep', kind: 'strike', cost: 14, cd: 3.2, dmg: 60, range: 5, launch: 38, stun: .3, col: '#ffd070' },
+        i: { n: 'Cursed Tool Flurry', kind: 'strike', cost: 38, cd: 10, dmg: 30, range: 10, hits: 4, iv: .15, pierce: 1, col: '#b8e8c8' } } },
+    // summons (swing = their one attack; intro = the banner when they arrive)
+    mahoraga: { name: 'Mahoraga', jp: '魔虚羅', title: 'Divine General', hp: 700, spd: 9, fly: 1, range: 3, aura: '#f0c850', scale: 1.45, moves: {},
+      swing: { range: 5, dmg: 70, launch: 30, col: '#f0c850', pose: 'cross', n: 'mahoraga' },
+      intro: ['八握剣異戒神将魔虚羅', 'Divine General Mahoraga', 'The wheel turns each time it is struck, and each time Infinity blocks a blow.'] },
+    rika: { name: 'Rika Orimoto', jp: '祈本里香', title: 'Queen of Curses', hp: 650, spd: 10, fly: 1, range: 3.5, aura: '#e8e0ff', scale: 1.6, moves: {},
+      swing: { range: 6, dmg: 80, launch: 38, col: '#efe6ff', pose: 'cross', n: 'Rika' },
+      intro: ['祈本里香 · 完全顕現', 'Rika: Full Manifestation', 'The Queen of Curses. Pure Love hits half again as hard while she is here.'] },
+    kuchisake: { name: 'Kuchisake-onna', jp: '口裂け女', title: 'Slit-Mouthed Woman', hp: 380, spd: 9.5, range: 2.5, aura: '#c8a8b8', scale: 1.05, moves: {},
+      swing: { range: 4, dmg: 42, stun: .5, col: '#e0c0d0', pose: 'jab1', n: 'Scissors' },
+      intro: ['口裂け女', 'Kuchisake-onna', '"Am I pretty?" Anyone near her freezes until they answer.'] }
   };
+  RO.yuta.moves.u = { n: 'Rika', kind: 'summon', sum: 'rika', cost: 30, cd: 28 };
+  RO.yuta.passive = 'Rika, the Queen of Curses, gives him a nearly bottomless reserve of cursed energy. U manifests her; Pure Love hits harder while she is here.';
+  RO.gojo0 = Object.assign({}, RO.gojo, { title: 'The Strongest · 2017', moves: Object.assign({}, RO.gojo.moves) });
   RO.sukunah = Object.assign({}, RO.sukuna, { name: 'Ryomen Sukuna', title: 'King of Curses · True Form', hp: 1500, spd: 11.5, bf: .1, moves: Object.assign({}, RO.sukuna.moves) });
   const WORLD_SLASH = { n: 'World-Cutting Slash', kind: 'beam', cost: 25, cd: 5, dmg: 220, w: 1.4, charge: .45, col: '#ffffff', len: 160, pierce: 1, world: 1, launch: 30 };
-  const PLAYABLE = ['gojo', 'sukuna', 'sukunah', 'yuji', 'yuta', 'kashimo', 'higuruma', 'maki', 'todo'];
+  const PLAYABLE = ['gojo', 'sukuna', 'sukunah', 'yuji', 'yuta', 'kashimo', 'higuruma', 'maki', 'todo', 'geto', 'gojo0', 'maki0'];
+  const summonOf = k => RO[k].moves.u && (RO[k].moves.u.sum || 'mahoraga');
 
   /* =================== ASSETS =================== */
-  const ATLAS = {};
+  // sprite atlases are drawn on demand (SPR caches them); menus only need the small thumbnails
+  const THUMB = {}, thumb = k => THUMB[k] || (THUMB[k] = SPR.thumb(k));
   function nearestTex(c) { const t = new THREE.CanvasTexture(c); t.magFilter = THREE.NearestFilter; t.minFilter = THREE.NearestFilter; t.generateMipmaps = false; return t; }
   const FXT = {};
   function fxTex(kind, col) { const key = kind + col; if (FXT[key]) return FXT[key]; const S = 32, c = document.createElement('canvas'); c.width = c.height = S; const g = c.getContext('2d'), P = (x, y, cl) => { g.fillStyle = cl; g.fillRect(x, y, 1, 1); };
@@ -70,6 +94,10 @@
     else if (kind === 'bolt') { let x = 2, y = 16; while (x < 30) { const ny = clamp(y + rand(-4, 4) | 0, 6, 26); for (let i = 0; i <= 3; i++) { const px = x + i, py = Math.round(y + (ny - y) * i / 3); P(px, py, '#fff'); P(px, py - 1, col); P(px, py + 1, col); } x += 3; y = ny; } }
     else if (kind === 'spark') { g.fillStyle = col; for (let i = 0; i < 8; i++) { const a = i / 8 * Math.PI * 2, l = i % 2 ? 8 : 15; for (let r = 2; r < l; r++) g.fillRect(Math.round(16 + Math.cos(a) * r), Math.round(16 + Math.sin(a) * r), 1, 1); } g.fillStyle = '#fff'; g.fillRect(14, 14, 4, 4); }
     else if (kind === 'bf') { for (let k = 0; k < 7; k++) { let x = 16, y = 16, a = rand(0, 6.28); for (let s = 0; s < 7; s++) { a += rand(-.8, .8); g.fillStyle = '#ff1030'; g.fillRect(Math.round(x) - 1, Math.round(y) - 1, 3, 3); g.fillStyle = '#000'; g.fillRect(Math.round(x), Math.round(y), 1, 1); x += Math.cos(a) * 2.4; y += Math.sin(a) * 2.4; } } }
+    else if (kind === 'curse') { for (let y = 0; y < S; y++) for (let x = 0; x < S; x++) { const d = Math.hypot(x - 15.5, (y - 15.5) * 1.15) / 11 + Math.sin(Math.atan2(y - 16, x - 16) * 5) * .12; if (d > 1) continue; P(x, y, d > .8 ? col : d > .5 ? '#2a1a36' : '#140a1c'); }
+      g.fillStyle = '#ffe24a'; for (const [x, y] of [[11, 13], [19, 12], [15, 17]]) g.fillRect(x, y, 2, 2); g.fillStyle = '#e8e0ff'; g.fillRect(12, 21, 8, 1); }
+    else if (kind === 'dragon') { const hue = ['#ff5a5a', '#ffb04a', '#ffe24a', '#6adf7a', '#5ab0ff', '#9a7aff']; for (let i = 0; i < 16; i++) { const t = i / 15; g.fillStyle = hue[i % 6]; g.beginPath(); g.arc(4 + t * 20, 16 + Math.sin(t * 6.3) * 7, 2.2 + t * 1.6, 0, 7); g.fill(); }
+      g.fillStyle = '#e8f0e0'; g.beginPath(); g.moveTo(24, 10); g.lineTo(31, 16); g.lineTo(24, 22); g.fill(); g.fillStyle = '#ff2020'; g.fillRect(26, 14, 2, 2); }
     else if (kind === 'ring') { for (let a = 0; a < 6.28; a += .02) { P(Math.round(16 + Math.cos(a) * 14), Math.round(16 + Math.sin(a) * 14), col); g.globalAlpha = .4; P(Math.round(16 + Math.cos(a) * 12), Math.round(16 + Math.sin(a) * 12), col); g.globalAlpha = 1; } }
     return FXT[key] = nearestTex(c); }
   const WHEEL = nearestTex(SPR.wheel());
@@ -95,6 +123,20 @@
 
   /* =================== FIGHTERS =================== */
   const shadowTex = fxTex('glow', '#000000');
+  // sprites are lit by the sun/moon through their normal-map atlas, so they sit in the scene's light instead of on top of it
+  const LIT = { L: { value: new V3(0, 0, 1) }, sun: { value: new THREE.Color() }, amb: { value: new THREE.Color() }, rim: { value: new THREE.Color() }, mix: { value: .75 } };
+  function litMat(tex, ntex, flip) { const m = new THREE.SpriteMaterial({ map: tex, transparent: true, alphaTest: .5 });
+    m.onBeforeCompile = sh => { Object.assign(sh.uniforms, { uN: { value: ntex }, uFlip: flip, uL: LIT.L, uSun: LIT.sun, uAmb: LIT.amb, uRim: LIT.rim, uMix: LIT.mix });
+      sh.fragmentShader = 'uniform sampler2D uN; uniform float uFlip, uMix; uniform vec3 uL, uSun, uAmb, uRim;\n' + sh.fragmentShader.replace('#include <map_fragment>', `#include <map_fragment>
+        vec3 nn = texture2D(uN, vUv).xyz * 2. - 1.; nn.x *= uFlip; nn = normalize(nn + vec3(0., 0., .02));
+        vec3 lit = uAmb + uSun * max(dot(nn, uL), 0.);
+        float rim = pow(1. - clamp(nn.z, 0., 1.), 3.) * max(dot(normalize(nn.xy + 1e-4), normalize(uL.xy + 1e-4)), 0.);
+        diffuseColor.rgb = diffuseColor.rgb * mix(vec3(1.), lit, uMix) + uRim * rim;`); };
+    m.customProgramCacheKey = () => 'litSprite'; return m; }
+  function updateLit() { const T = WORLD.TOD, md = WORLD.mood, s = md ? [.3, .6, .75] : T.sun;
+    LIT.L.value.set(s[0], Math.max(.2, s[1]), s[2]).normalize().transformDirection(camera.matrixWorldInverse);
+    LIT.sun.value.set(md ? '#ffffff' : T.sunC).multiplyScalar((md ? .9 : T.sunI) * .72); LIT.amb.value.set(md ? '#c0b8d0' : T.hs).multiplyScalar(.42).addScalar(.3);
+    LIT.rim.value.set(md ? '#ffffff' : T.sunC).multiplyScalar(.4); }
   class Fighter {
     constructor(key, pos, isP, owner) {
       const d = this.d = RO[key]; this.k = key; this.isP = isP; this.owner = owner || null;
@@ -103,8 +145,9 @@
       this.hurt = this.stun = this.poseT = this.comboT = this.conf = this.slow = this.dash = this.inv = this.bfBonus = this.launched = this.burn = 0;
       this.combo = 0; this.face = 1; this.pose = 'idle0'; this.buff = null; this.charge = null; this.lunge = null; this.used = false; this.dead = false; this.guard = false;
       this.mv = Object.assign({}, d.moves); this.ai = { t: 1, strafe: 1 }; this.summons = []; this.adaptPts = 0; this.adapted = false; this.lastBark = -9; this.animT = rand(0, 3); this.scale = d.scale || 1;
-      const A = ATLAS[key]; this.A = A; this.tex = new THREE.CanvasTexture(A.canvas); this.tex.magFilter = THREE.NearestFilter; this.tex.minFilter = THREE.NearestMipmapNearestFilter;
-      this.spr = new THREE.Sprite(new THREE.SpriteMaterial({ map: this.tex, transparent: true, alphaTest: .5 }));
+      const A = this.A = SPR.build(key), tx = c => { const t = new THREE.CanvasTexture(c); t.magFilter = THREE.NearestFilter; t.minFilter = THREE.NearestMipmapNearestFilter; return t; };
+      this.tex = tx(A.canvas); this.ntex = tx(A.ncanvas); this.flip = { value: 1 };
+      this.spr = new THREE.Sprite(litMat(this.tex, this.ntex, this.flip));
       this.sh = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), new THREE.MeshBasicMaterial({ map: shadowTex, transparent: true, opacity: .6, depthWrite: false })); this.sh.rotation.x = -Math.PI / 2;
       this.aura = new THREE.Sprite(new THREE.SpriteMaterial({ map: fxTex('glow', d.aura), transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, fog: false }));
       for (const o of [this.spr, this.sh, this.aura]) o.userData.keep = 1;
@@ -112,14 +155,15 @@
       if (key === 'mahoraga') { this.wheel = new THREE.Sprite(new THREE.SpriteMaterial({ map: WHEEL, transparent: true, alphaTest: .5 })); this.wheel.userData.keep = 1; this.wheelA = 0; this.wheelT = 0; scene.add(this.wheel); this.adaptMap = {}; }
       this.setFrame('idle0', 1);
     }
-    remove() { scene.remove(this.spr, this.sh, this.aura); if (this.wheel) scene.remove(this.wheel); if (this.charge) scene.remove(this.charge.orb); this.tex.dispose(); }
-    center() { return this.pos.clone().add(new V3(0, 1.1 * this.scale, 0)); }
+    remove() { scene.remove(this.spr, this.sh, this.aura); if (this.wheel) scene.remove(this.wheel); if (this.charge) scene.remove(this.charge.orb); this.tex.dispose(); this.ntex.dispose(); this.spr.material.dispose(); }
+    center() { return this.pos.clone().add(new V3(0, (this.dead ? .45 : 1.1) * this.scale, 0)); }
     get foe() { return this.owner ? this.owner.opp : this.opp; }
     setFrame(name, face) {
-      const t = this.tex, A = this.A, s = PX2U * this.scale;
-      if (name === 'down') { t.repeat.set((face > 0 ? 1 : -1) * 128 / 2048, .5); t.offset.set(face > 0 ? 0 : 128 / 2048, 0); this.spr.center.set(.5, 3 / 128); this.spr.scale.set(128 * s, 128 * s, 1); return; }
-      const i = A.frames[name]; t.repeat.set((face > 0 ? 1 : -1) * 64 / 2048, .5); t.offset.set((i + (face > 0 ? 0 : 1)) * 64 / 2048, .5);
-      this.spr.center.set(face > 0 ? 30 / 64 : 34 / 64, 3 / 128); this.spr.scale.set(64 * s, 128 * s, 1);
+      // atlas: 26 frames of OW x OH along the top row; the lying-down frame (OH x OH) under the first ones
+      const t = this.tex, s = PX2U * this.scale, f = face > 0 ? 1 : -1; this.flip.value = f;
+      if (name === 'down') { t.repeat.set(f * OH / ATW, OH / ATH); t.offset.set(f > 0 ? 0 : OH / ATW, 0); this.spr.center.set(.5, 8 / OH); this.spr.scale.set(OH * s, OH * s, 1); return; }
+      const i = this.A.frames[name]; t.repeat.set(f * OW / ATW, OH / ATH); t.offset.set((i + (f > 0 ? 0 : 1)) * OW / ATW, 1 - OH / ATH);
+      this.spr.center.set(f > 0 ? SPR.PXO / OW : 1 - SPR.PXO / OW, (OH - SPR.GYO) / OH); this.spr.scale.set(OW * s, OH * s, 1);
     }
     update(dt, I, o) {
       for (const k in this.cd) this.cd[k] = Math.max(0, this.cd[k] - dt);
@@ -175,7 +219,7 @@
       if (this.burn > 0 && a !== 'u') { this.msg('Technique burned out'); return; }
       if (a === 'o' && this.dm < 100) { this.msg('Domain meter not full'); return; }
       if (m.once && this.used) { this.msg('Already used'); return; }
-      if (a === 'u' && this.summons.some(s => !s.dead)) { this.msg('Mahoraga is already here'); return; }
+      if (a === 'u' && this.summons.some(s => !s.dead)) { this.msg(RO[m.sum || 'mahoraga'].name + ' is already here'); return; }
       const cost = this.buff && this.buff.free ? 0 : m.cost;
       if (this.ce < cost) { this.msg(this.d.hr ? 'Out of stamina' : 'Not enough cursed energy'); return; }
       this.ce -= cost; this.cd[a] = m.cd; if (m.once) this.used = true;
@@ -193,8 +237,7 @@
       if (f.k === 'mahoraga' && !f.dead && p.startsWith('run')) p = 'run' + ((f.animT * 6 | 0) % 6);
       f.setFrame(p, f.face);
       f.spr.position.copy(f.pos); if (!f.dead && (p === 'fly0' || p === 'fly1')) f.spr.position.y += Math.sin(t * 3 + f.pos.x) * .08;
-      const tint = (WORLD.mood ? '#ffffff' : WORLD.TOD.sprite);
-      f.spr.material.color.set(f.inv > 0 && !f.dead ? '#bfe8ff' : (f.hurt > 0 && (t * 20 | 0) % 2) ? '#ff9090' : tint);
+      f.spr.material.color.set(f.inv > 0 && !f.dead ? '#bfe8ff' : (f.hurt > 0 && (t * 20 | 0) % 2) ? '#ff9090' : '#ffffff');
       const sy = WORLD.surfaceY(f.pos.x, f.pos.z, f.pos.y + .3); f.sh.position.set(f.pos.x, sy + .06, f.pos.z); const ss = 1.9 * f.scale * Math.max(.25, 1 - (f.pos.y - sy) / 16); f.sh.scale.set(ss, ss * .6, 1);
       f.aura.position.copy(f.center()); const hot = G.mode !== 'cut' && (f.charge || f.buff || (domain && domain.owner === f) || (f.poseT > 0 && f.pose !== 'jab1'));
       f.aura.material.opacity = f.dead ? 0 : (hot ? .55 : G.mode === 'cut' ? .06 : .12) + Math.sin(t * 6) * .04; f.aura.scale.setScalar((hot ? 4.4 : 3) * f.scale);
@@ -207,7 +250,7 @@
   function aimTarget(f) { const list = foes(f); let best = list[0], bd = best ? best.pos.distanceTo(f.pos) : 1e9; for (const s of list.slice(1)) { const d = s.pos.distanceTo(f.pos); if (d < bd * .6) { best = s; bd = d; } } return best || f; }
   const KIND = {
     proj(f, o, m) { const n = m.count || 1; for (let i = 0; i < n; i++) { const dir = o.center().sub(f.center()).normalize().applyAxisAngle(UP, (i - (n - 1) / 2) * (m.spread || 0));
-        const s = fxSprite(fxTex(m.tex, m.col), f.center().addScaledVector(dir, .9), 1.5 * (m.size || 1), 99, { grow: 0 }); if (m.tex !== 'orb') s.material.rotation = rand(-.4, .4);
+        const s = fxSprite(fxTex(m.tex, m.col), f.center().addScaledVector(dir, .9), 1.5 * (m.size || 1), 99, { grow: 0, normal: m.tex === 'curse' || m.tex === 'dragon' }); if (m.tex !== 'orb') s.material.rotation = rand(-.4, .4);
         PR.push({ o: s, own: f, tgt: o, m, vel: dir.multiplyScalar(m.spd), life: 3, cuts: 0, last: s.position.clone() }); }
       AUDIO.sfx(m.tex === 'slash' ? 'slash' : m.tex === 'bolt' ? 'zap' : 'charge'); },
     strike(f, o, m) { const to = o.pos.clone().sub(f.pos), d = to.length(), go = Math.min(Math.max(0, d - 1.3), m.range || 2.5);
@@ -229,19 +272,21 @@
     swap(f, o, m) { AUDIO.sfx('clap'); floatText(f.center().add(new V3(0, 1.6, 0)), 'CLAP!', '#ffb04a', true); const a = f.pos.clone(); f.pos.copy(o.pos); o.pos.copy(a); f.lunge = o.lunge = null;
       spark(f.center(), m.col, 3); spark(o.center(), m.col, 3); o.stun = Math.max(o.stun, m.stun); f.poseT = 0; },
     domain(f, o, m) { expand(f, o, m); },
-    summon(f, o, m) { const p = f.pos.clone().add(new V3(rand(-3, 3), 0, rand(-3, 3))), s = new Fighter('mahoraga', [p.x, p.y, p.z], false, f); s.adaptPts = 0; f.summons.push(s); G.extra.push(s);
-      banner('八握剣異戒神将魔虚羅', 'Divine General Mahoraga', 'The wheel turns each time it is struck, and each time Infinity blocks a blow.', 2400, '#f0c850'); flash('#f0c850', .5); shake(.6); AUDIO.sfx('wheel');
+    summon(f, o, m) { const k = m.sum || 'mahoraga', d = RO[k], p = f.pos.clone().add(new V3(rand(-3, 3), 0, rand(-3, 3))), s = new Fighter(k, [p.x, p.y, p.z], false, f); f.summons.push(s); G.extra.push(s);
+      banner(...d.intro, 2400, d.aura); flash(d.aura, .5); shake(.6); AUDIO.sfx(k === 'mahoraga' ? 'wheel' : 'expand', .7);
+      if (k === 'kuchisake') { floatText(s.center().add(new V3(0, 1.6, 0)), '「わたし、きれい？」 Am I pretty?', '#e0c0d0', true); for (const t of foes(f)) if (t.pos.distanceTo(s.pos) < 10) t.stun = Math.max(t.stun, 1.4); }
       for (let i = 0; i < 8; i++) WORLD.dustAt(p.clone().add(new V3(rand(-4, 4), rand(0, 2), rand(-4, 4))), rand(5, 9), 0x2a1a30); }
   };
   function fireBeam(f, o, m, aim, big) {
-    if (f.dead) return; const org = f.center(), dir = aim.clone().sub(org).normalize(), len = m.len || 60, w = m.w * (big ? 1.7 : 1);
+    if (f.dead) return; const rika = f.k === 'yuta' && f.summons.some(s => !s.dead && s.k === 'rika'), mul = (big ? 2 : 1) * (rika ? 1.5 : 1);
+    const org = f.center(), dir = aim.clone().sub(org).normalize(), len = m.len || 60, w = m.w * (big ? 1.7 : 1) * (rika ? 1.4 : 1);
     const grp = new THREE.Group(), geo = new THREE.CylinderGeometry(.5, .5, 1, 12, 1, true);
     const outer = new THREE.Mesh(geo, new THREE.MeshBasicMaterial({ color: m.col, transparent: true, opacity: .75, blending: THREE.AdditiveBlending, depthWrite: false, fog: false }));
     const core = new THREE.Mesh(geo, new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: .9, blending: THREE.AdditiveBlending, depthWrite: false, fog: false }));
     outer.scale.set(w, len, w); core.scale.set(w * .4, len, w * .4); grp.add(outer, core); grp.userData.keep = 1;
     grp.position.copy(org).addScaledVector(dir, len / 2); grp.quaternion.setFromUnitVectors(UP, dir); scene.add(grp);
     FX.push({ o: grp, life: .6, max: .6, beam: [outer, core], w });
-    AUDIO.sfx(m.world ? 'slash' : 'beam'); shake(.8); flash(m.col, m.world ? .8 : .35); if (big) banner('', 'HOLLOW PURPLE · 200%', '', 1200, '#b45cff');
+    AUDIO.sfx(m.world ? 'slash' : 'beam'); shake(.8); flash(m.col, m.world ? .8 : .35); if (big) banner('', 'HOLLOW PURPLE · 200%', '', 1200, '#b45cff'); if (rika) banner('純愛', 'PURE LOVE · with Rika', '', 1200, '#f4f0ff');
     const end = org.clone().addScaledVector(dir, len);
     let stop = len;
     if (m.fire) { const hitsB = WORLD.segment(org, end, w * .5); if (hitsB.length) { const p = hitsB[0].p; stop = org.distanceTo(p); } }
@@ -249,7 +294,7 @@
     for (const { b, p } of WORLD.segment(org, end2, w * .5 + .5)) { if (m.erase) WORLD.erase(b); else if (m.world) WORLD.cutB(b, p.y); else WORLD.hitB(b, 90, p); }
     if (m.fire) { const c = end2.clone(); later(.15, () => { explosion(c, 20, f); }); }
     for (const t of foes(f)) { const c = t.center(), k = clamp(c.clone().sub(org).dot(dir), 0, stop);
-      if (org.clone().addScaledVector(dir, k).distanceTo(c) < w * .5 + .8 * t.scale) { damage(f, t, m.dmg * (big ? 2 : 1), { launch: m.launch, pierce: m.pierce, stun: .4, kind: m.n }); spark(c, m.col, 4); } }
+      if (org.clone().addScaledVector(dir, k).distanceTo(c) < w * .5 + .8 * t.scale) { damage(f, t, m.dmg * mul, { launch: m.launch, pierce: m.pierce, stun: .4, kind: m.n }); spark(c, m.col, 4); } }
   }
   function explosion(p, r, src) { fxSprite(fxTex('glow', '#ff8a24'), p, r * 1.4, .6, { grow: .5 }); fxSprite(fxTex('glow', '#fff0b0'), p, r * .6, .4, { grow: .4 }); AUDIO.sfx('boom'); shake(1); flash('#ff9a40', .45);
     for (const b of WORLD.within(p, r)) WORLD.collapse(b); for (let i = 0; i < 10; i++) WORLD.fireAt(p.clone().add(new V3(rand(-r, r) * .7, 0, rand(-r, r) * .7)).setY(0), rand(3, 6), 30);
@@ -263,7 +308,7 @@
   const onCrash = (p, size) => { AUDIO.sfx('crash', clamp(size / 800, .3, 1)); shake(clamp(size / 1500, .2, .8)); };
 
   function adaptTurn(owner, reason) {
-    const m = owner.summons.find(s => !s.dead); if (!m && reason === 'infinity') return;
+    const m = owner.summons.find(s => !s.dead && s.k === 'mahoraga'); if (!m && reason === 'infinity') return;
     owner.adaptPts++; if (owner.adaptPts % 4) return;
     const step = owner.adaptPts / 4; if (m) { m.wheelT += Math.PI / 4; AUDIO.sfx('wheel'); floatText(m.center().add(new V3(0, 3.5, 0)), 'CLANK', '#f0c850', true); }
     if (reason === 'infinity' && step >= 4 && !owner.adapted) {
@@ -293,7 +338,7 @@
     else tgt.kb.addScaledVector(dir, (opt.kb || 2) * (guarded ? .3 : 1));
     floatText(tgt.center().add(new V3(rand(-.4, .4), .7, 0)), Math.round(a), a > 90 ? '#ffd070' : '#fff', a > 90);
     if (!opt.sure) { AUDIO.sfx(a > 70 ? 'heavy' : 'hit'); shake(a / 150); if (a > 60) hitstop = Math.max(hitstop, .06); }
-    if (tgt.hp <= 0) { if (tgt.owner) { tgt.dead = true; tgt.hp = 0; banner('', 'Mahoraga destroyed', srcF.adapted || !tgt.owner.adaptPts ? '' : 'The wheel keeps what it learned.', 1600, '#f0c850'); for (let i = 0; i < 6; i++) WORLD.dustAt(tgt.center().add(new V3(rand(-2, 2), 0, rand(-2, 2))), rand(5, 8)); }
+    if (tgt.hp <= 0) { if (tgt.owner) { tgt.dead = true; tgt.hp = 0; const mh = tgt.k === 'mahoraga'; banner('', tgt.d.name + (mh ? ' destroyed' : ' is gone'), mh && !tgt.owner.adapted && tgt.owner.adaptPts ? 'The wheel keeps what it learned.' : '', 1600, tgt.d.aura); for (let i = 0; i < 6; i++) WORLD.dustAt(tgt.center().add(new V3(rand(-2, 2), 0, rand(-2, 2))), rand(5, 8)); }
       else if (G.mode === 'fight') KO(srcF, tgt); }
     return true;
   }
@@ -380,13 +425,21 @@
   function summonIntent(s, dt) { const o = aimTarget(s), I = { mv: new V3(), my: 0, act: null }; const to = o.pos.clone().sub(s.pos), dist = to.length(); to.setY(0).normalize();
     if (dist > 2.6) I.mv.copy(to); const dy = o.pos.y - s.pos.y; I.my = Math.abs(dy) > .8 ? Math.sign(dy) : 0;
     s.ai.t -= dt; if (s.ai.t <= 0 && dist < 4.5) { s.ai.t = rand(1.4, 2.4); I.act = 'swing'; } return I; }
-  function updateSummon(s, dt) { const I = summonIntent(s, dt); if (I.act === 'swing') { I.act = null; const o = aimTarget(s);
-      KIND.strike(s, o, { range: 5, dmg: 70, launch: 30, col: '#f0c850', pose: 'cross', n: 'mahoraga' }); AUDIO.sfx('whoosh', .7); }
+  function updateSummon(s, dt) { const I = summonIntent(s, dt); if (I.act === 'swing') { I.act = null; KIND.strike(s, aimTarget(s), s.d.swing); AUDIO.sfx('whoosh', .7); }
     s.update(dt, I, aimTarget(s)); }
 
   /* =================== CAMERA =================== */
-  const G = { mode: 'boot', p1: null, p2: null, story: null, diff: 1, paused: false, time: 0, a: 'gojo', b: 'sukuna', axis: new V3(1, 0, 0), extra: [], tod: 'noon', stage: 0, auto: true };
-  let camTarget = new V3(), camLook = new V3(), shot = null, shotT = 0, focusD = 20;
+  const G = { mode: 'boot', p1: null, p2: null, story: null, diff: 1, paused: false, time: 0, a: 'gojo', b: 'sukuna', axis: new V3(1, 0, 0), extra: [], tod: 'noon', stage: 0, auto: true, flow: 0 };
+  let camLook = new V3(), shot = null, shotT = 0, shotRot = null, shotChk = 0, focusD = 20;
+  const setShot = s => { shot = s; shotT = 0; shotRot = null; };
+  // a cutscene camera must see its subject: no building between lens and target, and the lens not inside one
+  const clearView = (pos, look) => !WORLD.segment(pos, look, .6).length;
+  function unblock(pos, look) {
+    if (shotRot === null || shotT - shotChk > 1) { shotChk = shotT; const off = pos.clone().sub(look);
+      if (shotRot === null || !clearView(look.clone().add(off.clone().applyAxisAngle(UP, shotRot)), look)) { shotRot = 0;
+        for (let k = 0; k < 9; k++) { const a = (k % 2 ? 1 : -1) * Math.ceil(k / 2) * .7; if (clearView(look.clone().add(off.clone().applyAxisAngle(UP, a)), look)) { shotRot = a; break; } } } }
+    const off = pos.clone().sub(look).applyAxisAngle(UP, shotRot); pos.copy(look).add(off);
+    if (!clearView(pos, look)) pos.y = Math.max(pos.y, WORLD.surfaceY(pos.x, pos.z, 999) + 2); }
   function spot(at) { if (at === 'p1') return G.p1.pos.clone(); if (at === 'p2') return G.p2.pos.clone(); return new V3(...at); }
   function camUpdate(dt) {
     const P = G.p1, Q = G.p2; if (!P) return; let pos, look;
@@ -395,10 +448,12 @@
       const s = shot || { cam: 'two' }; shotT += dt;
       if (s.cam === 'aerial') { const c = spot(s.at), a = shotT * .05 + (s.a0 || 0); pos = c.clone().add(new V3(Math.sin(a) * s.r, s.h, Math.cos(a) * s.r)); look = c.clone().add(new V3(0, s.h * .15, 0)); focusD = s.r; }
       else if (s.cam === 'dolly') { const k = clamp(shotT / 7, 0, 1), e = k * k * (3 - 2 * k); pos = new V3(...s.from).lerp(new V3(...s.to), e); look = new V3(...s.look); focusD = pos.distanceTo(P.pos); }
-      else if (s.cam === 'close') { const f = s.who === 'p2' ? Q : P, o = f === P ? Q : P, ax = o.pos.clone().sub(f.pos).setY(0).normalize(), side = new V3(-ax.z, 0, ax.x);
-        look = f.center().add(new V3(0, .35, 0)); pos = look.clone().addScaledVector(ax, 3.2).addScaledVector(side, 3.4 + Math.sin(shotT * .3) * .3).add(new V3(0, .5, 0)); focusD = pos.distanceTo(look); }
-      else { const mid = P.pos.clone().add(Q.pos).multiplyScalar(.5), ax = Q.pos.clone().sub(P.pos).setY(0).normalize(), side = new V3(-ax.z, 0, ax.x), a = shotT * .04;
-        look = mid.clone().add(new V3(0, 1.4, 0)); pos = look.clone().addScaledVector(side, 13 * Math.cos(a)).addScaledVector(ax, 13 * Math.sin(a) * .4).add(new V3(0, 3.5, 0)); focusD = 13; }
+      else if (s.cam === 'close') { const f = s.who === 'p2' ? Q : s.who === 'p1' ? P : (G.extra.find(e => e.k === s.who) || P), o = f === P ? Q : P, ax = o.pos.clone().sub(f.pos).setY(0), side = new V3();
+        if (ax.lengthSq() < .01) ax.set(1, 0, 0); ax.normalize(); side.set(-ax.z, 0, ax.x); const k = f.scale;
+        look = f.center().add(new V3(0, .35 * k, 0)); pos = look.clone().addScaledVector(ax, 3.2 * k).addScaledVector(side, (3.4 + Math.sin(shotT * .3) * .3) * k).add(new V3(0, .5, 0)); unblock(pos, look); }
+      else { const mid = P.pos.clone().add(Q.pos).multiplyScalar(.5), ax = Q.pos.clone().sub(P.pos).setY(0), a = shotT * .04, r = clamp(8 + P.pos.distanceTo(Q.pos) * .9, 11, 30);
+        if (ax.lengthSq() < .01) ax.set(1, 0, 0); ax.normalize(); const side = new V3(-ax.z, 0, ax.x);
+        look = mid.clone().add(new V3(0, 1.1, 0)); pos = look.clone().addScaledVector(side, r * Math.cos(a)).addScaledVector(ax, r * Math.sin(a) * .4).add(new V3(0, 3.2, 0)); unblock(pos, look); }
     } else {
       const mid = P.pos.clone().add(Q.pos).multiplyScalar(.5), ax = Q.pos.clone().sub(P.pos).setY(0), sep = P.pos.distanceTo(Q.pos);
       if (ax.lengthSq() > .5) G.axis.lerp(ax.normalize(), Math.min(1, dt * 3)).normalize();
@@ -430,7 +485,7 @@
       $('#h' + i).style.width = Math.max(0, f.hp) / f.maxhp * 100 + '%'; $('#t' + i).style.width = f.trail / f.maxhp * 100 + '%'; $('#c' + i).style.width = f.ce + '%'; $('#d' + i).style.width = f.dm + '%';
       $('#dm' + i + 'w').classList.toggle('full', f.dm >= 100 && !!f.mv.o); $('#dm' + i + 'w').style.visibility = f.mv.o ? 'visible' : 'hidden';
       const tg = []; if (f.buff) tg.push('AMBER'); if (f.conf > 0) tg.push('CONFISCATED ' + Math.ceil(f.conf) + 's'); if (f.burn > 0) tg.push('BURNOUT'); if (f.d.infinity && f.ce > 5 && !f.opp.adapted) tg.push('INFINITY');
-      const mh = f.summons.find(s => !s.dead); if (mh) tg.push(`MAHORAGA ${Math.ceil(mh.hp)}`); if (f.summons.length && !f.adapted && f.opp.d.infinity) tg.push(`WHEEL ${Math.min(4, f.adaptPts / 4 | 0)}/4`); if (f.adapted) tg.push('ADAPTED');
+      const mh = f.summons.find(s => !s.dead); if (mh) tg.push(`${mh.d.name.split(' ')[0].toUpperCase()} ${Math.ceil(mh.hp)}`); if (f.summons.some(s => s.k === 'mahoraga') && !f.adapted && f.opp.d.infinity) tg.push(`WHEEL ${Math.min(4, f.adaptPts / 4 | 0)}/4`); if (f.adapted) tg.push('ADAPTED');
       if (f.dm >= 100 && f.mv.o) tg.push('DOMAIN READY'); $('#g' + i).textContent = tg.join(' · '); });
     document.querySelectorAll('#moves .mv').forEach(el => { const s = el.dataset.s, m = P.mv[s]; if (s === 'k' && m) el.querySelector('span').textContent = m.n + ' ';
       const c = P.cd[s] || 0, max = m ? m.cd : .45; el.querySelector('.cdv').style.height = Math.min(1, c / max) * 100 + '%';
@@ -446,90 +501,123 @@
 
   /* =================== FLOW =================== */
   let prog = {}; try { prog = JSON.parse(localStorage.getItem('ss2-progress') || '{}'); } catch (e) { }
-  let settings = { music: true, voice: true, sfx: true, auto: true }; try { Object.assign(settings, JSON.parse(localStorage.getItem('ss2-settings') || '{}')); } catch (e) { }
+  let settings = { music: true, voice: true, sfx: true, auto: true, lang: 'ja' }; try { Object.assign(settings, JSON.parse(localStorage.getItem('ss2-settings') || '{}')); } catch (e) { }
   const save = () => { try { localStorage.setItem('ss2-progress', JSON.stringify(prog)); localStorage.setItem('ss2-settings', JSON.stringify(settings)); } catch (e) { } };
-  for (const k of ['music', 'voice', 'sfx']) AUDIO.set(k, settings[k]);
+  for (const k of ['music', 'voice', 'sfx', 'lang']) AUDIO.set(k, settings[k]);
   const screens = ['#title', '#story', '#versus', '#help', '#settings', '#result', '#pause'];
   function show(id) { for (const s of screens) $(s).hidden = s !== id; const fight = id === null && ['fight', 'ready', 'ko'].includes(G.mode);
     $('#hud').hidden = !fight; $('#touch').hidden = !(fight && matchMedia('(pointer:coarse)').matches); }
   function clearArena() { for (const f of [G.p1, G.p2, ...G.extra]) if (f) f.remove(); G.extra = [];
     for (const x of FX) scene.remove(x.o); FX.length = 0; for (const p of PR) scene.remove(p.o); PR.length = 0; for (const t of FT) t.el.remove(); FT.length = 0; EV = []; domain = null; clash = null; $('#clash').hidden = true; }
-  function setup(a, b, o = {}) { clearArena(); WORLD.reset(); WORLD.setTime(o.time || 'noon'); if (o.ruin) WORLD.ruin(o.ruin, .45);
+  function setup(a, b, o = {}) { clearArena(); WORLD.setMap(o.map); WORLD.reset(); WORLD.setTime(o.time || 'noon'); if (o.ruin) WORLD.ruin(o.ruin, .45);
+    const extra = [summonOf(a), summonOf(b), ...(o.keep || [])].filter(Boolean); SPR.release([a, b, ...extra]);
     const sp = o.spawn || [[-196, 0, 1], [-218, 0, -1]];
-    G.p1 = new Fighter(a, sp[0], true); G.p2 = new Fighter(b, sp[1], false); G.p1.opp = G.p2; G.p2.opp = G.p1;
-    if (o.sk && b.startsWith('sukuna')) G.p2.maxhp = G.p2.hp = G.p2.trail = Math.round(RO[b].hp * o.sk);
+    G.p1 = new Fighter(a, sp[0], true); G.p2 = new Fighter(b, sp[1], false); G.p1.opp = G.p2; G.p2.opp = G.p1; for (const k of extra) SPR.build(k);
+    if (o.sk) G.p2.maxhp = G.p2.hp = G.p2.trail = Math.round(RO[b].hp * o.sk);
     if (o.first200) G.p1.first200 = true;
     G.axis.copy(G.p2.pos).sub(G.p1.pos).setY(0).normalize(); G.camSnap = true; G.time = 0; lastDistrict = ''; }
-  async function startFight() { G.mode = 'ready'; show(null); fillHud(); AUDIO.play('battle');
-    banner(G.story != null ? LINES.story[G.story].sub : '', G.story != null ? 'Fight!' : 'Round 1', '', 1000); G.p1.bark('start', true); later(1.8, () => G.p2 && G.p2.bark('start', true));
-    await wait(1000); if (G.mode !== 'ready') return; banner('', 'FIGHT!', '', 700, '#e2b25c'); AUDIO.sfx('heavy'); G.mode = 'fight'; }
+  async function startFight() { const id = G.flow; G.mode = 'ready'; show(null); fillHud(); AUDIO.play('battle');
+    banner(G.story != null ? CH[G.story].sub : '', G.story != null ? 'Fight!' : 'Round 1', '', 1000); G.p1.bark('start', true); later(1.8, () => G.p2 && G.p2.bark('start', true));
+    await wait(1000); if (G.mode !== 'ready' || id !== G.flow) return; banner('', 'FIGHT!', '', 700, '#e2b25c'); AUDIO.sfx('heavy'); G.mode = 'fight'; }
   const wait = ms => new Promise(r => setTimeout(r, ms));
-  async function KO(w, l) { G.mode = 'ko'; l.dead = true; l.hp = 0; if (l.charge) { scene.remove(l.charge.orb); l.charge = null; } AUDIO.sfx('ko'); flash('#fff', .8); banner('', 'K.O.', '', 1800, '#e2324d'); slowmo = .25;
-    await wait(1800); slowmo = 1; if (domain) endDomain(); clash = null; $('#clash').hidden = true; endFight(w === G.p1); }
-  async function endFight(won) {
-    const ch = G.story != null ? LINES.story[G.story] : null;
+  async function KO(w, l) { const id = G.flow; G.mode = 'ko'; l.dead = true; l.hp = 0; if (l.charge) { scene.remove(l.charge.orb); l.charge = null; } AUDIO.sfx('ko'); flash('#fff', .8); banner('', 'K.O.', '', 1800, '#e2324d'); slowmo = .25;
+    await wait(1800); slowmo = 1; if (id !== G.flow) return; if (domain) endDomain(); clash = null; $('#clash').hidden = true; endFight(w === G.p1); }
+  // before an ending plays: nobody inside a wall or mid-air, and the winner standing a few steps from the loser
+  function settle(f) { f.kb.set(0, 0, 0); f.vel.set(0, 0, 0); f.lunge = null; f.launched = f.dash = 0; if (f.charge) { scene.remove(f.charge.orb); f.charge = null; }
+    WORLD.collide(f.pos, .6, -1); f.pos.y = WORLD.surfaceY(f.pos.x, f.pos.z, f.pos.y + .3); }
+  const freeSpot = p => !WORLD.within(p, .8).some(b => b.base < p.y + 1.8 && b.base + b.h > p.y + .1);
+  function stageEnding() { const L = G.p1.dead ? G.p1 : G.p2, W = L === G.p1 ? G.p2 : G.p1; settle(L);
+    const d = W.pos.clone().sub(L.pos).setY(0), a0 = d.lengthSq() > .01 ? Math.atan2(d.z, d.x) : 0; let spot = L.pos.clone().add(new V3(1.6, 0, 0));
+    for (let k = 0; k < 12; k++) { const a = a0 + (k % 2 ? 1 : -1) * Math.ceil(k / 2) * Math.PI / 6, p = L.pos.clone().add(new V3(Math.cos(a) * 4.5, 0, Math.sin(a) * 4.5)); p.y = WORLD.surfaceY(p.x, p.z, L.pos.y + .3);
+      if (Math.abs(p.y - L.pos.y) < .6 && freeSpot(p) && clearView(p.clone().setY(p.y + 1), L.center())) { spot = p; break; } }
+    W.pos.copy(spot); settle(W); for (const s of G.extra) if (!s.dead) { s.pos.copy(W.pos).add(new V3(0, 0, 2.5)); settle(s); } G.camSnap = true; }
+  async function endFight(won) { const id = G.flow;
+    const ch = G.story != null ? CH[G.story] : null; stageEnding();
     if (ch) { if (won) prog[ch.id] = 'win'; else if (!prog[ch.id]) prog[ch.id] = 'lose'; save(); AUDIO.play(won ? 'victory' : 'sad'); await cutscene(won ? ch.win : ch.lose, ch.title); }
     else { const W = won ? G.p1 : G.p2, L = won ? G.p2 : G.p1; AUDIO.play(won ? 'victory' : 'sad'); await cutscene([{ s: W.k, t: LINES.vs[W.k].win, id: `vs_${W.k}_win` }, { s: L.k, t: LINES.vs[L.k].lose, id: `vs_${L.k}_lose` }], ''); }
-    G.mode = 'result'; show('#result'); shot = { cam: 'aerial', at: 'p1', r: 40, h: 22 }; shotT = 0;
+    if (id !== G.flow) return;
+    G.mode = 'result'; show('#result'); setShot({ cam: 'aerial', at: 'p1', r: 40, h: 22 });
     $('#rT').textContent = won ? 'Victory' : 'Defeat'; $('#rT').style.color = won ? '#e2b25c' : '#e2324d';
-    const b = [], last = G.story === LINES.story.length - 1;
-    if (ch) { $('#rP').textContent = won ? (last ? "You played the manga's ending. The King of Curses is gone." : 'You changed history, at least in this timeline.') : (last ? "This isn't how it ends. Try again." : 'That is how it went in the manga. The fight continues.');
-      if (!last) b.push(['Next Chapter', () => playChapter(G.story + 1)]); b.push([won ? 'Replay' : 'Retry for the What If', () => playChapter(G.story)]); b.push(['Chapters', () => openStory()]); }
+    const b = [], last = ch && (!CH[G.story + 1] || CH[G.story + 1].season !== ch.season), film = ch && ch.season === 0;
+    if (ch) { $('#rP').textContent = won ? (last ? (film ? "You played the film's ending. Rika is free, and the Night Parade is over." : "You played the manga's ending. The King of Curses is gone.") : 'You changed history, at least in this timeline.')
+        : (last ? "This isn't how it ends. Try again." : film ? 'That is how it went in the film. The night goes on.' : 'That is how it went in the manga. The fight continues.');
+      if (!last) b.push(['Next Chapter', () => playChapter(G.story + 1)]); else if (film && won) b.push(['Shinjuku Showdown', () => playChapter(CH.findIndex(c => c.season === 1))]);
+      b.push([won ? 'Replay' : 'Retry for the What If', () => playChapter(G.story)]); b.push(['Chapters', () => openStory()]); }
     else { $('#rP').textContent = `${(won ? G.p1 : G.p2).d.name} wins.`; b.push(['Rematch', () => startVersus()], ['Change Fighters', () => openVersus()]); }
     b.push(['Title', () => toTitle()]);
     $('#rB').innerHTML = ''; b.forEach(([t, fn]) => { const e = document.createElement('button'); e.textContent = t; e.onclick = () => { AUDIO.sfx('ui'); fn(); }; $('#rB').appendChild(e); }); $('#rB').firstChild.focus(); }
-  function setPause(p) { G.paused = p; $('#pause').hidden = !p; if (p) $('#bResume').focus(); }
-  $('#bResume').onclick = () => setPause(false); $('#bQuit').onclick = () => { setPause(false); toTitle(); };
+  function setPause(p, quit) { G.paused = p; $('#pause').hidden = !p; if (p) $(quit ? '#bQuit' : '#bResume').focus(); }
+  const restart = () => G.story != null ? playChapter(G.story) : startVersus();
+  $('#bResume').onclick = () => setPause(false); $('#bQuit').onclick = () => { setPause(false); toTitle(); }; $('#bRestart').onclick = () => { setPause(false); restart(); };
+  $('#bExit').onclick = () => { AUDIO.sfx('ui'); setPause(true, true); };
+  $('#cutExit').onclick = () => { AUDIO.sfx('ui'); toTitle(); };
 
   /* cutscenes */
   let cutRes = null, typing = null, cutSkip = false, autoT = null;
   function advance() { if (typing) { typing(); return; } if (cutRes) { const r = cutRes; cutRes = null; clearTimeout(autoT); r(); } }
   function skipCut() { cutSkip = true; AUDIO.stopVoice(); advance(); advance(); }
   $('#cut').addEventListener('click', e => { if (e.target.closest('button')) return; advance(); }); $('#skip').onclick = skipCut;
-  async function cutscene(lines, title) { document.activeElement && document.activeElement.blur(); const prev = G.mode; G.mode = 'cut'; cutSkip = false; show(null); $('#cut').hidden = false; $('#chapTitle').textContent = title || ''; shotT = 0;
-    for (const ln of lines) { if (cutSkip) break; await say(ln); }
-    AUDIO.stopVoice(); $('#cut').hidden = true; G.mode = prev === 'cut' ? 'title' : prev; }
+  async function cutscene(lines, title) { const id = G.flow; document.activeElement && document.activeElement.blur(); const prev = G.mode; G.mode = 'cut'; cutSkip = false; show(null); $('#cut').hidden = false; $('#chapTitle').textContent = title || '';
+    setShot(lines[0] && lines[0].shot || { cam: 'two' });
+    for (const ln of lines) { if (cutSkip || id !== G.flow) break; await say(ln); }
+    if (id !== G.flow) return; AUDIO.stopVoice(); $('#cut').hidden = true; G.mode = prev === 'cut' ? 'title' : prev; }
+  // a line can re-stage the scene: swap the first actor, move both (the Season 0 epilogue in the alley)
+  function restage(S) { if (S.p1 && S.p1 !== G.p1.k) { G.p1.remove(); G.p1 = new Fighter(S.p1, S.at, true); G.p1.opp = G.p2; G.p2.opp = G.p1; }
+    else if (S.at) G.p1.pos.set(...S.at); if (S.p2at) G.p2.pos.set(...S.p2at); for (const e of G.extra) e.remove(); G.extra = []; G.p1.summons = []; G.p2.summons = []; G.camSnap = true; }
   function say(ln) { return new Promise(async res => {
-    if (ln.shot) { shot = ln.shot; shotT = 0; } else if (ln.s && ln.s !== 'n') { const who = G.p1 && G.p1.k === ln.s ? 'p1' : 'p2'; if (!shot || shot.cam !== 'close' || shot.who !== who) { shot = { cam: 'close', who }; shotT = 0; } }
+    if (ln.stage) restage(ln.stage);
+    if (ln.shot) setShot(ln.shot); else if (ln.stage) setShot({ cam: 'two' });
+    else if (ln.s && ln.s !== 'n') { const who = G.p1 && G.p1.k === ln.s ? 'p1' : G.p2 && G.p2.k === ln.s ? 'p2' : G.extra.some(e => e.k === ln.s && !e.dead) ? ln.s : null;
+      if (who && (!shot || shot.cam !== 'close' || shot.who !== who)) setShot({ cam: 'close', who }); }
     if (ln.fx === 'slash') { flash('#fff', .9); AUDIO.sfx('slash'); }
-    const d = $('#dlg'), tip = !!ln.tip; d.classList.toggle('narr', !ln.s || ln.s === 'n'); d.classList.toggle('tip', tip); const hasP = ln.s && ln.s !== 'n' && ATLAS[ln.s];
-    $('#dimg').hidden = !hasP; if (hasP) $('#dimg').src = ATLAS[ln.s].portrait; $('#dwho').textContent = tip ? 'TIP' : hasP ? RO[ln.s].name : '';
+    const d = $('#dlg'), tip = !!ln.tip; d.classList.toggle('narr', !ln.s || ln.s === 'n'); d.classList.toggle('tip', tip); const hasP = ln.s && ln.s !== 'n' && SPR.CHARS[ln.s];
+    $('#dimg').hidden = !hasP; if (hasP) $('#dimg').src = thumb(ln.s).portrait;
+    $('#djp').textContent = settings.lang === 'ja' && settings.voice && ln.id && !tip && window.LINES_JA && LINES_JA[ln.id] || ''; $('#dwho').textContent = tip ? 'TIP' : hasP ? RO[ln.s].name : '';
     const full = ln.tip || ln.t, el = $('#dtxt'); let i = 0; el.textContent = '';
     const dur = ln.id && !tip ? await AUDIO.say(ln.id) : 0; const cps = dur ? Math.max(18, full.length / Math.max(.8, dur - .2)) : 45;
-    const t0 = performance.now(); let doneTyping = false, voiceDone = !dur;
-    const finish = () => { if (settings.auto && dur && doneTyping && voiceDone && !cutRes.__auto) { cutRes.__auto = 1; autoT = setTimeout(() => { if (cutRes) advance(); }, 700); } };
-    if (dur) setTimeout(() => { voiceDone = true; if (cutRes) finish(); }, dur * 1000);
+    const t0 = performance.now(); let doneTyping = false, voiceDone = !dur, mine = null;   // timers only ever advance their own line
+    const finish = () => { if (settings.auto && dur && doneTyping && voiceDone && mine && cutRes === mine && !mine.__auto) { mine.__auto = 1; autoT = setTimeout(() => { if (cutRes === mine) advance(); }, 700); } };
+    if (dur) setTimeout(() => { voiceDone = true; finish(); }, dur * 1000);
     const iv = setInterval(() => { i = Math.floor((performance.now() - t0) / 1000 * cps); el.textContent = full.slice(0, i); if (i >= full.length) done(); }, 30);
-    function done() { clearInterval(iv); el.textContent = full; typing = null; doneTyping = true; cutRes = () => { AUDIO.stopVoice(); res(); }; finish(); }
+    function done() { clearInterval(iv); el.textContent = full; typing = null; doneTyping = true; cutRes = mine = () => { AUDIO.stopVoice(); res(); }; finish(); }
     typing = done; }); }
 
-  async function playChapter(i) { const ch = LINES.story[i]; G.story = i;
-    setup(ch.hero, ch.foe, { time: ch.time, spawn: ch.spawn, sk: ch.sk, ruin: ch.ruin, first200: ch.id === 'c1' && ch.hero === 'gojo' });
-    AUDIO.preload([ch.id, 'barks', 'vs']); AUDIO.play('tension'); G.mode = 'cut'; await cutscene(ch.intro, ch.title); startFight(); }
+  // Season 0 (Jujutsu Kaisen 0, 2017) then the Shinjuku Showdown (2018), in one list
+  const CH = [...LINES.story0.map(c => Object.assign(c, { season: 0 })), ...LINES.story.map(c => Object.assign(c, { season: 1 }))];
+  const SEASONS = [{ n: 'Season 0', sub: 'Jujutsu Kaisen 0 · Tokyo Jujutsu High, December 2017' }, { n: 'Shinjuku Showdown', sub: 'The Culling Game ends · Shinjuku, December 2018' }];
+  async function playChapter(i) { const ch = CH[i], id = ++G.flow; G.story = i; $('#cut').hidden = true;
+    const keep = ch.intro.concat(ch.win, ch.lose).map(l => l.stage && l.stage.p1).filter(Boolean);
+    setup(ch.hero, ch.foe, { map: ch.map, time: ch.time, spawn: ch.spawn, sk: ch.sk, ruin: ch.ruin, first200: ch.id === 'c1' && ch.hero === 'gojo', keep });
+    if (ch.season === 0) delete G.p1.mv.o;   // nobody had a domain yet in 2017
+    AUDIO.preload([ch.id, 'barks', 'vs']); AUDIO.play('tension'); G.mode = 'cut'; await cutscene(ch.intro, ch.title); if (id === G.flow) startFight(); }
   const STAGES = [{ n: 'Nishi-Shinjuku · Chūō-dōri', spawn: [[-196, 0, 1], [-218, 0, -1]] }, { n: 'Tochō Plaza', spawn: [[-318, 0, 24], [-340, 0, 22]] }, { n: 'Kabukichō', spawn: [[110, 0, -158], [130, 0, -158]] },
-    { n: 'Shinjuku Station', spawn: [[-6, 0, 62], [6, 0, 40]] }, { n: 'Shinjuku Gyoen', spawn: [[322, 0, 120], [346, 0, 118]] }];
-  function startVersus() { G.story = null; const st = STAGES[G.stage]; setup(G.a, G.b, { time: G.tod, spawn: st.spawn });
-    AUDIO.preload(['barks', 'vs']); AUDIO.play('tension'); (async () => { G.mode = 'cut'; shot = { cam: 'two' }; await cutscene([{ s: G.a, t: LINES.vs[G.a].vs, id: `vs_${G.a}_vs` }, { s: G.b, t: LINES.vs[G.b].vs, id: `vs_${G.b}_vs` }], 'Versus · ' + st.n); startFight(); })(); }
-  function toTitle() { G.story = null; setup('gojo', 'sukuna', { time: 'sunset' }); G.mode = 'title'; show('#title'); AUDIO.play('title'); $('#bStory').focus(); }
+    { n: 'Shinjuku Station', spawn: [[-6, 0, 62], [6, 0, 40]] }, { n: 'Shinjuku Gyoen', spawn: [[322, 0, 120], [346, 0, 118]] }, { n: 'Jujutsu High', map: 'jjh', spawn: [[2496, 0, 40], [2512, 0, 22]] }];
+  function startVersus() { const id = ++G.flow; G.story = null; $('#cut').hidden = true; const st = STAGES[G.stage]; setup(G.a, G.b, { time: G.tod, spawn: st.spawn, map: st.map });
+    AUDIO.preload(['barks', 'vs']); AUDIO.play('tension'); (async () => { G.mode = 'cut'; await cutscene([{ s: G.a, t: LINES.vs[G.a].vs, id: `vs_${G.a}_vs`, shot: { cam: 'two' } }, { s: G.b, t: LINES.vs[G.b].vs, id: `vs_${G.b}_vs` }], 'Versus · ' + st.n); if (id === G.flow) startFight(); })(); }
+  function toTitle() { G.flow++; cutSkip = true; AUDIO.stopVoice(); if (typing) typing(); if (cutRes) { const r = cutRes; cutRes = null; r(); } clearTimeout(autoT); $('#cut').hidden = true;
+    G.paused = false; G.story = null; setup('gojo', 'sukuna', { time: 'sunset' }); G.mode = 'title'; show('#title'); AUDIO.play('title'); $('#bStory').focus(); }
   function segRow(el, opts, get, set) { el.innerHTML = opts.map((t, i) => `<button data-i="${i}" class="${get() === i ? 'on' : ''}">${t}</button>`).join('');
     el.querySelectorAll('button').forEach(b => b.onclick = () => { set(+b.dataset.i); AUDIO.sfx('ui'); el.querySelectorAll('button').forEach(x => x.classList.toggle('on', x === b)); }); }
   const diffRow = el => segRow(el, ['Easy', 'Normal', 'Hard'], () => G.diff, v => G.diff = v);
-  function openStory() { G.mode = 'menu'; show('#story'); const box = $('#chaps'); box.innerHTML = '';
-    LINES.story.forEach((ch, i) => { const b = document.createElement('button'); b.className = 'chap'; const st = prog[ch.id] === 'win' ? '★ Won' : prog[ch.id] === 'lose' ? 'Played' : '';
-      b.innerHTML = `<img src="${ATLAS[ch.hero].portrait}" alt=""><div><b>${ch.title}</b><span>${ch.sub} · ${ch.time}</span></div><i>${st}</i>`; b.onclick = () => { AUDIO.sfx('ui'); playChapter(i); }; box.appendChild(b); });
-    diffRow($('#diffS')); box.firstChild.focus(); }
+  let season = 0;
+  function openStory(focusTabs) { G.mode = 'menu'; show('#story'); const box = $('#chaps'); box.innerHTML = '';
+    segRow($('#seasons'), SEASONS.map(s => s.n), () => season, v => { season = v; openStory(true); }); $('#seasonSub').textContent = SEASONS[season].sub;
+    CH.forEach((ch, i) => { if (ch.season !== season) return; const b = document.createElement('button'); b.className = 'chap'; const st = prog[ch.id] === 'win' ? '★ Won' : prog[ch.id] === 'lose' ? 'Played' : '';
+      b.innerHTML = `<img src="${thumb(ch.hero).portrait}" alt=""><div><b>${ch.title}</b><span>${ch.sub} · ${ch.time}</span></div><i>${st}</i>`; b.onclick = () => { AUDIO.sfx('ui'); playChapter(i); }; box.appendChild(b); });
+    diffRow($('#diffS')); (focusTabs ? $('#seasons .on') : box.firstChild).focus(); }
   const TODS = ['noon', 'afternoon', 'sunset', 'dusk', 'night'];
   function openVersus() { G.mode = 'menu'; show('#versus');
     const grid = (el, key) => { el.innerHTML = ''; for (const k of PLAYABLE) { const b = document.createElement('button'); b.className = 'card' + (G[key] === k ? ' sel' : '');
-      b.innerHTML = `<img src="${ATLAS[k].full}" alt=""><span>${RO[k].name}</span><small>${RO[k].title}</small>`; b.onclick = () => { G[key] = k; AUDIO.sfx('ui'); openVersus(); }; b.onfocus = b.onmouseenter = () => info(k); el.appendChild(b); } };
+      b.innerHTML = `<img src="${thumb(k).full}" alt=""><span>${RO[k].name}</span><small>${RO[k].title}</small>`; b.onclick = () => { G[key] = k; AUDIO.sfx('ui'); openVersus(); }; b.onfocus = b.onmouseenter = () => info(k); el.appendChild(b); } };
     const info = k => { const d = RO[k]; $('#vinfo').innerHTML = `<b>${d.name}</b> · ${d.passive}<br>K ${d.moves.k.n} · L ${d.moves.l.n} · I ${d.moves.i.n}${d.moves.o ? ' · O ' + d.moves.o.n : ' · no domain'}${d.moves.u ? ' · U ' + d.moves.u.n : ''}`; };
     grid($('#gridA'), 'a'); grid($('#gridB'), 'b'); info(G.a); diffRow($('#diffV'));
     segRow($('#todV'), TODS.map(t => t[0].toUpperCase() + t.slice(1)), () => TODS.indexOf(G.tod), v => G.tod = TODS[v]);
     segRow($('#stageV'), STAGES.map(s => s.n), () => G.stage, v => G.stage = v); }
   function openSettings() { show('#settings'); const el = $('#setRows'); el.innerHTML = '';
-    for (const [k, label, note] of [['music', 'Music', 'Original score, synthesized live'], ['voice', 'Voices', 'Synthetic voices, not the anime cast'], ['sfx', 'Sound effects', ''], ['auto', 'Auto-advance voiced lines', 'Cutscenes play on their own']]) {
-      const b = document.createElement('button'); b.className = 'toggle'; const draw = () => b.innerHTML = `<span>${label}${note ? `<small>${note}</small>` : ''}</span><b>${settings[k] ? 'ON' : 'OFF'}</b>`; draw();
-      b.onclick = () => { settings[k] = !settings[k]; if (k !== 'auto') AUDIO.set(k, settings[k]); save(); draw(); AUDIO.sfx('ui'); }; el.appendChild(b); } el.firstChild.focus(); }
+    for (const [k, label, note] of [['music', 'Music', 'Original score, synthesized live'], ['voice', 'Voices', 'Synthetic voices, not the anime cast'], ['lang', 'Voice language', 'Japanese with English subtitles, like the anime'], ['sfx', 'Sound effects', ''], ['auto', 'Auto-advance voiced lines', 'Cutscenes play on their own']]) {
+      const b = document.createElement('button'); b.className = 'toggle'; const val = () => k === 'lang' ? (settings.lang === 'ja' ? '日本語' : 'English') : settings[k] ? 'ON' : 'OFF';
+      const draw = () => b.innerHTML = `<span>${label}${note ? `<small>${note}</small>` : ''}</span><b>${val()}</b>`; draw();
+      b.onclick = () => { settings[k] = k === 'lang' ? (settings.lang === 'ja' ? 'en' : 'ja') : !settings[k]; if (k !== 'auto') AUDIO.set(k, settings[k]); save(); draw(); AUDIO.sfx('ui'); }; el.appendChild(b); } el.firstChild.focus(); }
   $('#bStory').onclick = () => { AUDIO.sfx('ui'); openStory(); }; $('#bVersus').onclick = () => { AUDIO.sfx('ui'); openVersus(); }; $('#bHelp').onclick = () => { AUDIO.sfx('ui'); show('#help'); };
   $('#bSettings').onclick = () => { AUDIO.sfx('ui'); openSettings(); }; $('#bFight').onclick = () => { AUDIO.sfx('ui'); startVersus(); };
   document.querySelectorAll('.back').forEach(b => b.onclick = () => { AUDIO.sfx('ui'); show('#title'); G.mode = 'title'; });
@@ -567,7 +655,7 @@
       else if (x.ghost) x.o.material.opacity = .45 * (1 - k);
       else if (x.max < 50) { x.o.scale.setScalar(x.s0 * (1 + x.grow * k)); x.o.material.opacity = 1 - k; }
       if (x.life <= 0) { scene.remove(x.o); FX.splice(i, 1); } }
-    if (P) { camUpdate(rdt);
+    if (P) { camUpdate(rdt); updateLit();
       for (const [f, o] of [[P, Q], [Q, P], ...G.extra.map(s => [s, aimTarget(s)])]) { if (!f.dead) { const s = o.pos.clone().sub(f.pos).dot(camRight); if (Math.abs(s) > .2) f.face = s > 0 ? 1 : -1; } f.visual(G.time); } }
     for (let i = FT.length - 1; i >= 0; i--) { const t = FT[i]; t.life -= rdt; t.pos.y += rdt * 1.2; const v = t.pos.clone().project(camera);
       t.el.style.left = (v.x + 1) / 2 * innerWidth + 'px'; t.el.style.top = (1 - v.y) / 2 * innerHeight + 'px'; t.el.style.opacity = Math.min(1, t.life / t.max * 2); t.el.hidden = v.z > 1; if (t.life <= 0) { t.el.remove(); FT.splice(i, 1); } }
@@ -582,7 +670,6 @@
   /* =================== BOOT =================== */
   $('#load').textContent = 'Drawing sorcerers…';
   setTimeout(() => {
-    for (const k of [...PLAYABLE, 'mahoraga']) ATLAS[k] = SPR.build(k);
     $('#load').remove(); toTitle(); WORLD.renderer.setAnimationLoop(frame);
     $('#title').classList.add('in');
   }, 30);

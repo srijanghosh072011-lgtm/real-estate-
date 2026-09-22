@@ -1,9 +1,11 @@
 'use strict';
-/* Shinjuku: map, rendering pipeline (low-res + depth of field + bloom), time of day, destructible city. */
+/* Shinjuku and Tokyo Jujutsu High: maps, rendering pipeline (low-res + depth of field + bloom), time of day, destructible city. */
 window.WORLD = (function () {
   const V3 = THREE.Vector3, rnd = (() => { let s = 20181224; return () => { s |= 0; s = s + 0x6D2B79F5 | 0; let t = Math.imul(s ^ s >>> 15, 1 | s); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; })();
   const R = (a, b) => a + rnd() * (b - a), pick = a => a[rnd() * a.length | 0], clamp = (v, a, b) => Math.max(a, Math.min(b, v));
-  const MAP = { x0: -480, x1: 440, z0: -280, z1: 280 };
+  // two maps in one world, far apart: Shinjuku (2018) and Tokyo Jujutsu High (Season 0, 2017)
+  const MAPS = { shinjuku: { x0: -480, x1: 440, z0: -280, z1: 280, ms: .26 }, jjh: { x0: 2350, x1: 2650, z0: -150, z1: 190, ms: .5 } };
+  const MAP = Object.assign({}, MAPS.shinjuku);
 
   /* ---------------- districts (first match wins) ---------------- */
   const D = [
@@ -20,7 +22,13 @@ window.WORLD = (function () {
     { id: 'sanchome', name: 'Shinjuku 3-chōme', jp: '新宿三丁目', x0: 55, z0: -66, x1: 260, z1: 110, cx: 46, cz: 44, sw: 12, h: [12, 32], styles: ['dept', 'office', 'glass', 'neon'], type: 0, neon: .35 },
     { id: 'gyoen', name: 'Shinjuku Gyoen', jp: '新宿御苑', x0: 260, z0: 10, x1: 440, z1: 280, type: 1 },
     { id: 'nichome', name: 'Shinjuku 2-chōme', jp: '新宿二丁目', x0: 260, z0: -66, x1: 440, z1: 10, cx: 45, cz: 38, sw: 10, h: [8, 24], styles: ['residential', 'neon', 'office'], type: 0, neon: .3 },
-    { id: 'yoyogi', name: 'Yoyogi', jp: '代々木', x0: 55, z0: 110, x1: 260, z1: 280, cx: 48, cz: 44, sw: 12, h: [12, 34], styles: ['office', 'glass', 'residential'], type: 0 }
+    { id: 'yoyogi', name: 'Yoyogi', jp: '代々木', x0: 55, z0: 110, x1: 260, z1: 280, cx: 48, cz: 44, sw: 12, h: [12, 34], styles: ['office', 'glass', 'residential'], type: 0 },
+    // Jujutsu High: type 4 raked gravel, type 5 cedar-forest floor
+    { id: 'jjhhall', name: 'Jujutsu High · Main Hall', jp: '呪術高専 本堂', x0: 2475, z0: -60, x1: 2535, z1: -20, type: 3 },
+    { id: 'jjhpath', name: 'Jujutsu High · Approach', jp: '呪術高専 参道', x0: 2494, z0: -20, x1: 2516, z1: 200, type: 3 },
+    { id: 'jjhdorm', name: 'Jujutsu High · Dormitories', jp: '呪術高専 学生寮', x0: 2540, z0: -60, x1: 2630, z1: 95, type: 4 },
+    { id: 'jjhcourt', name: 'Jujutsu High · Courtyard', jp: '呪術高専 境内', x0: 2420, z0: -80, x1: 2600, z1: 95, type: 4 },
+    { id: 'jjh', name: 'Jujutsu High · Cedar Forest', jp: '呪術高専 杉林', x0: 2100, z0: -400, x1: 2900, z1: 400, type: 5 }
   ];
   const AVE = [{ x0: 55, z0: -78, x1: 440, z1: -66, name: 'Yasukuni-dōri' }];
   function district(x, z) { for (const d of D) if (x >= d.x0 && x < d.x1 && z >= d.z0 && z < d.z1) return d; return D[3]; }
@@ -108,7 +116,7 @@ window.WORLD = (function () {
     skyU.top.value.set(t.top); skyU.mid.value.set(t.mid); skyU.hor.value.set(t.hor); skyU.sunC.value.set(t.sunC); skyU.sun.value.set(...t.sun).normalize(); skyU.night.value = t.night;
     sun.color.set(t.sunC); sun.intensity = t.sunI; hemi.color.set(t.hs); hemi.groundColor.set(t.hg); hemi.intensity = t.hI;
     scene.fog.color.set(t.fog); scene.fog.density = t.fogD; U.night.value = t.night; compM.uniforms.grade.value.set(...t.grade); compM.uniforms.lift.value.set(...t.lift); brightM.uniforms.th.value = t.bloomTh;
-    fuji.userData.m.color.set(t.fuji); fuji.userData.s.color.set(t.night > .5 ? '#5a6080' : '#f0f2f8');
+    fuji.userData.m.color.set(t.fuji); ridgeM[0].color.set(t.fuji).lerp(new THREE.Color(t.hor), .25); ridgeM[1].color.set(t.fuji).lerp(new THREE.Color('#1c2a1e'), .45); fuji.userData.s.color.set(t.night > .5 ? '#5a6080' : '#f0f2f8');
     lampMat.color.set(t.lamps > .2 ? '#ffd9a0' : '#8a8a90'); lampMat.color.multiplyScalar(t.lamps > .2 ? 1.6 : 1);
     snow.visible = k === 'night'; ash.visible = true; ash.material.color.set(t.night > .5 ? 0xff6a7a : 0x9a8a88); ash.material.size = t.night > .5 ? .16 : .12;
   }
@@ -117,7 +125,7 @@ window.WORLD = (function () {
   const GLSL_HASH = 'float hh(vec2 p){ p=fract(p*vec2(123.34,456.21)); p+=dot(p,p+45.32); return fract(p.x*p.y); }\nfloat vn(vec2 p){ vec2 i=floor(p),f=fract(p); f=f*f*(3.-2.*f); return mix(mix(hh(i),hh(i+vec2(1,0)),f.x),mix(hh(i+vec2(0,1)),hh(i+vec2(1,1)),f.x),f.y); }\n';
   const CUT_FRAG = `uniform vec4 uCut[2];\nfloat bayer4(vec2 p){ vec2 q=mod(floor(p),4.); float i=q.x+q.y*4.; return mod(i*5.+mod(i,4.)*2.,16.)/16.; }\n`;
   const CUT_CODE = `for(int i=0;i<2;i++){ vec4 c=uCut[i]; if(c.z<=0.) continue; float dd=distance(gl_FragCoord.xy,c.xy); if(dd<c.z && gl_FragCoord.z<c.w){ if(bayer4(gl_FragCoord.xy)>pow(dd/c.z,2.)*1.1-.05) discard; } }\n`;
-  function buildingMat(tex, tile, key) {
+  function buildingMat(tex, tile, key, shop) {
     const m = new THREE.MeshLambertMaterial({ map: tex });
     m.onBeforeCompile = sh => {
       sh.uniforms.uNight = U.night; sh.uniforms.uCut = U.cut; sh.uniforms.uTile = { value: tile };
@@ -129,14 +137,14 @@ window.WORLD = (function () {
         mat4 MM = modelMatrix * IM; vec3 sc = vec3(length(MM[0].xyz), length(MM[1].xyz), length(MM[2].xyz)); vec3 lp = position;
         vFUV = (abs(normal.x) > .5 ? vec2(lp.z * sc.z * sign(normal.x), (lp.y + .5) * sc.y) : vec2(-lp.x * sc.x * sign(normal.z), (lp.y + .5) * sc.y)) / uTile;
         vRoof = normal.y; vH = (lp.y + .5) * sc.y; vTop = (.5 - lp.y) * sc.y; vSeed = fract(MM[3].x * .137 + MM[3].z * .311); vWP = (MM * vec4(lp, 1.)).xyz;`);
-      sh.fragmentShader = 'varying vec2 vFUV; varying float vRoof, vSeed, vH, vTop; varying vec3 vWP; uniform float uNight;\n' + GLSL_HASH + CUT_FRAG + sh.fragmentShader
+      sh.fragmentShader = `#define SHOP ${shop ? '1.' : '0.'}\nvarying vec2 vFUV; varying float vRoof, vSeed, vH, vTop; varying vec3 vWP; uniform float uNight;\n` + GLSL_HASH + CUT_FRAG + sh.fragmentShader
         .replace('#include <clipping_planes_fragment>', '#include <clipping_planes_fragment>\n' + CUT_CODE)
         .replace('#include <map_fragment>', `float lit = 0.;
           if (vRoof > .5) { diffuseColor.rgb *= vec3(.46,.45,.47) * (.8 + .35 * hh(floor(vWP.xz * 1.3))); }
           else if (vRoof > -.5) {
             vec4 fac = texture2D(map, vFUV); diffuseColor.rgb *= fac.rgb;
             vec2 cell = floor(vFUV * 2.); lit = step(.75, fac.a) * step(.58, hh(cell + vSeed * 91.7));
-            if (vH < 1.8) { float s = hh(vec2(floor(vFUV.x * 1.5), vSeed * 13.)); diffuseColor.rgb = mix(vec3(.16,.18,.22), vec3(.55,.42,.3), s) * (vH < 1.35 ? 1. : .55); lit = step(.4, s) * step(vH, 1.35) * .8; }
+            if (vH < 1.8 && SHOP > .5) { float s = hh(vec2(floor(vFUV.x * 1.5), vSeed * 13.)); diffuseColor.rgb = mix(vec3(.16,.18,.22), vec3(.55,.42,.3), s) * (vH < 1.35 ? 1. : .55); lit = step(.4, s) * step(vH, 1.35) * .8; }
             if (vTop < .38) diffuseColor.rgb *= .7;
           }`)
         .replace('#include <emissivemap_fragment>', '#include <emissivemap_fragment>\ntotalEmissiveRadiance += vec3(1.,.8,.52) * lit * uNight * .9;');
@@ -148,7 +156,8 @@ window.WORLD = (function () {
     const c = document.createElement('canvas'); c.width = c.height = 32; const g = c.getContext('2d'), id = g.createImageData(32, 32), d = id.data;
     const set = (x, y, r, gg, b, a) => { const o = (y * 32 + x) * 4; d[o] = r; d[o + 1] = gg; d[o + 2] = b; d[o + 3] = a; };
     const P = { glass: [[92, 130, 150], [150, 190, 205]], office: [[150, 150, 152], [60, 72, 90]], granite: [[178, 170, 158], [70, 80, 96]], darkglass: [[40, 44, 52], [60, 70, 86]],
-      residential: [[205, 196, 178], [70, 84, 100]], neon: [[70, 64, 72], [50, 56, 70]], dept: [[184, 160, 132], [80, 86, 96]], brown: [[128, 96, 76], [60, 66, 80]] }[kind];
+      residential: [[205, 196, 178], [70, 84, 100]], neon: [[70, 64, 72], [50, 56, 70]], dept: [[184, 160, 132], [80, 86, 96]], brown: [[128, 96, 76], [60, 66, 80]],
+      temple: [[226, 220, 206], [214, 196, 160]], plaster: [[218, 212, 198], [74, 70, 66]], stone: [[150, 146, 138], [150, 146, 138]] }[kind], WOOD = [58, 40, 30];
     for (let y = 0; y < 32; y++) for (let x = 0; x < 32; x++) {
       const fy = y % 16, fx = x % 16; let win = false, c0 = P[0], n = (Math.random() * 10) | 0;
       if (kind === 'glass' || kind === 'darkglass') { win = fy > 2 && fx !== 0 && fx !== 8; if (fy <= 2) c0 = kind === 'glass' ? [70, 96, 112] : [26, 28, 34]; }
@@ -157,6 +166,10 @@ window.WORLD = (function () {
       else if (kind === 'residential') { win = fy >= 3 && fy <= 11 && fx >= 2 && fx <= 12; if (fy === 12 || fy === 13) c0 = [120, 116, 110]; }
       else if (kind === 'neon') win = fy >= 5 && fy <= 11 && fx % 8 >= 2 && fx % 8 <= 6;
       else if (kind === 'dept') win = fy >= 9 && fy <= 12 && fx >= 3 && fx <= 12;
+      // temple: dark timber posts and beams, white plaster above, paper shoji below (they glow at night)
+      else if (kind === 'temple') { if (fx === 0 || fy <= 1 || fy === 6 || fy === 7) c0 = WOOD; else if (fy >= 8) { win = true; if (fx % 4 === 0 || fy % 4 === 0) { set(x, y, WOOD[0] + 20, WOOD[1] + 16, WOOD[2] + 12, 255); continue; } } }
+      else if (kind === 'plaster') { if (fy <= 1 || fx === 0) c0 = WOOD; else win = fy >= 5 && fy <= 11 && fx >= 4 && fx <= 11; }
+      else if (kind === 'stone') { if (fy % 8 === 0 || (fx + (fy >> 3) * 8) % 16 === 0) c0 = [112, 108, 102]; }
       if (win) { const w = P[1], sky = kind === 'glass' ? (16 - fy) * 2 : 0; set(x, y, w[0] + sky + n, w[1] + sky + n, w[2] + sky + n, 255); }
       else set(x, y, c0[0] + n - 5, c0[1] + n - 5, c0[2] + n - 5, 128);
     }
@@ -167,17 +180,19 @@ window.WORLD = (function () {
   const groundMat = new THREE.MeshLambertMaterial({ color: 0xffffff });
   groundMat.onBeforeCompile = sh => {
     const dd = D.map(d => new THREE.Vector4(d.x0, d.z0, d.x1, d.z1)), gg = D.map(d => new THREE.Vector4(d.cx || 1, d.cz || 1, d.sw || 0, d.type));
-    while (dd.length < 16) { dd.push(new THREE.Vector4(0, 0, -1, -1)); gg.push(new THREE.Vector4(1, 1, 0, 0)); }
+    while (dd.length < 20) { dd.push(new THREE.Vector4(0, 0, -1, -1)); gg.push(new THREE.Vector4(1, 1, 0, 0)); }
     const aa = AVE.map(a => new THREE.Vector4(a.x0, a.z0, a.x1, a.z1)); while (aa.length < 4) aa.push(new THREE.Vector4(0, 0, -1, -1));
     Object.assign(sh.uniforms, { uD: { value: dd }, uG: { value: gg }, uA: { value: aa }, uCut: U.cut });
     sh.vertexShader = 'varying vec3 vWP;\n' + sh.vertexShader.replace('#include <project_vertex>', '#include <project_vertex>\nvWP = (modelMatrix * vec4(position,1.)).xyz;');
-    sh.fragmentShader = 'varying vec3 vWP; uniform vec4 uD[16]; uniform vec4 uG[16]; uniform vec4 uA[4];\n' + GLSL_HASH + `
+    sh.fragmentShader = 'varying vec3 vWP; uniform vec4 uD[20]; uniform vec4 uG[20]; uniform vec4 uA[4];\n' + GLSL_HASH + `
       vec3 asph(vec2 p){ return vec3(.2,.2,.22) + hh(floor(p*5.))*.05 + vn(p*.25)*.05; }
       vec3 pave(vec2 p){ vec2 t=fract(p*.8); float g=step(t.x,.08)+step(t.y,.08); return mix(vec3(.55,.53,.5)+hh(floor(p*.8))*.06, vec3(.38,.37,.36), clamp(g,0.,1.)); }
       vec3 lot(vec2 p){ return vec3(.34,.33,.32)+hh(floor(p*2.))*.04; }
       vec3 grass(vec2 p){ float n=vn(p*.12)*.55+hh(floor(p*3.))*.2; vec3 c=mix(vec3(.19,.3,.13),vec3(.3,.4,.17),n);
         float path=abs(sin(p.x*.031+sin(p.y*.02)*2.)*28.-p.y*.18-mod(p.x*.2,40.)*0.); if(abs(fract((p.x*.7+p.y)/90.)-.5)*90.<2.2) c=vec3(.52,.46,.36)+hh(floor(p*4.))*.05; return c; }
       vec3 plaza(vec2 p){ vec2 t=fract(p/3.); float g=step(t.x,.04)+step(t.y,.04); vec3 c=mix(vec3(.6,.57,.53),vec3(.52,.5,.47),step(.5,hh(floor(p/3.)))); return mix(c,vec3(.42,.4,.38),clamp(g,0.,1.)); }
+      vec3 gravel(vec2 p){ return vec3(.5,.49,.46)+hh(floor(p*6.))*.06-vn(p*.3)*.07; }
+      vec3 forest(vec2 p){ float n=vn(p*.15)*.6+hh(floor(p*3.))*.22; return mix(vec3(.14,.17,.09),vec3(.27,.23,.14),n); }
       vec3 rails(vec2 p){ if(p.x<-36.||p.x>38.) return plaza(p*1.5); float tx=mod(p.x+36.,4.6); vec3 c=vec3(.33,.3,.28)+hh(floor(p*5.))*.1;
         if(abs(tx-2.3)<1.25 && fract(p.y/.75)<.38) c=vec3(.3,.23,.18); if(abs(abs(tx-2.3)-.55)<.07) c=vec3(.66,.64,.64); if(tx>4.) c=vec3(.45,.44,.43); return c; }
       vec3 urban(vec2 p, vec4 d, vec4 g){ vec2 f=mod(p-d.xy,g.xy); float sw=g.z; bool vs=f.x<sw, hs=f.y<sw;
@@ -189,24 +204,25 @@ window.WORLD = (function () {
         return lot(p); }
       vec3 groundAt(vec2 p){
         for(int i=0;i<4;i++){ vec4 a=uA[i]; if(a.z<=a.x) continue; if(p.x>a.x&&p.x<a.z&&p.y>a.y&&p.y<a.w){ vec3 c=asph(p); float m=(a.y+a.w)*.5; if(abs(p.y-m)<.25&&abs(p.y-m)>.08) c=vec3(.86,.72,.22); else if(abs(abs(p.y-m)-3.)<.08&&fract(p.x/5.)<.5) c=vec3(.8); return c; } }
-        for(int i=0;i<16;i++){ vec4 d=uD[i]; if(d.z<=d.x) continue; if(p.x<d.x||p.x>=d.z||p.y<d.y||p.y>=d.w) continue; vec4 g=uG[i];
-          if(g.w<.5) return urban(p,d,g); if(g.w<1.5) return grass(p); if(g.w<2.5) return rails(p); return plaza(p); }
+        for(int i=0;i<20;i++){ vec4 d=uD[i]; if(d.z<=d.x) continue; if(p.x<d.x||p.x>=d.z||p.y<d.y||p.y>=d.w) continue; vec4 g=uG[i];
+          if(g.w<.5) return urban(p,d,g); if(g.w<1.5) return grass(p); if(g.w<2.5) return rails(p); if(g.w<3.5) return plaza(p); if(g.w<4.5) return gravel(p); return forest(p); }
         return lot(p); }
       ` + CUT_FRAG.replace('uniform vec4 uCut[2];', 'uniform vec4 uCut[2];') + sh.fragmentShader.replace('#include <map_fragment>', 'diffuseColor.rgb *= groundAt(vWP.xz);');
   };
   groundMat.customProgramCacheKey = () => 'ground';
   const ground = new THREE.Mesh(new THREE.PlaneGeometry(MAP.x1 - MAP.x0 + 800, MAP.z1 - MAP.z0 + 800), groundMat);
   ground.rotation.x = -Math.PI / 2; ground.position.set((MAP.x0 + MAP.x1) / 2, 0, (MAP.z0 + MAP.z1) / 2); ground.receiveShadow = true; scene.add(ground);
+  const ground2 = new THREE.Mesh(new THREE.PlaneGeometry(800, 800), groundMat); ground2.rotation.x = -Math.PI / 2; ground2.position.set(2500, 0, 0); ground2.receiveShadow = true;
 
   /* ---------------- buildings ---------------- */
-  const STY = ['glass', 'office', 'granite', 'darkglass', 'residential', 'neon', 'dept', 'brown'];
-  const TILE = { glass: [4, 3.4], office: [5, 3.4], granite: [4, 3.4], darkglass: [4, 3.4], residential: [4.4, 3], neon: [4, 3], dept: [6, 4], brown: [4, 3.4] };
-  const MATS = {}; for (const s of STY) MATS[s] = buildingMat(facadeTex(s), new THREE.Vector2(...TILE[s]), s);
+  const STY = ['glass', 'office', 'granite', 'darkglass', 'residential', 'neon', 'dept', 'brown', 'temple', 'plaster', 'stone'], JJH_STY = ['temple', 'plaster', 'stone'];
+  const TILE = { glass: [4, 3.4], office: [5, 3.4], granite: [4, 3.4], darkglass: [4, 3.4], residential: [4.4, 3], neon: [4, 3], dept: [6, 4], brown: [4, 3.4], temple: [8, 9], plaster: [7, 6], stone: [2.4, 1.1] };
+  const MATS = {}; for (const s of STY) MATS[s] = buildingMat(facadeTex(s), new THREE.Vector2(...TILE[s]), s, !JJH_STY.includes(s));
   const B = [], plan = {}; for (const s of STY) plan[s] = [];
   const RES = [];   // reserved rects (landmarks, plazas)
   const reserve = (x0, z0, x1, z1) => RES.push([x0, z0, x1, z1]);
   const reserved = (x0, z0, x1, z1) => RES.some(r => x0 < r[2] && x1 > r[0] && z0 < r[3] && z1 > r[1]) || AVE.some(a => x0 < a.x1 && x1 > a.x0 && z0 < a.z1 && z1 > a.z0);
-  function addB(style, x, z, w, d, h, o) { o = o || {}; const b = { style, x, z, w, d, h, h0: h, base: o.base || 0, rot: o.rot || 0, tint: o.tint || R(.82, 1.08), lm: o.lm || null, hp: 0, alive: true, neon: o.neon || 0 };
+  function addB(style, x, z, w, d, h, o) { o = o || {}; const b = { style, x, z, w, d, h, h0: h, base: o.base || 0, rot: o.rot || 0, tint: o.tint || R(.82, 1.08), lm: o.lm || null, hp: 0, alive: true, neon: o.neon || 0, map: o.map || null };
     const c = Math.abs(Math.cos(b.rot)), s = Math.abs(Math.sin(b.rot)); b.hw = (w * c + d * s) / 2; b.hd = (w * s + d * c) / 2; b.hp = b.hp0 = 30 + w * d * .6 + h * 4; plan[style].push(b); B.push(b); return b; }
 
   // landmarks (Nishi-Shinjuku skyscrapers, Tochō, Kabukichō, Yoyogi)
@@ -249,6 +265,20 @@ window.WORLD = (function () {
     lm('gyoen', 350, 150); lm('cpark', -440, -10); lm('gai', 245, -140);
   }
   landmarks();
+  // Tokyo Jujutsu High: a temple compound in the forested hills on the edge of Tokyo (layout is ours; the anime shows
+  // timber halls on stone platforms, a five-storey pagoda, stone lanterns and cedar woods)
+  const JR = [];   // roofs to build for these buildings
+  { const J = (st, x, z, w, d, h, o = {}) => addB(st, x, z, w, d, h, Object.assign({ map: 'jjh', tint: R(.94, 1.04) }, o));
+    for (let k = 0; k < 3; k++) J('stone', 2505, -40, 54 - k * 4, 34 - k * 4, .55, { base: k * .55 });   // walkable steps
+    JR.push({ b: J('temple', 2505, -40, 38, 18, 9, { base: 1.65 }), eave: 4, rh: 8 });
+    JR.push({ b: J('plaster', 2440, -30, 14, 40, 8), eave: 2, rh: 4 });                     // lecture hall
+    JR.push({ b: J('plaster', 2610, -30, 14, 36, 7.5), eave: 2, rh: 4 });                   // dormitory
+    JR.push({ b: J('plaster', 2588, 62, 16, 28, 7), eave: 1.6, rh: 3.6 });                  // east dorm and the storehouse
+    JR.push({ b: J('plaster', 2552, 62, 10, 16, 5.5, { tint: 1.08 }), eave: 1.2, rh: 2.6 }); //   frame a narrow back alley
+    J('stone', 2448, 55, 11, 11, .9);                                                        // five-storey pagoda
+    for (let k = 0; k < 5; k++) { const w = 7.4 - k * .65; JR.push({ b: J('temple', 2448, 55, w, w, 3, { base: .9 + k * 3 }), eave: 2.4 - k * .1, rh: 1.3, y: -.6, spire: k === 4 }); }
+    JR.push({ b: J('temple', 2487, 92, 6, 6, 6), eave: 1.2, rh: 2.2 }); JR.push({ b: J('temple', 2513, 92, 6, 6, 6), eave: 1.2, rh: 2.2 });   // gate pavilions
+  }
   // procedural blocks
   for (const d of D) {
     if (d.type !== 0) continue;
@@ -270,8 +300,9 @@ window.WORLD = (function () {
   const inst = {};
   function writeB(b) { if (b.hidden) { inst[b.style].setMatrixAt(b.i, M4.makeScale(0, 0, 0)); return; } const h = Math.max(.001, b.h); P3.set(b.x, b.base + h / 2, b.z); Q.setFromAxisAngle(new V3(0, 1, 0), b.rot); S3.set(b.w, h, b.d);
     M4.compose(P3, Q, S3); inst[b.style].setMatrixAt(b.i, M4); COL.setScalar(b.tint * (b.alive ? 1 : .55)); if (!b.alive) COL.r *= 1.05; inst[b.style].setColorAt(b.i, COL); }
-  for (const s of STY) { const list = plan[s], m = new THREE.InstancedMesh(box, MATS[s], Math.max(1, list.length)); m.castShadow = m.receiveShadow = true; m.frustumCulled = false;
+  for (const s of STY) { const list = plan[s], m = new THREE.InstancedMesh(box, MATS[s], Math.max(1, list.length)); m.castShadow = m.receiveShadow = true; m.frustumCulled = false; m.userData.sty = s;
     list.forEach((b, i) => { b.i = i; }); inst[s] = m; scene.add(m); list.forEach(writeB); m.instanceMatrix.needsUpdate = true; if (m.instanceColor) m.instanceColor.needsUpdate = true; }
+  const inside = (b, x, z, r) => x > b.x - b.hw - r && x < b.x + b.hw + r && z > b.z - b.hd - r && z < b.z + b.hd + r;
   // collision grid
   const GC = 24, grid = new Map(), gk = (i, j) => i * 10007 + j;
   for (const b of B) { for (let i = Math.floor((b.x - b.hw) / GC); i <= Math.floor((b.x + b.hw) / GC); i++) for (let j = Math.floor((b.z - b.hd) / GC); j <= Math.floor((b.z + b.hd) / GC); j++) { const k = gk(i, j); if (!grid.has(k)) grid.set(k, []); grid.get(k).push(b); } }
@@ -295,6 +326,10 @@ window.WORLD = (function () {
     for (const [dx, dz, ry] of [[0, 4.05, 0], [0, -4.05, Math.PI], [4.55, 0, Math.PI / 2], [-4.55, 0, -Math.PI / 2]]) { const p = new THREE.Mesh(new THREE.PlaneGeometry(5, 5), new THREE.MeshBasicMaterial({ map: clk, transparent: true })); p.position.set(133 + dx, 90, 182 + dz); p.rotation.y = ry; scene.add(p); }
   }
   // kaiju head on the Toho building, Kabukichō gate, Alta screen, Shinjuku Eye, torii
+  const toriiM = new THREE.MeshLambertMaterial({ color: 0xc8302a });
+  function torii(parent, x, z, ry, s = 1) { const t = new THREE.Group(); for (const dx of [-1.8, 1.8]) { const p = new THREE.Mesh(box, toriiM); p.scale.set(.4, 5, .4); p.position.set(dx, 2.5, 0); t.add(p); }
+    const k = new THREE.Mesh(box, toriiM); k.scale.set(5.6, .45, .5); k.position.y = 5.1; t.add(k); const n = new THREE.Mesh(box, toriiM); n.scale.set(4.6, .3, .35); n.position.y = 4.2; t.add(n);
+    t.traverse(o => o.castShadow = true); t.position.set(x, 0, z); t.rotation.y = ry; t.scale.setScalar(s); parent.add(t); return t; }
   function canvasTex(w, h, draw, nearest = true) { const c = document.createElement('canvas'); c.width = w; c.height = h; draw(c.getContext('2d'), w, h); const t = new THREE.CanvasTexture(c); if (nearest) { t.magFilter = THREE.NearestFilter; t.minFilter = THREE.NearestFilter; t.generateMipmaps = false; } return t; }
   {
     const hm = new THREE.MeshLambertMaterial({ color: 0x4a5048 }), g = new THREE.Group(); g.position.set(108, 52, -124);
@@ -309,12 +344,10 @@ window.WORLD = (function () {
     const scr = new THREE.Mesh(new THREE.PlaneGeometry(14, 7), new THREE.MeshBasicMaterial({ map: alta })); scr.position.set(68.9, 12, -40); scr.rotation.y = -Math.PI / 2; scene.add(scr);
     const eyeT = canvasTex(32, 16, (c) => { c.fillStyle = '#f2c230'; c.beginPath(); c.ellipse(16, 8, 15, 7, 0, 0, 7); c.fill(); c.fillStyle = '#fff6d0'; c.beginPath(); c.ellipse(16, 8, 9, 5, 0, 0, 7); c.fill(); c.fillStyle = '#2a2014'; c.beginPath(); c.arc(16, 8, 3.4, 0, 7); c.fill(); });
     const se = new THREE.Mesh(new THREE.PlaneGeometry(8, 4), new THREE.MeshBasicMaterial({ map: eyeT, transparent: true })); se.position.set(-76, 5, -24.9); scene.add(se);
-    const tm = new THREE.MeshLambertMaterial({ color: 0xc8302a }); const torii = (x, z, ry) => { const t = new THREE.Group(); for (const dx of [-1.8, 1.8]) { const p = new THREE.Mesh(box, tm); p.scale.set(.4, 5, .4); p.position.set(dx, 2.5, 0); t.add(p); }
-      const k = new THREE.Mesh(box, tm); k.scale.set(5.6, .45, .5); k.position.y = 5.1; t.add(k); const n = new THREE.Mesh(box, tm); n.scale.set(4.6, .3, .35); n.position.y = 4.2; t.add(n); t.position.set(x, 0, z); t.rotation.y = ry; scene.add(t); };
-    torii(-452, -112, 0); torii(-452, -100, 0); addB('brown', -452, -124, 8, 6, 4, { lm: 'kumano', tint: .7 });
+    torii(scene, -452, -112, 0); torii(scene, -452, -100, 0); addB('brown', -452, -124, 8, 6, 4, { lm: 'kumano', tint: .7 });
   }
   // rewrite instance buffers for the late additions (Sumitomo core, shrine)
-  for (const s of STY) { const list = plan[s]; if (inst[s].count < list.length) { const old = inst[s]; scene.remove(old); const m = new THREE.InstancedMesh(box, MATS[s], list.length); m.castShadow = m.receiveShadow = true; m.frustumCulled = false; inst[s] = m; scene.add(m); list.forEach((b, i) => b.i = i); } list.forEach(writeB); inst[s].instanceMatrix.needsUpdate = true; if (inst[s].instanceColor) inst[s].instanceColor.needsUpdate = true; }
+  for (const s of STY) { const list = plan[s]; if (inst[s].count < list.length) { const old = inst[s]; scene.remove(old); const m = new THREE.InstancedMesh(box, MATS[s], list.length); m.castShadow = m.receiveShadow = true; m.frustumCulled = false; m.userData.sty = s; inst[s] = m; scene.add(m); list.forEach((b, i) => b.i = i); } list.forEach(writeB); inst[s].instanceMatrix.needsUpdate = true; if (inst[s].instanceColor) inst[s].instanceColor.needsUpdate = true; }
     grid.clear(); for (const b of B) { for (let i = Math.floor((b.x - b.hw) / GC); i <= Math.floor((b.x + b.hw) / GC); i++) for (let j = Math.floor((b.z - b.hd) / GC); j <= Math.floor((b.z + b.hd) / GC); j++) { const k = gk(i, j); if (!grid.has(k)) grid.set(k, []); grid.get(k).push(b); } }
 
   /* ---------------- props ---------------- */
@@ -376,6 +409,85 @@ window.WORLD = (function () {
   const lanG = new THREE.BufferGeometry(); lanG.setAttribute('position', new THREE.Float32BufferAttribute(lanP, 3));
   scene.add(new THREE.Points(lanG, new THREE.PointsMaterial({ map: lanT, size: .7, transparent: true, alphaTest: .4 })));
 
+  // things standing on a roof vanish with it: {m, i, M} instances attached to a building
+  const ZERO = new THREE.Matrix4().makeScale(0, 0, 0);
+  function writeAtt(b) { if (!b.att) return; for (const a of b.att) { a.m.setMatrixAt(a.i, b.h >= b.h0 - .5 ? a.M : ZERO); a.m.instanceMatrix.needsUpdate = true; } }
+  function attachAll(m, list) { list.forEach((it, i) => { const M = new THREE.Matrix4(); m.getMatrixAt(i, M); (it.b.att || (it.b.att = [])).push({ m, i, M }); }); }
+  const upsOf = b => b._ups || (b._ups = [...near(b.x, b.z, Math.max(b.hw, b.hd) + 1)].filter(u => u !== b && u.base >= b.base + b.h0 - .05 && inside(b, u.x, u.z, 0)));
+  // rooftop clutter: condenser units and water tanks
+  { const ac = [], tank = [];
+    for (const b of B) { if (b.map || b.lm || b.hidden || b.h < 6 || upsOf(b).length) continue; const top = b.base + b.h, n = Math.min(4, 1 + (b.w * b.d / 90 | 0));
+      for (let k = 0; k < n; k++) ac.push({ b, x: b.x + R(-.35, .35) * b.w, z: b.z + R(-.35, .35) * b.d, y: top, s: R(.8, 1.4), r: pick([0, Math.PI / 2]) });
+      if (b.style !== 'glass' && b.style !== 'darkglass' && rnd() < .45) tank.push({ b, x: b.x + R(-.3, .3) * b.w, z: b.z + R(-.3, .3) * b.d, y: top, s: R(.8, 1.3) }); }
+    const place = (it, m) => m.compose(P3.set(it.x, it.y, it.z), Q.setFromAxisAngle(new V3(0, 1, 0), it.r || 0), S3.setScalar(it.s));
+    attachAll(instanced(new THREE.BoxGeometry(1.3, .8, .9).translate(0, .4, 0), new THREE.MeshLambertMaterial({ color: 0x9a9ca2 }), ac, place, true), ac);
+    attachAll(instanced(new THREE.CylinderGeometry(.75, .75, 1.3, 8).translate(0, 1.35, 0), new THREE.MeshLambertMaterial({ color: 0x8aa6b8 }), tank, place, true), tank);
+    attachAll(instanced(new THREE.BoxGeometry(1.2, .7, 1.2).translate(0, .35, 0), new THREE.MeshLambertMaterial({ color: 0x4a4c52 }), tank, place), tank); }
+  // rooftop billboards around Kabukichō and 3-chōme (made-up ads, one atlas)
+  { const ADS = [['カラオケ', '24H', '#ff3a8a', '#1a0a1e'], ['ラーメン', '新宿', '#ffd23a', '#3a0e08'], ['SALE', '冬の大売出し', '#ffffff', '#c0182a'], ['牛丼', '並 ¥380', '#ff7a1a', '#101418']];
+    const T = canvasTex(128, 64, c => ADS.forEach(([a, b2, fg, bg], i) => { const x = (i % 2) * 64, y = (i >> 1) * 32; c.fillStyle = bg; c.fillRect(x, y, 64, 32); c.fillStyle = fg; c.textAlign = 'center';
+      c.font = 'bold 15px sans-serif'; c.fillText(a, x + 32, y + 16); c.font = 'bold 9px sans-serif'; c.fillText(b2, x + 32, y + 28); c.strokeStyle = fg; c.strokeRect(x + 1.5, y + 1.5, 61, 29); }), false);
+    const bb = []; for (const b of B) { if (b.map || b.lm || b.base > 0 || b.h < 10 || b.h > 32 || !['kabuki', 'sanchome', 'nichome'].includes(district(b.x, b.z).id) || upsOf(b).length || rnd() > .3) continue;
+      bb.push({ b, x: b.x, z: b.z, y: b.base + b.h, ry: pick([0, Math.PI / 2, Math.PI, -Math.PI / 2]), s: rnd() * 4 | 0 }); }
+    const g = new THREE.PlaneGeometry(7, 3.5).translate(0, 3.3, .2), uv = new Float32Array(Math.max(1, bb.length) * 4);
+    bb.forEach((it, i) => uv.set([(it.s % 2) / 2, it.s >> 1 ? 0 : .5, .5, .5], i * 4)); g.setAttribute('aUV', new THREE.InstancedBufferAttribute(uv, 4));
+    const mat = new THREE.MeshBasicMaterial({ map: T }); mat.onBeforeCompile = signMat.onBeforeCompile; mat.customProgramCacheKey = () => 'billboard';
+    const place = (it, m) => m.compose(P3.set(it.x, it.y, it.z), Q.setFromAxisAngle(new V3(0, 1, 0), it.ry), S3.set(1, 1, 1));
+    attachAll(instanced(g, mat, bb, place), bb);
+    attachAll(instanced(new THREE.BoxGeometry(7.4, 3.9, .3).translate(0, 3.3, 0), new THREE.MeshLambertMaterial({ color: 0x2a2a30 }), bb, place, true), bb);
+    attachAll(instanced(new THREE.BoxGeometry(.3, 1.6, .3).translate(0, .8, 0), new THREE.MeshLambertMaterial({ color: 0x3a3c44 }), bb, place), bb); }
+  // utility poles and sagging wires on the low-rise streets
+  { const poles = [], wp = [];
+    for (const d of D) { if (!['honan', 'nishin', 'nishis', 'shinjuku6', 'nichome', 'gai', 'kabuki'].includes(d.id)) continue;
+      for (let ox = d.x0; ox < d.x1 - 4; ox += d.cx) { let prev = null; const x = ox + d.sw + .9;
+        for (let z = d.z0 + d.sw + 3; z < d.z1 - 2; z += 11) { if ((z - d.z0) % d.cz < d.sw + 1) continue; if (prev && z - prev > 26) prev = null;
+          poles.push([x, z]); if (prev) for (const [dx, h] of [[-.55, 7.9], [.55, 7.9], [0, 8.4]]) { const m = (prev + z) / 2; wp.push(x + dx, h, prev, x + dx, h - .55, m, x + dx, h - .55, m, x + dx, h, z); } prev = z; } } }
+    const pole = ([x, z], m) => m.compose(P3.set(x, 0, z), Q.identity(), S3.set(1, 1, 1));
+    instanced(new THREE.CylinderGeometry(.11, .14, 8.6, 5).translate(0, 4.3, 0), new THREE.MeshLambertMaterial({ color: 0x6a6660 }), poles, pole, true);
+    instanced(new THREE.BoxGeometry(1.5, .12, .12).translate(0, 7.9, 0), new THREE.MeshLambertMaterial({ color: 0x3a3a3e }), poles, pole);
+    const wg = new THREE.BufferGeometry(); wg.setAttribute('position', new THREE.Float32BufferAttribute(wp, 3)); scene.add(new THREE.LineSegments(wg, new THREE.LineBasicMaterial({ color: 0x18181c }))); }
+
+  /* ---------------- Tokyo Jujutsu High set dressing ---------------- */
+  const cityList = scene.children.filter(o => ![sky, hemi, sun, sun.target, fuji].includes(o) && !JJH_STY.includes(o.userData.sty));
+  const jjh = new THREE.Group(); jjh.visible = false; scene.add(jjh); jjh.add(ground2);
+  const roofM = new THREE.MeshLambertMaterial({ color: 0x3c4452 });
+  function hipRoof(w, d, h) {   // concave hip roof (shallow at the eaves, steep at the ridge), ridge along the long side
+    const swap = d > w; if (swap) [w, d] = [d, w]; const N = 4, pos = [];
+    const ring = k => { const t = k / N, i = t * d / 2, y = h * Math.pow(t, 1.7); return [[-w / 2 + i, y, d / 2 - i], [w / 2 - i, y, d / 2 - i], [w / 2 - i, y, -d / 2 + i], [-w / 2 + i, y, -d / 2 + i]]; };
+    for (let k = 0; k < N; k++) { const a = ring(k), c = ring(k + 1); for (let q = 0; q < 4; q++) { const q2 = (q + 1) % 4; pos.push(...a[q], ...a[q2], ...c[q2], ...a[q], ...c[q2], ...c[q]); } }
+    const r0 = ring(0); pos.push(...r0[0], ...r0[3], ...r0[2], ...r0[0], ...r0[2], ...r0[1]);
+    const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); g.computeVertexNormals(); if (swap) g.rotateY(Math.PI / 2); return g; }
+  for (const r of JR) { const b = r.b, g = new THREE.Group(), m = new THREE.Mesh(hipRoof(b.w + r.eave * 2, b.d + r.eave * 2, r.rh), roofM); m.castShadow = m.receiveShadow = true; g.add(m);
+    if (r.spire) { const sp = new THREE.Mesh(new THREE.CylinderGeometry(.12, .12, 6, 5).translate(0, 3 + r.rh * .8, 0), roofM); g.add(sp);
+      for (let k = 0; k < 6; k++) { const ring = new THREE.Mesh(new THREE.CylinderGeometry(.42, .42, .12, 8), roofM); ring.position.y = r.rh + 1.4 + k * .55; g.add(ring); } }
+    g.position.set(b.x, b.base + b.h + (r.y || -.2), b.z); g.rotation.y = b.rot; jjh.add(g); b.spec = g; }
+  torii(jjh, 2500, 106, 0, 1.7); torii(jjh, 2500, 150, 0, 1.7);
+  { const lan = []; for (let z = 100; z <= 184; z += 12) lan.push([2484, z], [2516, z]); lan.push([2480, -12], [2530, -12], [2470, 40], [2530, 40]);
+    const stoneM = new THREE.MeshLambertMaterial({ color: 0x8a867e }), at = ([x, z], m) => m.compose(P3.set(x, 0, z), Q.identity(), S3.set(1, 1, 1));
+    instanced(new THREE.BoxGeometry(.9, .35, .9).translate(0, .18, 0), stoneM, lan, at, true); instanced(new THREE.CylinderGeometry(.18, .22, 1.3, 6).translate(0, 1, 0), stoneM, lan, at, true);
+    instanced(new THREE.BoxGeometry(.55, .5, .55).translate(0, 1.9, 0), lampMat, lan, at); instanced(new THREE.ConeGeometry(.7, .55, 4).rotateY(Math.PI / 4).translate(0, 2.42, 0), stoneM, lan, at, true);
+    jjh.add(...scene.children.slice(-4)); }
+  { // cedar woods all around; a clearing for the courtyard, the approach and the buildings
+    const trees2 = [], clear = (x, z) => (x > 2415 && x < 2605 && z > -85 && z < 100) || (x > 2476 && x < 2524 && z > 80) || B.some(b => b.map && inside(b, x, z, 3));
+    for (let i = 0; i < 3400; i++) { const x = R(2230, 2770), z = R(-270, 270); if (clear(x, z)) continue; trees2.push([x, z, R(10, 17)]); }
+    const cones = [[.38, .5, .5], [.3, .42, .72], [.19, .34, .9]].map(([r, h, y]) => new THREE.ConeGeometry(r, h, 7).translate(0, y, 0).toNonIndexed());
+    const fol = new THREE.BufferGeometry(), arr = []; for (const c of cones) arr.push(...c.attributes.position.array); fol.setAttribute('position', new THREE.Float32BufferAttribute(arr, 3)); fol.computeVertexNormals();
+    const tr = new THREE.CylinderGeometry(.03, .05, 1, 5).translate(0, .5, 0);
+    const at = ([x, z, h], m) => m.compose(P3.set(x, 0, z), Q.setFromAxisAngle(new V3(0, 1, 0), x * 3.1), S3.set(h * .6, h, h * .6));
+    const a = instanced(tr, new THREE.MeshLambertMaterial({ color: 0x4a3024 }), trees2, at, true), f = instanced(fol, new THREE.MeshLambertMaterial({ color: 0xffffff }), trees2.map(t => Object.assign(t, { c: 1 })),
+      (t, m, c) => { at(t, m); c.setRGB(.13 + (t[0] % 3) * .012, .24 + (t[1] % 5) * .012, .12); }, true);
+    jjh.add(a, f); }
+  // distant mountain ridges (flat colour, tinted by the time of day)
+  const ridgeM = [0, 1].map(() => new THREE.MeshBasicMaterial({ color: 0x556070, fog: false, side: THREE.DoubleSide }));
+  [[1500, 260, 0], [900, 150, 1]].forEach(([r, hMax, li]) => { const N = 120, pos = [], hgt = a => hMax * (.45 + .3 * Math.sin(a * 3 + li * 2) + .15 * Math.sin(a * 7.3 + 1) + .1 * Math.sin(a * 17 + li));
+    for (let i = 0; i < N; i++) { const a0 = i / N * Math.PI * 2, a1 = (i + 1) / N * Math.PI * 2, p = (a, y) => [2500 + Math.cos(a) * r, y, Math.sin(a) * r];
+      pos.push(...p(a0, -40), ...p(a1, -40), ...p(a1, hgt(a1)), ...p(a0, -40), ...p(a1, hgt(a1)), ...p(a0, hgt(a0))); }
+    const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); const m = new THREE.Mesh(g, ridgeM[li]); m.frustumCulled = false; jjh.add(m); });
+  let mapK = 'shinjuku';
+  function setMap(k) { if (!MAPS[k]) k = 'shinjuku'; mapK = k; Object.assign(MAP, MAPS[k]); const j = k === 'jjh';
+    for (const o of cityList) o.visible = !j; for (const s of STY) inst[s].visible = JJH_STY.includes(s) === j; jjh.visible = j;
+    mini.width = Math.ceil((MAP.x1 - MAP.x0) * MAP.ms); mini.height = Math.ceil((MAP.z1 - MAP.z0) * MAP.ms); drawMini(); }
+
   /* ---------------- domain set pieces ---------------- */
   const domain = new THREE.Group(); scene.add(domain);
   const stars = (() => { const n = 2600, p = new Float32Array(n * 3), c = new Float32Array(n * 3); for (let i = 0; i < n; i++) { const v = new V3(R(-1, 1), R(-1, 1), R(-1, 1)).normalize().multiplyScalar(R(40, 500)); p.set([v.x, v.y, v.z], i * 3);
@@ -426,10 +538,10 @@ window.WORLD = (function () {
   const smokeT = [0, 1, 2].map(k => canvasTex(16, 16, c => { for (let i = 0; i < 9; i++) { c.fillStyle = `rgba(255,255,255,${.35 + rnd() * .5})`; c.beginPath(); c.arc(4 + rnd() * 8, 4 + rnd() * 8, 2 + rnd() * 3.5, 0, 7); c.fill(); } }));
   const flameT = [0, 1, 2, 3].map(f => canvasTex(16, 24, c => { for (let y = 0; y < 24; y++) for (let x = 0; x < 16; x++) { const cx = 8 + Math.sin(y * .5 + f * 1.6) * 1.5 * (1 - y / 24), w = Math.pow(y / 24, .8) * 6.5, dd = Math.abs(x - cx) / w; if (dd > 1 || y < 2) continue;
     const ht = (y / 24) * (1 - dd); c.fillStyle = ht > .5 ? '#fff2b0' : ht > .3 ? '#ffc040' : ht > .15 ? '#ff7a20' : '#d02a20'; c.fillRect(x, y, 1, 1); } }));
-  const dust = [], fires = [], FIRE_MAX = 70, DUST_MAX = 90;
-  function dustAt(p, s, col, life) { if (dust.length >= DUST_MAX) { const o = dust.shift(); scene.remove(o.o); }
+  const dust = [], fires = [], FIRE_MAX = 70, DUST_MAX = 140;
+  function dustAt(p, s, col, life, vel) { if (dust.length >= DUST_MAX) { const o = dust.shift(); scene.remove(o.o); }
     const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: pick(smokeT), color: col || (TOD.night > .5 ? 0x6a6878 : 0xb8b0a4), transparent: true, depthWrite: false, opacity: .85 }));
-    sp.position.copy(p); sp.scale.setScalar(s); sp.material.rotation = R(0, 6); scene.add(sp); dust.push({ o: sp, life: life || R(2.5, 4.5), max: 0, s, v: new V3(R(-.6, .6), R(.4, 1.4), R(-.6, .6)) }); dust[dust.length - 1].max = dust[dust.length - 1].life; }
+    sp.position.copy(p); sp.scale.setScalar(s); sp.material.rotation = R(0, 6); scene.add(sp); dust.push({ o: sp, life: life || R(2.5, 4.5), max: 0, s, v: vel || new V3(R(-.6, .6), R(.4, 1.4), R(-.6, .6)) }); dust[dust.length - 1].max = dust[dust.length - 1].life; }
   function fireAt(p, s = 3, life = 40) { if (fires.length >= FIRE_MAX) { const o = fires.shift(); scene.remove(o.o); }
     const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: flameT[0], blending: THREE.AdditiveBlending, depthWrite: false, transparent: true, fog: false })); sp.center.set(.5, 0);
     sp.position.copy(p); sp.scale.set(s * .7, s, 1); scene.add(sp); fires.push({ o: sp, life, max: life, s, ph: R(0, 4) }); }
@@ -446,25 +558,25 @@ window.WORLD = (function () {
   const chunks = [];
 
   /* ---------------- destruction ---------------- */
-  function setH(b, h) { b.h = Math.max(0, h); writeB(b); if (b.spec) { if (b.spec.userData.core) { b.spec.scale.y = Math.max(.01, b.h); b.spec.position.y = b.h / 2; } else b.spec.visible = b.h >= b.h0 - .5; } inst[b.style].instanceMatrix.needsUpdate = true; if (inst[b.style].instanceColor) inst[b.style].instanceColor.needsUpdate = true; }
+  function setH(b, h, quiet) { b.h = Math.max(0, h); writeB(b); writeAtt(b); if (b.spec) { if (b.spec.userData.core) { b.spec.scale.y = Math.max(.01, b.h); b.spec.position.y = b.h / 2; } else b.spec.visible = b.h >= b.h0 - .5; } inst[b.style].instanceMatrix.needsUpdate = true; if (inst[b.style].instanceColor) inst[b.style].instanceColor.needsUpdate = true;
+    if (b.h < b.h0 - .5) for (const u of upsOf(b)) if (u.h > 0) { if (!quiet) chunk(u, 0, u.h); u.alive = false; setH(u, 0, quiet); } }
   function chunk(b, from, hgt) { if (chunks.length > 8 || hgt < 1) return; const m = new THREE.Mesh(box, MATS[b.style]); m.scale.set(b.w, hgt, b.d); m.position.set(b.x, b.base + from + hgt / 2, b.z); m.rotation.y = b.rot; m.castShadow = true; scene.add(m);
     chunks.push({ m, v: new V3(R(-3, 3), R(0, 2), R(-3, 3)), w: new V3(R(-.5, .5), 0, R(-.5, .5)), b }); }
   function collapse(b, quiet) { if (!b.alive || b.h < 2.5) return; const keep = Math.max(1.6, b.h * R(.1, .3)); b.alive = false;
     if (!quiet) { chunk(b, keep, b.h - keep); const c = new V3(b.x, b.base + keep, b.z); for (let k = 0; k < 6; k++) dustAt(c.clone().add(new V3(R(-b.w, b.w) * .6, R(0, 3), R(-b.d, b.d) * .6)), R(6, 12)); debris(c, 26, null, 12); }
-    setH(b, keep); signs.forEach((s, i) => { if (s.b === b) { signMesh.setMatrixAt(i, M4.makeScale(0, 0, 0)); signMesh.instanceMatrix.needsUpdate = true; } }); if (rnd() < .7) fireAt(new V3(b.x + R(-b.w, b.w) * .35, b.base + keep, b.z + R(-b.d, b.d) * .35), R(2.5, 5)); }
+    setH(b, keep, quiet); signs.forEach((s, i) => { if (s.b === b) { signMesh.setMatrixAt(i, M4.makeScale(0, 0, 0)); signMesh.instanceMatrix.needsUpdate = true; } }); if (rnd() < .7) fireAt(new V3(b.x + R(-b.w, b.w) * .35, b.base + keep, b.z + R(-b.d, b.d) * .35), R(2.5, 5)); }
   function cutB(b, y, quiet) { const local = y - b.base; if (local < 2 || local > b.h - 1.5) { hitB(b, 40, new V3(b.x, y, b.z)); return; }
-    if (!quiet) chunk(b, local, b.h - local); setH(b, local); b.hp *= .6; if (!quiet) { debris(new V3(b.x, y, b.z), 10, null, 6); for (let k = 0; k < 3; k++) dustAt(new V3(b.x + R(-b.w, b.w) * .5, y, b.z + R(-b.d, b.d) * .5), R(4, 7)); } }
+    if (!quiet) chunk(b, local, b.h - local); setH(b, local, quiet); b.hp *= .6; if (!quiet) { debris(new V3(b.x, y, b.z), 10, null, 6); for (let k = 0; k < 3; k++) dustAt(new V3(b.x + R(-b.w, b.w) * .5, y, b.z + R(-b.d, b.d) * .5), R(4, 7)); } }
   function hitB(b, dmg, p) { if (b.h < .5) return; b.hp -= dmg; debris(p, 4, null, 7); if (b.hp <= 0) collapse(b); }
-  function erase(b) { if (b.h < .5) return; const c = new V3(b.x, b.base + b.h / 2, b.z); b.alive = false; setH(b, .4); dustAt(c, 10, 0x8a5ac8); crater(new V3(b.x, 0, b.z), Math.max(b.w, b.d) * .7); }
-  function ruin(id, frac) { for (const b of B) { if (b.lm && b.lm !== 'omoide') { if (rnd() < frac * .4 && b.base === 0 && !b.spec && !['parktower', 'docomo', 'tocho'].includes(b.lm)) cutB(b, b.base + b.h * R(.4, .8), true); continue; }
+  function erase(b) { if (b.h < .5) return; const c = new V3(b.x, b.base + b.h / 2, b.z); b.alive = false; setH(b, .4, true); dustAt(c, 10, 0x8a5ac8); crater(new V3(b.x, 0, b.z), Math.max(b.w, b.d) * .7); }
+  function ruin(id, frac) { for (const b of B) { if (b.map) continue; if (b.lm && b.lm !== 'omoide') { if (rnd() < frac * .4 && b.base === 0 && !b.spec && !['parktower', 'docomo', 'tocho'].includes(b.lm)) cutB(b, b.base + b.h * R(.4, .8), true); continue; }
     const d = district(b.x, b.z); if (d.id === id && rnd() < frac) { if (b.base > 0) setH(b, 0); else collapse(b, true); } }
-    for (let i = 0; i < 26; i++) { const b = pick(B.filter(q => !q.alive)); if (b) fireAt(new V3(b.x, b.base + b.h, b.z), R(2.5, 5), 1e9); } }
-  function reset() { for (const b of B) { b.h = b.h0; b.alive = true; b.hp = b.hp0; if (!b.hidden) writeB(b); if (b.spec) { b.spec.visible = true; if (b.spec.userData.core) { b.spec.scale.y = b.h0; b.spec.position.y = b.h0 / 2; } } } for (const s of STY) { inst[s].instanceMatrix.needsUpdate = true; if (inst[s].instanceColor) inst[s].instanceColor.needsUpdate = true; }
+    for (let i = 0; i < 26; i++) { const b = pick(B.filter(q => !q.alive && !q.map)); if (b) fireAt(new V3(b.x, b.base + b.h, b.z), R(2.5, 5), 1e9); } }
+  function reset() { for (const b of B) { b.h = b.h0; b.alive = true; b.hp = b.hp0; if (!b.hidden) writeB(b); writeAtt(b); if (b.spec) { b.spec.visible = true; if (b.spec.userData.core) { b.spec.scale.y = b.h0; b.spec.position.y = b.h0 / 2; } } } for (const s of STY) { inst[s].instanceMatrix.needsUpdate = true; if (inst[s].instanceColor) inst[s].instanceColor.needsUpdate = true; }
     for (const f of fires) scene.remove(f.o); fires.length = 0; for (const d of dust) scene.remove(d.o); dust.length = 0; for (const c of chunks) scene.remove(c.m); chunks.length = 0;
     for (const d of deb) d.life = 0; signs.forEach((s, i) => signMesh.setMatrixAt(i, M4.compose(P3.set(s.x, s.y, s.z), Q.setFromAxisAngle(new V3(0, 1, 0), s.ry), S3.set(1, 1, 1)))); signMesh.instanceMatrix.needsUpdate = true; drawMini(); for (let i = 0; i < DEC; i++) decM.setMatrixAt(i, M4.makeScale(0, 0, 0)); decM.instanceMatrix.needsUpdate = true; setMood(null); }
 
   /* ---------------- collision queries ---------------- */
-  const inside = (b, x, z, r) => x > b.x - b.hw - r && x < b.x + b.hw + r && z > b.z - b.hd - r && z < b.z + b.hd + r;
   function collide(p, r, prevY) {   // p = feet position; returns {b, landed} after pushing p out of buildings
     let res = null;
     for (const b of near(p.x, p.z, r + 2)) { if (b.h < .5 || !inside(b, p.x, p.z, r)) continue; const top = b.base + b.h; if (p.y >= top || p.y + 1.8 < b.base) continue;
@@ -484,9 +596,12 @@ window.WORLD = (function () {
   function occluded(a, bpt) { for (const { b } of segment(a, bpt, 0)) if (b.base + b.h > Math.min(a.y, bpt.y)) return b; return null; }
 
   /* ---------------- per-frame ---------------- */
-  let T = 0;
+  let T = 0, smokeCd = 0;
   function update(dt, focus) {
     T += dt;
+    // smoke columns drifting up from burning buildings near the camera
+    if ((smokeCd -= dt) <= 0 && fires.length) { smokeCd = .16; const f = fires[Math.random() * fires.length | 0];
+      if (f.life > 4 && f.o.position.distanceToSquared(camera.position) < 62500) dustAt(f.o.position.clone().add(new V3(R(-1, 1), f.s * .8, R(-1, 1))), R(5, 9), TOD.night > .5 ? 0x2c2830 : 0x55504e, R(6, 9), new V3(R(.2, 1.2), R(3.5, 5.5), R(-.5, .5))); }
     const cam = camera.position;
     sky.position.copy(cam); fuji.position.set(cam.x - 1900, 0, cam.z + 700);
     sun.position.copy(focus).addScaledVector(skyU.sun.value, 300); sun.target.position.copy(focus);
@@ -516,10 +631,10 @@ window.WORLD = (function () {
   }
 
   /* ---------------- minimap ---------------- */
-  const mini = document.createElement('canvas'), MS = .26; mini.width = Math.ceil((MAP.x1 - MAP.x0) * MS); mini.height = Math.ceil((MAP.z1 - MAP.z0) * MS);
-  function drawMini() { const g = mini.getContext('2d'); g.fillStyle = '#1c1a22'; g.fillRect(0, 0, mini.width, mini.height);
+  const mini = document.createElement('canvas'); mini.width = Math.ceil((MAP.x1 - MAP.x0) * MAP.ms); mini.height = Math.ceil((MAP.z1 - MAP.z0) * MAP.ms);
+  function drawMini() { const g = mini.getContext('2d'), MS = MAP.ms; g.fillStyle = '#1c1a22'; g.fillRect(0, 0, mini.width, mini.height);
     const X = x => (x - MAP.x0) * MS, Z = z => (z - MAP.z0) * MS;
-    for (const d of D) { g.fillStyle = d.type === 1 ? '#23422a' : d.type === 2 ? '#3a3640' : d.type === 3 ? '#4a4650' : '#2a2832'; g.fillRect(X(d.x0), Z(d.z0), (d.x1 - d.x0) * MS, (d.z1 - d.z0) * MS);
+    for (const d of [...D].reverse()) { g.fillStyle = ['#2a2832', '#23422a', '#3a3640', '#4a4650', '#4e4a44', '#1d3320'][d.type]; g.fillRect(X(d.x0), Z(d.z0), (d.x1 - d.x0) * MS, (d.z1 - d.z0) * MS);
       if (d.type === 0) { g.fillStyle = '#4a4854'; for (let x = d.x0; x < d.x1; x += d.cx) g.fillRect(X(x), Z(d.z0), Math.max(1, d.sw * MS), (d.z1 - d.z0) * MS); for (let z = d.z0; z < d.z1; z += d.cz) g.fillRect(X(d.x0), Z(z), (d.x1 - d.x0) * MS, Math.max(1, d.sw * MS)); }
       if (d.type === 2) { g.fillStyle = '#6a6470'; for (let x = -34; x < 36; x += 4.6) g.fillRect(X(x), Z(d.z0), 1, (d.z1 - d.z0) * MS); } }
     for (const a of AVE) { g.fillStyle = '#5a5866'; g.fillRect(X(a.x0), Z(a.z0), (a.x1 - a.x0) * MS, (a.z1 - a.z0) * MS); }
@@ -532,6 +647,6 @@ window.WORLD = (function () {
   resize();
   setTime('noon');
   return { scene, camera, renderer, render, resize, update, setTime: setTimeK, setMood, get mood() { return mood; }, TIMES, get TOD() { return TOD; },
-    district, D, MAP, LM, B, collide, surfaceY, segment, within, occluded, near,
-    hitB, cutB, collapse, erase, ruin, reset, degrade, debris, dustAt, fireAt, crater, setCut, mini, drawMini, MS, compM, get W() { return W; }, get H() { return H; } };
+    district, D, MAP, LM, B, setMap, get map() { return mapK; }, collide, surfaceY, segment, within, occluded, near,
+    hitB, cutB, collapse, erase, ruin, reset, degrade, debris, dustAt, fireAt, crater, setCut, mini, drawMini, get MS() { return MAP.ms; }, compM, get W() { return W; }, get H() { return H; } };
 })();
