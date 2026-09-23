@@ -7,7 +7,10 @@ window.WORLD = (function () {
   const MAPS = { shinjuku: { x0: -480, x1: 440, z0: -280, z1: 280, ms: .26 }, jjh: { x0: 2350, x1: 2650, z0: -150, z1: 190, ms: .5 },
     sendai: { x0: 4720, x1: 5280, z0: -280, z1: 280, ms: .3 },
     suburb: { x0: 7220, x1: 7780, z0: -280, z1: 280, ms: .3 },
-    shibuya: { x0: 9720, x1: 10280, z0: -280, z1: 280, ms: .3 } };
+    shibuya: { x0: 9720, x1: 10280, z0: -280, z1: 280, ms: .3 },
+    ikebukuro: { x0: 12220, x1: 12780, z0: -280, z1: 280, ms: .3 },
+    canyon: { x0: 14820, x1: 15180, z0: -180, z1: 180, ms: .5 } };
+  const CITY = ['shinjuku', 'sendai', 'suburb', 'shibuya', 'ikebukuro'];
   const MAP = Object.assign({}, MAPS.shinjuku);
 
   /* ---------------- districts (first match wins) ---------------- */
@@ -34,11 +37,10 @@ window.WORLD = (function () {
     { id: 'jjh', name: 'Jujutsu High · Cedar Forest', jp: '呪術高専 杉林', x0: 2100, z0: -400, x1: 2900, z1: 400, type: 5 },
     // Sendai, where Yuji's story starts (the town layout is ours)
     { id: 'sugisawa', name: 'Sugisawa Third High School', jp: '杉沢第三高校', x0: 4950, z0: -75, x1: 5070, z1: 40, type: 4 },
-    { id: 'sendai', name: 'Sendai', jp: '仙台', x0: 4700, z0: -300, x1: 5300, z1: 300, cx: 34, cz: 30, sw: 8, h: [5, 14], styles: ['residential', 'residential', 'brown', 'office'], type: 0 },
+    { id: 'sendai', name: 'Sendai', jp: '仙台', x0: 4700, z0: -300, x1: 5300, z1: 300, cx: 26, cz: 24, sw: 6, h: [4.5, 8], styles: ['residential', 'residential', 'brown'], type: 0 },
     // the suburbs of the early arcs (layout is ours): the detention center, Junpei's school, a river crossed by Yasohachi Bridge
     { id: 'eishu', name: 'Eishū Juvenile Detention Center', jp: '英集少年院', x0: 7300, z0: -230, x1: 7420, z1: -110, type: 4 },
     { id: 'satozakura', name: 'Satozakura High School', jp: '里桜高校', x0: 7560, z0: -200, x1: 7680, z1: -90, type: 4 },
-    { id: 'river', name: 'Yasohachi Bridge', jp: '八十八橋', x0: 7200, z0: 170, x1: 7800, z1: 230, type: 6 },
     { id: 'suburb', name: 'Suburbs', jp: '郊外', x0: 7200, z0: -300, x1: 7800, z1: 300, cx: 32, cz: 30, sw: 8, h: [5, 16], styles: ['residential', 'residential', 'brown', 'office'], type: 0 },
     // Shibuya, around the station (approximate real layout: the scramble crossing west of the station, 109 at the Dōgenzaka fork, Center Gai to the north-west)
     { id: 'scramble', name: 'Shibuya Scramble Crossing', jp: '渋谷スクランブル交差点', x0: 9925, z0: -60, x1: 9990, z1: 5, type: 3 },
@@ -46,7 +48,15 @@ window.WORLD = (function () {
     { id: 'centergai', name: 'Center Gai', jp: 'センター街', x0: 9820, z0: -200, x1: 9925, z1: -30, cx: 26, cz: 22, sw: 6, h: [8, 22], styles: ['neon', 'neon', 'dept'], type: 0, neon: 1 },
     { id: 'dogenzaka', name: 'Dōgenzaka', jp: '道玄坂', x0: 9780, z0: 5, x1: 9990, z1: 200, cx: 34, cz: 30, sw: 8, h: [10, 30], styles: ['neon', 'office', 'dept'], type: 0, neon: .5 },
     { id: 'shibuyae', name: 'Shibuya East', jp: '渋谷東', x0: 10035, z0: -300, x1: 10300, z1: 300, cx: 44, cz: 40, sw: 12, h: [16, 50], styles: ['glass', 'office', 'darkglass'], type: 0 },
-    { id: 'shibuya', name: 'Shibuya', jp: '渋谷', x0: 9700, z0: -300, x1: 9990, z1: 300, cx: 38, cz: 34, sw: 10, h: [12, 34], styles: ['office', 'dept', 'neon', 'glass'], type: 0, neon: .3 }
+    { id: 'shibuya', name: 'Shibuya', jp: '渋谷', x0: 9700, z0: -300, x1: 9990, z1: 300, cx: 38, cz: 34, sw: 10, h: [12, 34], styles: ['office', 'dept', 'neon', 'glass'], type: 0, neon: .3 },
+    // Ikebukuro, inside Tokyo Colony No. 1 (Higuruma's theater, Sunshine 60)
+    { id: 'sunshine', name: 'Sunshine 60', jp: 'サンシャイン60', x0: 12560, z0: -70, x1: 12650, z1: 20, type: 3 },
+    { id: 'theater', name: "Theater · Higuruma's base", jp: '劇場', x0: 12390, z0: 40, x1: 12470, z1: 110, type: 3 },
+    { id: 'ikestation', name: 'Ikebukuro Station', jp: '池袋駅', x0: 12320, z0: -300, x1: 12365, z1: 300, type: 2 },
+    { id: 'ikebukuro', name: 'Ikebukuro · Tokyo Colony No. 1', jp: '池袋 · 東京第一結界', x0: 12200, z0: -300, x1: 12800, z1: 300, cx: 36, cz: 32, sw: 10, h: [14, 40], styles: ['office', 'dept', 'neon', 'glass'], type: 0, neon: .3 },
+    // Yasohachi Bridge: a stone bridge high over Koinokuchi Canyon, forest roads at both ends, a small river far below
+    { id: 'canyonriver', name: 'Yasohachi Bridge', jp: '八十八橋', x0: 14700, z0: -24, x1: 15300, z1: 24, type: 6 },
+    { id: 'canyon', name: 'Koinokuchi Canyon', jp: '恋の口渓谷', x0: 14700, z0: -300, x1: 15300, z1: 300, type: 5 }
   ];
   const AVE = [{ x0: 55, z0: -78, x1: 440, z1: -66, name: 'Yasukuni-dōri' }];
   function district(x, z) { for (const d of D) if (x >= d.x0 && x < d.x1 && z >= d.z0 && z < d.z1) return d; return D[3]; }
@@ -136,7 +146,7 @@ window.WORLD = (function () {
     scene.fog.color.set(t.fog); scene.fog.density = t.fogD; U.night.value = t.night; compM.uniforms.grade.value.set(...t.grade); compM.uniforms.lift.value.set(...t.lift); brightM.uniforms.th.value = t.bloomTh;
     fuji.userData.m.color.set(t.fuji); ridgeM[0].color.set(t.fuji).lerp(new THREE.Color(t.hor), .25); ridgeM[1].color.set(t.fuji).lerp(new THREE.Color('#1c2a1e'), .45); fuji.userData.s.color.set(t.night > .5 ? '#5a6080' : '#f0f2f8');
     lampMat.color.set(t.lamps > .2 ? '#ffd9a0' : '#8a8a90'); lampMat.color.multiplyScalar(t.lamps > .2 ? 1.6 : 1);
-    snow.visible = k === 'night'; ash.visible = true; ash.material.color.set(t.night > .5 ? 0xff6a7a : 0x9a8a88); ash.material.size = t.night > .5 ? .16 : .12;
+    snow.visible = k === 'night'; ash.visible = true; if (typeof rain !== 'undefined') rain.visible = false; ash.material.color.set(t.night > .5 ? 0xff6a7a : 0x9a8a88); ash.material.size = t.night > .5 ? .16 : .12;
   }
 
   /* ---------------- shader helpers ---------------- */
@@ -155,10 +165,10 @@ window.WORLD = (function () {
         mat4 MM = modelMatrix * IM; vec3 sc = vec3(length(MM[0].xyz), length(MM[1].xyz), length(MM[2].xyz)); vec3 lp = position;
         vFUV = (abs(normal.x) > .5 ? vec2(lp.z * sc.z * sign(normal.x), (lp.y + .5) * sc.y) : vec2(-lp.x * sc.x * sign(normal.z), (lp.y + .5) * sc.y)) / uTile;
         vRoof = normal.y; vH = (lp.y + .5) * sc.y; vTop = (.5 - lp.y) * sc.y; vSeed = fract(MM[3].x * .137 + MM[3].z * .311); vWP = (MM * vec4(lp, 1.)).xyz;`);
-      sh.fragmentShader = `#define SHOP ${shop ? '1.' : '0.'}\nvarying vec2 vFUV; varying float vRoof, vSeed, vH, vTop; varying vec3 vWP; uniform float uNight;\n` + GLSL_HASH + CUT_FRAG + sh.fragmentShader
+      sh.fragmentShader = `#define SHOP ${shop ? '1.' : '0.'}\n#define ROOFC ${key === 'rock' ? 'vec3(.2,.3,.14)' : 'vec3(.46,.45,.47)'}\nvarying vec2 vFUV; varying float vRoof, vSeed, vH, vTop; varying vec3 vWP; uniform float uNight;\n` + GLSL_HASH + CUT_FRAG + sh.fragmentShader
         .replace('#include <clipping_planes_fragment>', '#include <clipping_planes_fragment>\n' + CUT_CODE)
         .replace('#include <map_fragment>', `float lit = 0.;
-          if (vRoof > .5) { diffuseColor.rgb *= vec3(.46,.45,.47) * (.8 + .35 * hh(floor(vWP.xz * 1.3))); }
+          if (vRoof > .5) { diffuseColor.rgb *= ROOFC * (.8 + .35 * hh(floor(vWP.xz * 1.3))); }
           else if (vRoof > -.5) {
             vec4 fac = texture2D(map, vFUV); diffuseColor.rgb *= fac.rgb;
             vec2 cell = floor(vFUV * 2.); lit = step(.75, fac.a) * step(.58, hh(cell + vSeed * 91.7));
@@ -175,7 +185,7 @@ window.WORLD = (function () {
     const set = (x, y, r, gg, b, a) => { const o = (y * 32 + x) * 4; d[o] = r; d[o + 1] = gg; d[o + 2] = b; d[o + 3] = a; };
     const P = { glass: [[92, 130, 150], [150, 190, 205]], office: [[150, 150, 152], [60, 72, 90]], granite: [[178, 170, 158], [70, 80, 96]], darkglass: [[40, 44, 52], [60, 70, 86]],
       residential: [[205, 196, 178], [70, 84, 100]], neon: [[70, 64, 72], [50, 56, 70]], dept: [[184, 160, 132], [80, 86, 96]], brown: [[128, 96, 76], [60, 66, 80]],
-      temple: [[226, 220, 206], [214, 196, 160]], plaster: [[218, 212, 198], [74, 70, 66]], stone: [[150, 146, 138], [150, 146, 138]] }[kind], WOOD = [58, 40, 30];
+      temple: [[226, 220, 206], [214, 196, 160]], plaster: [[218, 212, 198], [74, 70, 66]], stone: [[150, 146, 138], [150, 146, 138]], rock: [[112, 104, 92], [112, 104, 92]] }[kind], WOOD = [58, 40, 30];
     for (let y = 0; y < 32; y++) for (let x = 0; x < 32; x++) {
       const fy = y % 16, fx = x % 16; let win = false, c0 = P[0], n = (Math.random() * 10) | 0;
       if (kind === 'glass' || kind === 'darkglass') { win = fy > 2 && fx !== 0 && fx !== 8; if (fy <= 2) c0 = kind === 'glass' ? [70, 96, 112] : [26, 28, 34]; }
@@ -187,6 +197,7 @@ window.WORLD = (function () {
       // temple: dark timber posts and beams, white plaster above, paper shoji below (they glow at night)
       else if (kind === 'temple') { if (fx === 0 || fy <= 1 || fy === 6 || fy === 7) c0 = WOOD; else if (fy >= 8) { win = true; if (fx % 4 === 0 || fy % 4 === 0) { set(x, y, WOOD[0] + 20, WOOD[1] + 16, WOOD[2] + 12, 255); continue; } } }
       else if (kind === 'plaster') { if (fy <= 1 || fx === 0) c0 = WOOD; else win = fy >= 5 && fy <= 11 && fx >= 4 && fx <= 11; }
+      else if (kind === 'rock') { const band = Math.sin(y * .9 + Math.sin(x * .4) * 1.4); c0 = band > .5 ? [128, 118, 102] : band < -.6 ? [84, 78, 70] : [104, 96, 86]; if ((x * 7 + y * 3) % 11 === 0) c0 = [70, 88, 58]; }
       else if (kind === 'stone') { if (fy % 8 === 0 || (fx + (fy >> 3) * 8) % 16 === 0) c0 = [112, 108, 102]; }
       if (win) { const w = P[1], sky = kind === 'glass' ? (16 - fy) * 2 : 0; set(x, y, w[0] + sky + n, w[1] + sky + n, w[2] + sky + n, 255); }
       else set(x, y, c0[0] + n - 5, c0[1] + n - 5, c0[2] + n - 5, 128);
@@ -198,11 +209,11 @@ window.WORLD = (function () {
   const groundMat = new THREE.MeshLambertMaterial({ color: 0xffffff });
   groundMat.onBeforeCompile = sh => {
     const dd = D.map(d => new THREE.Vector4(d.x0, d.z0, d.x1, d.z1)), gg = D.map(d => new THREE.Vector4(d.cx || 1, d.cz || 1, d.sw || 0, d.type));
-    while (dd.length < 34) { dd.push(new THREE.Vector4(0, 0, -1, -1)); gg.push(new THREE.Vector4(1, 1, 0, 0)); }
+    while (dd.length < 40) { dd.push(new THREE.Vector4(0, 0, -1, -1)); gg.push(new THREE.Vector4(1, 1, 0, 0)); }
     const aa = AVE.map(a => new THREE.Vector4(a.x0, a.z0, a.x1, a.z1)); while (aa.length < 4) aa.push(new THREE.Vector4(0, 0, -1, -1));
     Object.assign(sh.uniforms, { uD: { value: dd }, uG: { value: gg }, uA: { value: aa }, uCut: U.cut, uT: U.time });
     sh.vertexShader = 'varying vec3 vWP;\n' + sh.vertexShader.replace('#include <project_vertex>', '#include <project_vertex>\nvWP = (modelMatrix * vec4(position,1.)).xyz;');
-    sh.fragmentShader = 'varying vec3 vWP; uniform vec4 uD[34]; uniform vec4 uG[34]; uniform vec4 uA[4]; uniform float uT;\n' + GLSL_HASH + `
+    sh.fragmentShader = 'varying vec3 vWP; uniform vec4 uD[40]; uniform vec4 uG[40]; uniform vec4 uA[4]; uniform float uT;\n' + GLSL_HASH + `
       vec3 asph(vec2 p){ return vec3(.2,.2,.22) + hh(floor(p*5.))*.05 + vn(p*.25)*.05; }
       vec3 pave(vec2 p){ vec2 t=fract(p*.8); float g=step(t.x,.08)+step(t.y,.08); return mix(vec3(.55,.53,.5)+hh(floor(p*.8))*.06, vec3(.38,.37,.36), clamp(g,0.,1.)); }
       vec3 lot(vec2 p){ return vec3(.34,.33,.32)+hh(floor(p*2.))*.04; }
@@ -222,7 +233,7 @@ window.WORLD = (function () {
         return lot(p); }
       vec3 groundAt(vec2 p){
         for(int i=0;i<4;i++){ vec4 a=uA[i]; if(a.z<=a.x) continue; if(p.x>a.x&&p.x<a.z&&p.y>a.y&&p.y<a.w){ vec3 c=asph(p); float m=(a.y+a.w)*.5; if(abs(p.y-m)<.25&&abs(p.y-m)>.08) c=vec3(.86,.72,.22); else if(abs(abs(p.y-m)-3.)<.08&&fract(p.x/5.)<.5) c=vec3(.8); return c; } }
-        for(int i=0;i<34;i++){ vec4 d=uD[i]; if(d.z<=d.x) continue; if(p.x<d.x||p.x>=d.z||p.y<d.y||p.y>=d.w) continue; vec4 g=uG[i];
+        for(int i=0;i<40;i++){ vec4 d=uD[i]; if(d.z<=d.x) continue; if(p.x<d.x||p.x>=d.z||p.y<d.y||p.y>=d.w) continue; vec4 g=uG[i];
           if(g.w<.5) return urban(p,d,g); if(g.w<1.5) return grass(p); if(g.w<2.5) return rails(p); if(g.w<3.5) return plaza(p); if(g.w<4.5) return gravel(p); if(g.w<5.5) return forest(p);
           float bank=abs(p.y-(d.y+d.w)*.5); return bank<18.? vec3(.14,.24,.3)+vn(p*.3+vec2(0.,uT))*.06 : mix(vec3(.3,.36,.2),vec3(.42,.4,.3),hh(floor(p*3.))*.5); }
         return lot(p); }
@@ -234,8 +245,9 @@ window.WORLD = (function () {
   const ground2 = new THREE.Mesh(new THREE.PlaneGeometry(800, 800), groundMat); ground2.rotation.x = -Math.PI / 2; ground2.position.set(2500, 0, 0); ground2.receiveShadow = true;
 
   /* ---------------- buildings ---------------- */
-  const STY = ['glass', 'office', 'granite', 'darkglass', 'residential', 'neon', 'dept', 'brown', 'temple', 'plaster', 'stone'], JJH_STY = ['temple', 'plaster', 'stone'];
-  const TILE = { glass: [4, 3.4], office: [5, 3.4], granite: [4, 3.4], darkglass: [4, 3.4], residential: [4.4, 3], neon: [4, 3], dept: [6, 4], brown: [4, 3.4], temple: [8, 9], plaster: [7, 6], stone: [2.4, 1.1] };
+  const STY = ['glass', 'office', 'granite', 'darkglass', 'residential', 'neon', 'dept', 'brown', 'temple', 'plaster', 'stone', 'rock'], JJH_STY = ['temple', 'plaster', 'stone', 'rock'];
+  const STY_MAPS = { temple: ['jjh'], plaster: ['jjh'], stone: ['jjh', 'canyon'], rock: ['canyon'] };   // everything else belongs to the city maps
+  const TILE = { glass: [4, 3.4], office: [5, 3.4], granite: [4, 3.4], darkglass: [4, 3.4], residential: [4.4, 3], neon: [4, 3], dept: [6, 4], brown: [4, 3.4], temple: [8, 9], plaster: [7, 6], stone: [2.4, 1.1], rock: [14, 9] };
   const MATS = {}; for (const s of STY) MATS[s] = buildingMat(facadeTex(s), new THREE.Vector2(...TILE[s]), s, !JJH_STY.includes(s));
   const B = [], plan = {}; for (const s of STY) plan[s] = [];
   const RES = [];   // reserved rects (landmarks, plazas)
@@ -290,6 +302,7 @@ window.WORLD = (function () {
   reserve(4945, -80, 5075, 45); reserve(4855, -178, 4905, -122);   // Sendai: school grounds, hospital
   reserve(7295, -235, 7425, -105); reserve(7555, -205, 7685, -85); reserve(7200, 165, 7800, 235); reserve(7430, 40, 7475, 85);   // suburbs
   reserve(9880, -30, 9925, 10); reserve(10040, -45, 10080, 5); reserve(9920, -95, 9960, -60);   // Shibuya: 109, Hikarie, QFront
+  reserve(12555, -75, 12655, 25); reserve(12385, 35, 12475, 115);   // Ikebukuro: Sunshine 60, the theater
   { const J = (st, x, z, w, d, h, o = {}) => addB(st, x, z, w, d, h, Object.assign({ map: 'jjh', tint: R(.94, 1.04) }, o));
     for (let k = 0; k < 3; k++) J('stone', 2505, -40, 54 - k * 4, 34 - k * 4, .55, { base: k * .55 });   // walkable steps
     JR.push({ b: J('temple', 2505, -40, 38, 18, 9, { base: 1.65 }), eave: 4, rh: 8 });
@@ -326,9 +339,11 @@ window.WORLD = (function () {
   for (const [x, z, w, d] of [[7360, -229, 124, 1.2], [7360, -111, 124, 1.2], [7299, -170, 1.2, 118], [7421, -170, 1.2, 118]]) SB('granite', x, z, w, d, 5, { lm: 'eishu-wall' });
   SB('residential', 7620, -180, 90, 14, 14, { lm: 'satozakura', tint: 1.05 }); SB('brown', 7580, -130, 24, 30, 10, { lm: 'satozakura-gym' });   // the gym hosts the assembly
   SB('dept', 7452, 62, 36, 36, 12, { lm: 'cinema', tint: .85 });
-  SB('granite', 7500, 200, 12, 70, 1, { base: 4.5, lm: 'bridge' }); for (const z of [175, 200, 225]) SB('granite', 7500, z, 3, 3, 4.5, { lm: 'bridge-pier' });
-  for (const z of [168, 232]) SB('granite', 7500, z, 12, 8, 4.5, { lm: 'bridge-ramp' });
-  const SH = (st, x, z, w, d, h, o = {}) => addB(st, x, z, w, d, h, Object.assign({ map: 'shibuya', tint: R(.95, 1.05) }, o));
+  const IK = (st, x, z, w, d, h, o = {}) => addB(st, x, z, w, d, h, Object.assign({ map: 'ikebukuro', tint: R(.95, 1.05) }, o));
+  IK('darkglass', 12605, -25, 34, 34, 112, { lm: 'sunshine', tint: .95 }); IK('office', 12605, -25, 60, 60, 10, { lm: 'sunshine-podium' }); IK('dept', 12430, 72, 36, 28, 16, { lm: 'theater', tint: .8 });
+  // canyon walls: uneven blocks of rock either side of the gorge, forest on top; the bridge deck crosses at the rim
+  const CANYON = []; for (const side of [-1, 1]) for (let x = 14720; x < 15290; x += 38) { const z0 = 24 + R(0, 6), h = Math.abs(x + 19 - 15000) < 34 ? 28.6 : R(27, 33); CANYON.push(addB('rock', x + 19, side * (z0 + 90), 40, 180, h, { map: 'canyon', tint: R(.9, 1.1) })); }
+  addB('stone', 15000, 0, 9, 72, 1.4, { base: 28.6, map: 'canyon', lm: 'yasohachi' });  const SH = (st, x, z, w, d, h, o = {}) => addB(st, x, z, w, d, h, Object.assign({ map: 'shibuya', tint: R(.95, 1.05) }, o));
   SH('glass', 10060, -20, 34, 44, 72, { lm: 'hikarie', tint: 1.05 }); SH('dept', 9940, -78, 34, 30, 22, { lm: 'qfront', tint: .8 }); SH('office', 9955, 30, 40, 18, 24, { lm: 'markcity' });
   const b109 = SH('darkglass', 9902, -10, 16, 16, 34, { lm: '109' }); b109.hidden = true;
   // instanced meshes
@@ -338,6 +353,7 @@ window.WORLD = (function () {
     M4.compose(P3, Q, S3); inst[b.style].setMatrixAt(b.i, M4); COL.setScalar(b.tint * (b.alive ? 1 : .55)); if (!b.alive) COL.r *= 1.05; inst[b.style].setColorAt(b.i, COL); }
   for (const s of STY) { const list = plan[s], m = new THREE.InstancedMesh(box, MATS[s], Math.max(1, list.length)); m.castShadow = m.receiveShadow = true; m.frustumCulled = false; m.userData.sty = s;
     list.forEach((b, i) => { b.i = i; }); inst[s] = m; scene.add(m); list.forEach(writeB); m.instanceMatrix.needsUpdate = true; if (m.instanceColor) m.instanceColor.needsUpdate = true; }
+  const PI4 = Math.PI / 4;
   const inside = (b, x, z, r) => x > b.x - b.hw - r && x < b.x + b.hw + r && z > b.z - b.hd - r && z < b.z + b.hd + r;
   // collision grid
   const GC = 24, grid = new Map(), gk = (i, j) => i * 10007 + j;
@@ -453,7 +469,7 @@ window.WORLD = (function () {
   const upsOf = b => b._ups || (b._ups = [...near(b.x, b.z, Math.max(b.hw, b.hd) + 1)].filter(u => u !== b && u.base >= b.base + b.h0 - .05 && inside(b, u.x, u.z, 0)));
   // rooftop clutter: condenser units and water tanks
   { const ac = [], tank = [];
-    for (const b of B) { if (b.map || b.lm || b.hidden || b.h < 6 || upsOf(b).length) continue; const top = b.base + b.h, n = Math.min(4, 1 + (b.w * b.d / 90 | 0));
+    for (const b of B) { if (b.map || b.lm || b.hidden || b.h < 6 || upsOf(b).length || district(b.x, b.z).id === 'sendai') continue; const top = b.base + b.h, n = Math.min(4, 1 + (b.w * b.d / 90 | 0));
       for (let k = 0; k < n; k++) ac.push({ b, x: b.x + R(-.35, .35) * b.w, z: b.z + R(-.35, .35) * b.d, y: top, s: R(.8, 1.4), r: pick([0, Math.PI / 2]) });
       if (b.style !== 'glass' && b.style !== 'darkglass' && rnd() < .45) tank.push({ b, x: b.x + R(-.3, .3) * b.w, z: b.z + R(-.3, .3) * b.d, y: top, s: R(.8, 1.3) }); }
     const place = (it, m) => m.compose(P3.set(it.x, it.y, it.z), Q.setFromAxisAngle(new V3(0, 1, 0), it.r || 0), S3.setScalar(it.s));
@@ -494,6 +510,14 @@ window.WORLD = (function () {
     sg(10, 2.4, (c, w, h) => { c.fillStyle = '#20202a'; c.fillRect(0, 0, w, h); c.fillStyle = '#ffd24a'; c.font = 'bold 15px sans-serif'; c.textAlign = 'center'; c.fillText('映画館 CINEMA', w / 2, 21); }, 7452, 10, 80.2, 0);
     const hachi = new THREE.Mesh(box, new THREE.MeshLambertMaterial({ color: 0x6a5a3a })); hachi.scale.set(.6, 1.2, 1.4); hachi.position.set(9978, .6, -12); scene.add(hachi);
     const water = new THREE.Mesh(new THREE.PlaneGeometry(600, 36), new THREE.MeshLambertMaterial({ color: 0x2a4a60, transparent: true, opacity: .85 })); water.rotation.x = -Math.PI / 2; water.position.set(7500, .08, 200); scene.add(water); }
+  // Sendai is a low-rise town: tiled hip roofs on the houses, a running track and a clock at the school
+  { const roofs = B.filter(b => !b.map && !b.lm && district(b.x, b.z).id === 'sendai' && b.base === 0).map(b => ({ b, c: [0x3a4658, 0x4a3a34, 0x5a2a28, 0x39424a][(b.x * 3 + b.z) & 3] }));
+    const rg = new THREE.ConeGeometry(.74, 1, 4, 1).rotateY(PI4).translate(0, .5, 0);
+    const m = instanced(rg, new THREE.MeshLambertMaterial({ color: 0xffffff }), roofs.map(r => Object.assign(r, { c: 1, col: r.c })), (r, M, c) => { M.compose(P3.set(r.b.x, r.b.h - .1, r.b.z), Q.identity(), S3.set(r.b.w * 1.1, Math.min(3.2, r.b.w * .3), r.b.d * 1.1)); c.setHex(r.col); }, true);
+    attachAll(m, roofs);
+    const track = new THREE.Mesh(new THREE.RingGeometry(20, 25, 40), new THREE.MeshLambertMaterial({ color: 0x8a4a38 })); track.rotation.x = -Math.PI / 2; track.scale.set(1.9, 1, 1); track.position.set(5010, .05, 5); scene.add(track);
+    const clock = new THREE.Mesh(new THREE.CircleGeometry(1.6, 20), new THREE.MeshBasicMaterial({ map: canvasTex(32, 32, c => { c.fillStyle = '#f2efe6'; c.beginPath(); c.arc(16, 16, 15, 0, 7); c.fill(); c.strokeStyle = '#222'; c.lineWidth = 2; c.stroke(); c.beginPath(); c.moveTo(16, 16); c.lineTo(16, 5); c.moveTo(16, 16); c.lineTo(24, 18); c.stroke(); }) }));
+    clock.position.set(5010, 12.6, -48.9); scene.add(clock); }
   // Sendai: ground, school gate and signs
   { const g3 = new THREE.Mesh(new THREE.PlaneGeometry(900, 900), groundMat); g3.rotation.x = -Math.PI / 2; g3.position.set(5000, 0, 0); g3.receiveShadow = true; scene.add(g3);
     const sign = (w, h, draw, x, y, z, ry) => { const m = new THREE.Mesh(new THREE.PlaneGeometry(w, h), new THREE.MeshBasicMaterial({ map: canvasTex(w * 16, h * 16, draw, false), side: THREE.DoubleSide })); m.position.set(x, y, z); m.rotation.y = ry || 0; scene.add(m); };
@@ -504,7 +528,20 @@ window.WORLD = (function () {
   /* ---------------- Tokyo Jujutsu High set dressing ---------------- */
   const cityList = scene.children.filter(o => ![sky, hemi, sun, sun.target, fuji].includes(o) && !JJH_STY.includes(o.userData.sty));
   const jjh = new THREE.Group(); jjh.visible = false; scene.add(jjh); jjh.add(ground2);
-  const roofM = new THREE.MeshLambertMaterial({ color: 0x3c4452 });
+  // map-specific set pieces, shown only on their own map
+  const MAPG = {}; for (const k of ['shibuya', 'ikebukuro', 'canyon']) { MAPG[k] = new THREE.Group(); MAPG[k].visible = false; scene.add(MAPG[k]); }
+  const dome = (r, col, op, x, z) => { const m = new THREE.Mesh(new THREE.SphereGeometry(r, 48, 24, 0, Math.PI * 2, 0, Math.PI / 2), new THREE.MeshBasicMaterial({ color: col, transparent: true, opacity: op, side: THREE.DoubleSide, depthWrite: false, fog: false })); m.position.set(x, 0, z); return m; };
+  // Shibuya, October 31: the curtain over the station (centered on the Tokyu Department Store), Halloween lights in the streets
+  { const g = MAPG.shibuya; g.add(dome(200, 0x05030a, .42, 10010, -40), dome(203, 0x3a1a5a, .12, 10010, -40));
+    const lanT = canvasTex(8, 8, c => { c.fillStyle = '#ff8a1a'; c.beginPath(); c.arc(4, 4, 3.4, 0, 7); c.fill(); c.fillStyle = '#ffe0a0'; c.fillRect(3, 3, 2, 2); });
+    const pts = []; for (let i = 0; i < 260; i++) { const street = i % 3; pts.push(street === 0 ? 9870 + R(-40, 40) : street === 1 ? 9958 + R(-30, 30) : 9900 + R(-10, 90), R(4, 7), street === 0 ? R(-160, -40) : street === 1 ? R(-60, 5) : R(10, 140)); }
+    const pg = new THREE.BufferGeometry(); pg.setAttribute('position', new THREE.Float32BufferAttribute(pts, 3)); g.add(new THREE.Points(pg, new THREE.PointsMaterial({ map: lanT, size: .8, transparent: true, alphaTest: .4 }))); }
+  // Ikebukuro inside the colony barrier; the theater Higuruma uses as his base
+  { const g = MAPG.ikebukuro; g.add(dome(260, 0x14061e, .38, 12500, 0), dome(263, 0x8a3aff, .1, 12500, 0));
+    const sg = new THREE.Mesh(new THREE.PlaneGeometry(12, 2.6), new THREE.MeshBasicMaterial({ map: canvasTex(144, 32, (c, w, h) => { c.fillStyle = '#2a0e10'; c.fillRect(0, 0, w, h); c.fillStyle = '#f2d27a'; c.font = 'bold 20px serif'; c.textAlign = 'center'; c.fillText('劇場 THEATER', w / 2, 23); }, false) }));
+    sg.position.set(12430, 13, 86.2); g.add(sg);
+    const gr = new THREE.Mesh(new THREE.PlaneGeometry(900, 900), groundMat); gr.rotation.x = -Math.PI / 2; gr.position.set(12500, 0, 0); gr.receiveShadow = true; g.add(gr); }
+  const roofM = new THREE.MeshLambertMaterial({ color: 0x3c4452 }), jjhTreeGeo = {};
   function hipRoof(w, d, h) {   // concave hip roof (shallow at the eaves, steep at the ridge), ridge along the long side
     const swap = d > w; if (swap) [w, d] = [d, w]; const N = 4, pos = [];
     const ring = k => { const t = k / N, i = t * d / 2, y = h * Math.pow(t, 1.7); return [[-w / 2 + i, y, d / 2 - i], [w / 2 - i, y, d / 2 - i], [w / 2 - i, y, -d / 2 + i], [-w / 2 + i, y, -d / 2 + i]]; };
@@ -524,9 +561,9 @@ window.WORLD = (function () {
   { // cedar woods all around; a clearing for the courtyard, the approach and the buildings
     const trees2 = [], clear = (x, z) => (x > 2415 && x < 2605 && z > -85 && z < 100) || (x > 2476 && x < 2524 && z > 80) || B.some(b => b.map && inside(b, x, z, 3));
     for (let i = 0; i < 3400; i++) { const x = R(2230, 2770), z = R(-270, 270); if (clear(x, z)) continue; trees2.push([x, z, R(10, 17)]); }
-    const cones = [[.38, .5, .5], [.3, .42, .72], [.19, .34, .9]].map(([r, h, y]) => new THREE.ConeGeometry(r, h, 7).translate(0, y, 0).toNonIndexed());
+    const cones = jjhTreeGeo.cones = [[.38, .5, .5], [.3, .42, .72], [.19, .34, .9]].map(([r, h, y]) => new THREE.ConeGeometry(r, h, 7).translate(0, y, 0).toNonIndexed());
     const fol = new THREE.BufferGeometry(), arr = []; for (const c of cones) arr.push(...c.attributes.position.array); fol.setAttribute('position', new THREE.Float32BufferAttribute(arr, 3)); fol.computeVertexNormals();
-    const tr = new THREE.CylinderGeometry(.03, .05, 1, 5).translate(0, .5, 0);
+    const tr = jjhTreeGeo.tr = new THREE.CylinderGeometry(.03, .05, 1, 5).translate(0, .5, 0); jjhTreeGeo.fol = fol;
     const at = ([x, z, h], m) => m.compose(P3.set(x, 0, z), Q.setFromAxisAngle(new V3(0, 1, 0), x * 3.1), S3.set(h * .6, h, h * .6));
     const a = instanced(tr, new THREE.MeshLambertMaterial({ color: 0x4a3024 }), trees2, at, true), f = instanced(fol, new THREE.MeshLambertMaterial({ color: 0xffffff }), trees2.map(t => Object.assign(t, { c: 1 })),
       (t, m, c) => { at(t, m); c.setRGB(.13 + (t[0] % 3) * .012, .24 + (t[1] % 5) * .012, .12); }, true);
@@ -537,9 +574,20 @@ window.WORLD = (function () {
     for (let i = 0; i < N; i++) { const a0 = i / N * Math.PI * 2, a1 = (i + 1) / N * Math.PI * 2, p = (a, y) => [2500 + Math.cos(a) * r, y, Math.sin(a) * r];
       pos.push(...p(a0, -40), ...p(a1, -40), ...p(a1, hgt(a1)), ...p(a0, -40), ...p(a1, hgt(a1)), ...p(a0, hgt(a0))); }
     const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); const m = new THREE.Mesh(g, ridgeM[li]); m.frustumCulled = false; jjh.add(m); });
+  // Koinokuchi Canyon: forest on both rims, a stone arch under Yasohachi Bridge, a river far below, mountains around
+  { const g = MAPG.canyon, gr = new THREE.Mesh(new THREE.PlaneGeometry(900, 900), groundMat); gr.rotation.x = -Math.PI / 2; gr.position.set(15000, 0, 0); gr.receiveShadow = true; g.add(gr);
+    const stoneM = new THREE.MeshLambertMaterial({ color: 0x8a867e });
+    const arch = new THREE.Mesh(new THREE.TorusGeometry(25, 2.2, 8, 28, Math.PI), stoneM); arch.rotation.y = Math.PI / 2; arch.position.set(15000, 3.2, 0); arch.castShadow = true; g.add(arch);
+    for (const dx of [-4.3, 4.3]) { const rail = new THREE.Mesh(box, stoneM); rail.scale.set(.5, 1, 72); rail.position.set(15000 + dx, 30.5, 0); g.add(rail); }
+    const water = new THREE.Mesh(new THREE.PlaneGeometry(700, 16), new THREE.MeshLambertMaterial({ color: 0x2a4a5a, transparent: true, opacity: .85 })); water.rotation.x = -Math.PI / 2; water.position.set(15000, .1, 0); g.add(water);
+    const tr = []; for (let i = 0; i < 1500; i++) { const x = R(14700, 15300), z = (rnd() < .5 ? -1 : 1) * R(34, 300); if (Math.abs(x - 15000) < 7 && Math.abs(z) < 60) continue; tr.push([x, z, R(8, 15), surfaceY(x, z, 999)]); }
+    const fol = jjhTreeGeo.fol, at = ([x, z, h, y], M) => M.compose(P3.set(x, y, z), Q.setFromAxisAngle(new V3(0, 1, 0), x), S3.set(h * .6, h, h * .6));
+    const a = instanced(jjhTreeGeo.tr, new THREE.MeshLambertMaterial({ color: 0x4a3024 }), tr, at, true), f = instanced(fol, new THREE.MeshLambertMaterial({ color: 0xffffff }), tr.map(t => Object.assign(t, { c: 1 })), (t, M, c) => { at(t, M); c.setRGB(.12 + (t[0] % 3) * .012, .22 + (t[1] % 5) * .012, .11); }, true);
+    g.add(a, f); }
   let mapK = 'shinjuku';
-  function setMap(k) { if (!MAPS[k]) k = 'shinjuku'; mapK = k; Object.assign(MAP, MAPS[k]); const j = k === 'jjh';   // Sendai shares the city meshes
-    for (const o of cityList) o.visible = !j; for (const s of STY) inst[s].visible = JJH_STY.includes(s) === j; jjh.visible = j;
+  function setMap(k) { if (!MAPS[k]) k = 'shinjuku'; mapK = k; Object.assign(MAP, MAPS[k]); const city = CITY.includes(k);   // every city map shares the city meshes
+    for (const o of cityList) o.visible = city; for (const s of STY) inst[s].visible = STY_MAPS[s] ? STY_MAPS[s].includes(k) : city; jjh.visible = k === 'jjh';
+    for (const [m, g] of Object.entries(MAPG)) g.visible = m === k;
     mini.width = Math.ceil((MAP.x1 - MAP.x0) * MAP.ms); mini.height = Math.ceil((MAP.z1 - MAP.z0) * MAP.ms); drawMini(); }
 
   /* ---------------- domain set pieces ---------------- */
@@ -562,6 +610,7 @@ window.WORLD = (function () {
   const MOODS = {
     void: { sky: ['#000006', '#04102e', '#1a4a9a'], fog: '#06102a', fogD: .004, grade: [.9, 1, 1.2], hide: true },
     shrine: { sky: ['#140004', '#4a0610', '#c01424'], fog: '#3a060c', fogD: .012, grade: [1.2, .86, .86] },
+    womb: { sky: ['#0c0406', '#3a1216', '#6a2a24'], fog: '#2a1012', fogD: .02, grade: [1.15, .9, .88] },
     love: { sky: ['#1a1628', '#6a5a80', '#f0e0f0'], fog: '#b0a0c0', fogD: .01, grade: [1.05, 1, 1.08] },
     yuji: { sky: ['#1a1030', '#7a3a50', '#ffae5a'], fog: '#8a5a48', fogD: .008, grade: [1.12, 1, .9] },
     judge: { sky: ['#020204', '#101018', '#2a2838'], fog: '#0c0c12', fogD: .025, grade: [1, 1, 1.05], hide: true }
@@ -608,6 +657,8 @@ window.WORLD = (function () {
     const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.BufferAttribute(p, 3)); const pt = new THREE.Points(g, new THREE.PointsMaterial({ color: col, size, transparent: true, opacity: .9, depthWrite: false, fog: false, blending: THREE.AdditiveBlending }));
     pt.userData.fx = 1; pt.frustumCulled = false; scene.add(pt); return pt; };
   const ash = mkPts(500, 45, 0xff6a7a, .14), snow = mkPts(1400, 45, 0xffffff, .12); snow.material.blending = THREE.NormalBlending; snow.visible = false;
+  const rain = mkPts(2600, 40, 0x9ab4d8, .09); rain.material.blending = THREE.NormalBlending; rain.material.opacity = .6; rain.visible = false; let weather = null;
+  function setWeather(k) { weather = k; rain.visible = k === 'rain'; if (k === 'rain') { ash.visible = snow.visible = false; scene.fog.density *= 1.6; } }
   const lights = [0, 1, 2, 3].map(() => { const l = new THREE.PointLight(0xff8a3a, 0, 26, 1.6); scene.add(l); return l; });
   const chunks = [];
 
@@ -677,7 +728,7 @@ window.WORLD = (function () {
       lights.forEach((l, i) => { const f = s[i]; if (f && f.o.position.distanceTo(focus) < 60) { l.position.copy(f.o.position).add(new V3(0, 2, 0)); l.intensity = 1.4; } else l.intensity = 0; }); }
     for (const l of lights) if (l.intensity > 0) l.intensity = 1.2 + Math.sin(T * 13 + l.id) * .2;
     // weather around the camera
-    for (const pt of [ash, snow]) { if (!pt.visible) continue; const a = pt.geometry.attributes.position.array, sp = pt === snow ? -2.2 : 1.4;
+    for (const pt of [ash, snow, rain]) { if (!pt.visible) continue; const a = pt.geometry.attributes.position.array, sp = pt === snow ? -2.2 : pt === rain ? -34 : 1.4;
       for (let i = 0; i < a.length; i += 3) { a[i + 1] += sp * dt * (1 + (i % 7) * .08); a[i] += Math.sin(T + i) * dt * .5;
         if (a[i + 1] > 40 || a[i + 1] < 0) { a[i + 1] = sp > 0 ? 0 : 40; } if (Math.abs(a[i] + pt.position.x - cam.x) > 45) a[i] = cam.x - pt.position.x + R(-40, 40); if (Math.abs(a[i + 2] + pt.position.z - cam.z) > 45) a[i + 2] = cam.z - pt.position.z + R(-40, 40); }
       pt.position.set(0, Math.max(0, cam.y - 25), 0); pt.geometry.attributes.position.needsUpdate = true; }
@@ -701,6 +752,6 @@ window.WORLD = (function () {
   resize();
   setTime('noon');
   return { scene, camera, renderer, render, resize, update, setTime: setTimeK, setMood, get mood() { return mood; }, TIMES, get TOD() { return TOD; },
-    district, D, MAP, LM, B, setMap, get map() { return mapK; }, collide, surfaceY, segment, within, occluded, near,
+    district, D, MAP, LM, B, setMap, setWeather, get map() { return mapK; }, collide, surfaceY, segment, within, occluded, near,
     hitB, cutB, collapse, erase, ruin, reset, degrade, debris, dustAt, fireAt, crater, setCut, mini, drawMini, get MS() { return MAP.ms; }, compM, get W() { return W; }, get H() { return H; } };
 })();

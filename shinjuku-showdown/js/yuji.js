@@ -53,10 +53,12 @@ window.OW = (function () {
     sendai: { map: 'sendai', time: 'night', song: 'tension', start: [4880, 0, -130], yaw: PI, name: 'Sendai' },
     jjh: { map: 'jjh', time: 'afternoon', song: 'title', start: [2500, 0, 150], yaw: 0, name: 'Tokyo Jujutsu High' },
     suburb: { map: 'suburb', time: 'dusk', song: 'tension', start: [7500, 0, 110], yaw: 0, name: 'The Suburbs' },
+    eishu: { map: 'suburb', time: 'dusk', rain: 1, song: 'tension', start: [7360, 0, -92], yaw: 0, name: 'Eishū Juvenile Detention Center · West Tokyo' },
+    canyon: { map: 'canyon', time: 'sunset', song: 'tension', start: [15000, 30, 50], yaw: 0, name: 'Yasohachi Bridge · Koinokuchi Canyon' },
     shibuya: { map: 'shibuya', time: 'night', song: 'tension', start: [9960, 0, 45], yaw: 0, name: 'Shibuya · October 31, 2018' },
-    colony: { map: 'shibuya', time: 'dusk', song: 'tension', ruin: ['centergai', 'dogenzaka', 'shibuya', 'shibuyae'], start: [9960, 0, 45], yaw: 0, name: 'Tokyo Colony · Culling Game' },
+    colony: { map: 'ikebukuro', time: 'dusk', song: 'tension', ruin: ['ikebukuro'], start: [12430, 0, 130], yaw: 0, name: 'Ikebukuro · Tokyo Colony No. 1' },
     shinjuku: { map: 'shinjuku', time: 'night', song: 'battle', ruin: ['nishi', 'sanchome'], start: [236, 0, -72], yaw: 0, name: 'Shinjuku · December 24, 2018' } };
-  const ORDER = ['jjh', 'sendai', 'suburb', 'shibuya', 'colony', 'shinjuku'];
+  const ORDER = ['jjh', 'sendai', 'eishu', 'suburb', 'canyon', 'shibuya', 'colony', 'shinjuku'];
   const NPCS = { sendai: s => [['megumi', [5010, 0, 47], 'megumi', 'Go home. Gojo-sensei is waiting for you in Tokyo.']],
     jjh: s => [s < 27 && ['gojoow', [2505, 0, -19], 'gojo', 'Go get them, Yuji.'], ['megumi', [2470, 0, 30], 'megumi', 'Train harder.'], s >= 8 && ['nobara', [2532, 0, 32], 'nobara', "Don't slow me down."],
       s >= 23 && ['todob', [2485, 0, 70], 'todo', 'Brother! Let us train until the sun goes down!']],
@@ -71,13 +73,13 @@ window.OW = (function () {
   const near = (dx, dz) => [G.p1.pos.x + dx, G.p1.pos.y, G.p1.pos.z + dz];
   function enterZone(z) {
     const Z = ZONES[z]; zone = z; S.map = z; if (!S.seen.includes(z)) S.seen.push(z); GAME.clearArena(); ents = []; side = null;
-    WORLD.setMap(Z.map); WORLD.reset(); WORLD.setTime(Z.time); for (const id of Z.ruin || []) WORLD.ruin(id, .4);
+    WORLD.setMap(Z.map); WORLD.reset(); WORLD.setTime(Z.time); if (Z.rain) WORLD.setWeather('rain'); for (const id of Z.ruin || []) WORLD.ruin(id, .4);
     SPR.release(['yuji', 'sukunay', 'megumi', 'gojo0', 'curse1', 'curse2', 'nobara', 'todo']);
     G.p1 = new Fighter(S.form || 'yujiow', Z.start, true); applyStats(G.p1);
     syncNpcs();
     if (S.step >= 7 && z !== 'jjh') for (let i = 0; i < 4; i++) spawn(z === 'shibuya' || z === 'colony' ? 'tfh' : i % 2 ? 'curse2' : 'curse1', [Z.start[0] + rand(-120, 120), 0, Z.start[2] + rand(-120, 120)], 'roam');
     yaw = Z.yaw; G.camSnap = true; G.mode = 'ow'; GAME.show(null); AUDIO.play(Z.song); preload();
-    const q = cur(); if (q.zone === z && q.enter) { q.enter(); qT = 0; } pick(); GAME.fillHud(); GAME.banner('', Z.name, '', 1600);
+    const q = cur(); if (q.zone === z && q.enter) { q.enter(); qT = 0; } pick(); GAME.fillHud(); GAME.banner('', Z.name, '', 1600); if (!busy) arrive(q);
   }
   // who stands around a zone depends on the story so far
   function syncNpcs() { const want = (NPCS[zone] || (() => []))(S.step).filter(Boolean);
@@ -101,7 +103,7 @@ window.OW = (function () {
     // 1 · Sendai → Tokyo
     S1('y1', { zone: 'sendai', t: 'Head to Sugisawa Third High', at: [5010, 0, 52], r: 6, start: 'intro', cut: 'gate' }),
     S1('y1', { zone: 'sendai', t: 'Clear the curses from the school grounds', enter: () => ring(['curse1', 'curse1', 'curse1', 'curse2'], 4, [5010, 0, 0], 16, 'yard'), kill: 'yard' }),
-    S1('y1', { zone: 'sendai', t: 'Get onto the school roof (hold Space against the wall)', at: [5010, 15, -56], r: 30, needY: 14.5, cut: 'roof' }),
+    S1('y1', { zone: 'sendai', t: 'Get onto the school roof (hold Space against the wall)', at: [5010, 15, -56], r: 30, needY: 14.5, place: [5010, 0, -45.5], cut: 'roof' }),
     S1('y1', { zone: 'sendai', t: 'Hold off the curse', enter: () => boss('cboss', [5032, 15, -56], { armor: .08 }), timer: 22, lowHp: .4, cut: 'finger', after: () => become('sukunay') }),
     S1('y1', { zone: 'sendai', t: 'Sukuna has taken over: destroy the curse', enter: () => { const b = bossOf() || boss('cboss', [5032, 15, -56]); b.armor = 1; b.hp = b.maxhp; }, kill: 'boss', cut: 'sukuna', after: () => spawn('gojoow', near(5, 3), 'gojo', { hostile: false }) }),
     S1('y1', { zone: 'sendai', t: 'Survive ten seconds against Gojo', start: 'gojo', enter: () => { const g = ents.find(f => f.k === 'gojoow') || spawn('gojoow', [5015, 15, -52], 'gojo'); g.hostile = true; g.armor = .05; }, timer: 10, lowHp: .02, cut: 'duel', after: () => become('yujiow') }),
@@ -109,11 +111,11 @@ window.OW = (function () {
     S1('y1', { zone: 'jjh', t: 'Exorcise the curses in the cedar woods', enter: () => ring(['curse1', 'curse1', 'curse2'], 5, [2500, 0, 165], 20, 'woods'), kill: 'woods', cut: 'woods' }),
     // 2 · Cursed Womb
     S1('y2', { zone: 'jjh', t: 'Meet the new first-year (talk to Nobara)', talk: 'nobara', cut: 'meet' }),
-    S1('y2', { zone: 'suburb', t: 'Go to the Eishū Juvenile Detention Center', at: [7360, 0, -100], r: 9, cut: 'enter' }),
-    S1('y2', { zone: 'suburb', t: 'Clear the curses in the yard', enter: () => { ally('megumi', near(-3, 2)); ally('nobara', near(3, 2)); ring(['curse2', 'curse1'], 6, [7360, 0, -140], 14, 'yard'); }, kill: 'yard' }),
-    S1('y2', { zone: 'suburb', t: 'Face the special grade', enter: () => boss('wombb', [7360, 0, -165], { armor: .15 }), timer: 20, lowHp: .4, cut: 'womb', after: () => { drop('ally'); become('sukunay'); } }),
-    S1('y2', { zone: 'suburb', t: 'Sukuna: destroy the special grade', enter: () => { const b = bossOf() || boss('wombb', [7360, 0, -165]); b.armor = 1; b.hp = b.maxhp; }, kill: 'boss', cut: 'betray', after: () => become('megumi') }),
-    S1('y2', { zone: 'suburb', t: 'As Megumi: hold out against Sukuna', enter: () => { spawn('sukunab', near(6, 0), 'boss2', { armor: .2 }); AUDIO.play('battle'); }, timer: 20, lowHp: .02, cut: 'death', after: () => { drop('boss2'); become('yujiow'); } }),
+    S1('y2', { zone: 'eishu', t: 'Go to the Eishū Juvenile Detention Center', at: [7360, 0, -100], r: 9, cut: 'enter' }),
+    S1('y2', { zone: 'eishu', t: 'Clear the curses in the yard', enter: () => { ally('megumi', near(-3, 2)); ally('nobara', near(3, 2)); ring(['curse2', 'curse1'], 6, [7360, 0, -140], 14, 'yard'); }, kill: 'yard' }),
+    S1('y2', { zone: 'eishu', t: 'Face the special grade', enter: () => { WORLD.setMood('womb', new THREE.Vector3(7360, 0, -160)); return boss('wombb', [7360, 0, -165], { armor: .15 }); }, timer: 20, lowHp: .4, cut: 'womb', after: () => { drop('ally'); become('sukunay'); } }),
+    S1('y2', { zone: 'eishu', t: 'Sukuna: destroy the special grade', enter: () => { WORLD.setMood('womb', new THREE.Vector3(7360, 0, -160)); const b = bossOf() || boss('wombb', [7360, 0, -165]); b.armor = 1; b.hp = b.maxhp; }, kill: 'boss', cut: 'betray', after: () => become('megumi') }),
+    S1('y2', { zone: 'eishu', t: 'As Megumi: hold out against Sukuna', enter: () => { WORLD.setMood('womb', new THREE.Vector3(7360, 0, -160)); spawn('sukunab', near(6, 0), 'boss2', { armor: .2 }); AUDIO.play('battle'); }, timer: 20, lowHp: .02, cut: 'death', after: () => { WORLD.setMood(null); drop('boss2'); become('yujiow'); } }),
     // 3 · Mahito and Junpei
     S1('y3', { zone: 'jjh', t: 'Talk to Gojo', talk: 'gojo', cut: 'brief' }),
     S1('y3', { zone: 'suburb', t: 'Find Nanami outside the cinema', talk: 'nanami', cut: 'nanami' }),
@@ -127,8 +129,8 @@ window.OW = (function () {
     S1('y4', { zone: 'jjh', t: 'Fight Hanami alongside Todo (I: Black Flash)', enter: () => { if (!alive('ally')) ally('todob', near(3, 2)); boss('hanami', near(0, -12)); }, winHp: .35, cut: 'flash', after: () => { drop('boss'); drop('ally'); } }),
     // 5 · Death Painting
     S1('y5', { zone: 'jjh', t: 'Talk to Nobara', talk: 'nobara', cut: 'brief' }),
-    S1('y5', { zone: 'suburb', t: 'Go to Yasohachi Bridge', at: [7500, 0, 160], r: 14, cut: 'bridge' }),
-    S1('y5', { zone: 'suburb', t: 'Defeat Eso and Kechizu', enter: () => { ally('nobara', near(3, 2)); spawn('eso', [7485, 0, 178], 'bros'); spawn('kechizu', [7515, 0, 178], 'bros'); AUDIO.play('battle'); }, kill: 'bros', cut: 'brothers', after: () => drop('ally') }),
+    S1('y5', { zone: 'canyon', t: 'Go to Yasohachi Bridge', at: [15000, 30, 20], r: 14, cut: 'bridge' }),
+    S1('y5', { zone: 'canyon', t: 'Defeat Eso and Kechizu under the bridge', place: [15000, 0, 10], enter: () => { ally('nobara', [15003, 0, 12]); spawn('eso', [14988, 0, -6], 'bros'); spawn('kechizu', [15012, 0, -6], 'bros'); AUDIO.play('battle'); }, kill: 'bros', cut: 'brothers', after: () => drop('ally') }),
     // 6 · Shibuya Incident
     S1('y6', { zone: 'jjh', t: 'Talk to Gojo', talk: 'gojo', cut: 'curtain' }),
     S1('y6', { zone: 'shibuya', t: 'Clear the transfigured humans at the crossing', enter: () => { ally('nanami', near(3, 2)); ring('tfh', 7, [9958, 0, -28], 16, 'tfh'); }, kill: 'tfh', cut: 'nanami', after: () => drop('ally') }),
@@ -138,8 +140,8 @@ window.OW = (function () {
     S1('y6', { zone: 'shibuya', t: 'Keep going. Find Nanami in Dōgenzaka', at: [9880, 0, 110], r: 10, cut: 'nanami2' }),
     S1('y6', { zone: 'shibuya', t: 'Defeat Mahito with Todo', enter: () => { ally('todob', near(3, 2)); boss('mahito2', near(0, -8)); }, winHp: .08, cut: 'cog', after: () => { drop('boss'); drop('ally'); } }),
     // 7 · Culling Game
-    S1('y7', { zone: 'colony', t: 'Clear the colony with Choso', start: 'game', enter: () => { ally('choso', near(3, 2)); ring(['tfh', 'curse2'], 7, [9960, 0, 0], 18, 'wave'); }, kill: 'wave', cut: 'judge' }),
-    S1('y7', { zone: 'colony', t: 'Face Higuruma', enter: () => { drop('ally'); const h = boss('higub', near(0, -8)); h.dm = 70; }, winHp: .4, lowHp: .3, cut: 'verdict', after: () => drop('boss') }),
+    S1('y7', { zone: 'colony', t: 'Clear the colony with Choso', start: 'game', enter: () => { ally('choso', near(3, 2)); ring(['tfh', 'curse2'], 7, [12440, 0, 140], 18, 'wave'); }, kill: 'wave', cut: 'judge' }),
+    S1('y7', { zone: 'colony', t: 'Face Higuruma at his theater', enter: () => { drop('ally'); const h = boss('higub', [12430, 0, 94]); h.dm = 70; }, winHp: .4, lowHp: .3, cut: 'verdict', after: () => drop('boss') }),
     // 8 · Shinjuku Showdown
     S1('y8', { zone: 'shinjuku', t: 'Defeat Sukuna', start: 'final', enter: () => { const b = boss('sukunaf', near(0, -12)); b.armor = .8; applyStats(G.p1); GAME.fillHud(); G.p1.dm = 100; }, winHp: .02, cut: 'ending' }),
     S1('y8', { zone: null, t: 'The end. Free roam: T to travel, side quests are blue', end: true })];
@@ -148,7 +150,18 @@ window.OW = (function () {
   const cur = () => MAIN[Math.min(S.step, MAIN.length - 1)];
   const LINE = (arc, key) => key === 'ending' ? LINES.story.find(c => c.id === 'c7').win.filter(l => !l.tip).concat([{ tip: 'The end. Thank you for playing. Free roam is open: T travels anywhere, and blue markers are side quests.' }]) : LO[arc][key];
   async function scene(lines, title) { busy = true; pick(); if (WORLD.camera.position.distanceTo(G.p1.pos) > 30) G.camSnap = true; await GAME.cutscene(lines, title || 'Yuji: Story · ' + arcName(cur().arc)); busy = false; if (OW.active && G.mode === 'ow') GAME.show(null); }
-  async function begin(fresh) { const q = cur(); if (q.zone && q.zone !== zone) enterZone(q.zone); else { syncNpcs(); if (q.enter) { q.enter(); qT = 0; } pick(); } if (fresh && q.start) await scene(LINE(q.arc, q.start)); }
+  async function begin(fresh) { const q = cur(); busy = !!(fresh && q.start); if (q.zone && q.zone !== zone) enterZone(q.zone); else { syncNpcs(); if (q.enter) { q.enter(); qT = 0; } pick(); }
+    if (fresh && q.start) await scene(LINE(q.arc, q.start)); busy = false; if (OW.active) arrive(q); }
+  // put Yuji a few steps from a point, on solid ground and outside buildings, with the camera behind him looking at it
+  function goTo(pt, r) { const p = G.p1; for (let k = 0; k < 12; k++) { const a = Math.atan2(p.pos.z - pt[2], p.pos.x - pt[0]) + (k % 2 ? 1 : -1) * Math.ceil(k / 2) * .55, x = pt[0] + Math.cos(a) * r, z = pt[2] + Math.sin(a) * r, y = WORLD.surfaceY(x, z, (pt[1] || 0) + 1);
+      if (!WORLD.within(new V3(x, y, z), .8).some(b => b.base < y + 1.8 && b.base + b.h > y + .1)) { put([x, y, z], Math.atan2(x - pt[0], z - pt[2])); return; } } put(pt); }
+  function put(pt, ry) { const p = G.p1; p.pos.set(...pt); p.vel.set(0, 0, 0); p.vy = 0; p.kb.set(0, 0, 0); if (ry != null) yaw = ry; G.camSnap = true; GAME.flash('#000', .5); }
+  function arrive(q) { if (q.end || q.zone !== zone || busy) return;
+    const soon = () => setTimeout(() => { if (OW.active && cur() === q && !busy && G.mode === 'ow') complete(); }, 450);
+    if (q.place) { put(q.place, 0); return; }
+    if (q.at && !q.needY) { goTo(q.at, 2); soon(); return; }
+    if (q.talk) { const n = ents.find(e => e.npc === q.talk); if (n) { goTo([n.pos.x, n.pos.y, n.pos.z], 2.4); soon(); } return; }
+    const o = objective(); if (o && Math.hypot(G.p1.pos.x - o[0], G.p1.pos.z - o[2]) > 16) goTo(o, 10); }
   async function complete() { const q = cur(); busy = true; if (q.cut) await scene(LINE(q.arc, q.cut)); if (!OW.active) return; if (q.after) q.after(); S.step++; save(); busy = false;
     if (G.mode === 'ow') AUDIO.play(ZONES[zone].song); if (cur().arc !== q.arc) preload(); if (G.p1.k === 'yujiow') { applyStats(G.p1); GAME.fillHud(); } await begin(true); }
 
@@ -159,13 +172,13 @@ window.OW = (function () {
     { id: 'gym', zone: 'sendai', from: 6, t: 'Curses in the old gym', kind: 'hunt', at: [4968, 0, -8], n: 5, reward: { hp: 100 } },
     { id: 'night', zone: 'sendai', from: 6, t: 'Night run through Sendai', kind: 'race', at: [4880, 0, -110], pts: [[4880, -40], [4950, 60], [5100, 80], [5150, -100], [5000, -150]], time: 45, reward: { spd: .05 } },
     { id: 'nobspar', zone: 'jjh', from: 9, t: 'Spar with Nobara', kind: 'duel', npc: 'nobara', reward: { ce: 3 } },
-    { id: 'eishu', zone: 'suburb', from: 14, t: 'Sweep the detention center', kind: 'hunt', at: [7360, 0, -150], n: 6, reward: { hp: 100 } },
-    { id: 'river', zone: 'suburb', from: 26, t: 'Riverbank run', kind: 'race', at: [7300, 0, 150], pts: [[7380, 150], [7480, 150], [7500, 200], [7620, 150], [7700, 150]], time: 35, reward: { spd: .05 } },
+    { id: 'eishu', zone: 'eishu', from: 14, t: 'Sweep the detention center', kind: 'hunt', at: [7360, 0, -150], n: 6, reward: { hp: 100 } },
+    { id: 'river', zone: 'suburb', from: 26, t: 'Suburb street run', kind: 'race', at: [7300, 0, 150], pts: [[7380, 150], [7480, 120], [7500, 40], [7620, 60], [7700, 150]], time: 35, reward: { spd: .05 } },
     { id: 'woods2', zone: 'jjh', from: 23, t: 'Night shift in the cedar woods', kind: 'hunt', at: [2420, 0, 130], n: 6, reward: { bf: .03 } },
     { id: 'todospar', zone: 'jjh', from: 23, t: 'Spar with Todo', kind: 'duel', npc: 'todo', reward: { hp: 150 } },
     { id: 'centergai', zone: 'shibuya', from: 34, t: 'Transfigured humans in Center Gai', kind: 'hunt', at: [9870, 0, -110], n: 6, reward: { hp: 120 } },
     { id: 'roofs', zone: 'shibuya', from: 34, t: 'Run the Shibuya streets', kind: 'race', at: [9960, 0, 40], pts: [[9958, -28], [9900, -60], [9870, -150], [10060, -120], [10100, 60]], time: 45, reward: { spd: .05 } },
-    { id: 'colony', zone: 'colony', from: 35, t: 'Colony hunters', kind: 'hunt', at: [9860, 0, 100], n: 7, reward: { ce: 3 } },
+    { id: 'colony', zone: 'colony', from: 35, t: 'Colony hunters', kind: 'hunt', at: [12520, 0, 120], n: 7, reward: { ce: 3 } },
     { id: 'shinjuku', zone: 'shinjuku', from: 36, t: 'Shinjuku stragglers', kind: 'hunt', at: [-200, 0, 0], n: 8, reward: { hp: 150 } }];
   const busyMain = () => ents.some(f => f.hostile && !f.dead && f.tag !== 'roam' && f.tag !== 'side');
   const sideOpen = s => !S.side[s.id] && s.zone === zone && S.step >= s.from && !side && !busyMain();
