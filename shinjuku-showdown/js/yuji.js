@@ -56,9 +56,15 @@ window.OW = (function () {
     eishu: { map: 'suburb', time: 'dusk', rain: 1, song: 'tension', start: [7360, 0, -92], yaw: 0, name: 'Eishū Juvenile Detention Center · West Tokyo' },
     canyon: { map: 'canyon', time: 'sunset', song: 'tension', start: [15000, 30, 50], yaw: 0, name: 'Yasohachi Bridge · Koinokuchi Canyon' },
     shibuya: { map: 'shibuya', time: 'night', song: 'tension', start: [9960, 0, 45], yaw: 0, name: 'Shibuya · October 31, 2018' },
+    school: { map: 'school', time: 'indoorNight', indoor: 1, song: 'tension', start: [20008, 0, 0], yaw: -PI / 2, name: 'Sugisawa Third High · 4th floor, night' },
+    womb: { map: 'womb', time: 'domain', indoor: 1, mood: 'womb', song: 'tension', start: [20500, 0, 60], yaw: 0, name: "Inside the Cursed Womb's Innate Domain" },
+    cinema: { map: 'cinema', time: 'indoor', indoor: 1, song: 'tension', start: [20830, 5.4, 26], yaw: 0, name: 'Cinema · Screen 3' },
+    gym: { map: 'gym', time: 'indoor', indoor: 1, song: 'tension', start: [21240, 0, 20], yaw: 0, name: 'Satozakura High · Gymnasium' },
+    platform: { map: 'platform', time: 'indoor', indoor: 1, song: 'tension', start: [21600, 1.1, 0], yaw: -PI / 2, name: 'Shibuya Station · B5F Fukutoshin Line' },
+    court: { map: 'court', time: 'domain', indoor: 1, song: 'shrine', start: [22250, 0, 22], yaw: 0, name: 'Domain Expansion · Deadly Sentencing' },
     colony: { map: 'ikebukuro', time: 'dusk', song: 'tension', ruin: ['ikebukuro'], start: [12430, 0, 130], yaw: 0, name: 'Ikebukuro · Tokyo Colony No. 1' },
     shinjuku: { map: 'shinjuku', time: 'night', song: 'battle', ruin: ['nishi', 'sanchome'], start: [236, 0, -72], yaw: 0, name: 'Shinjuku · December 24, 2018' } };
-  const ORDER = ['jjh', 'sendai', 'eishu', 'suburb', 'canyon', 'shibuya', 'colony', 'shinjuku'];
+  const ORDER = ['jjh', 'sendai', 'school', 'eishu', 'suburb', 'cinema', 'gym', 'canyon', 'shibuya', 'platform', 'colony', 'shinjuku'];
   const NPCS = { sendai: s => [['megumi', [5010, 0, 47], 'megumi', 'Go home. Gojo-sensei is waiting for you in Tokyo.']],
     jjh: s => [s < 27 && ['gojoow', [2505, 0, -19], 'gojo', 'Go get them, Yuji.'], ['megumi', [2470, 0, 30], 'megumi', 'Train harder.'], s >= 8 && ['nobara', [2532, 0, 32], 'nobara', "Don't slow me down."],
       s >= 23 && ['todob', [2485, 0, 70], 'todo', 'Brother! Let us train until the sun goes down!']],
@@ -73,7 +79,7 @@ window.OW = (function () {
   const near = (dx, dz) => [G.p1.pos.x + dx, G.p1.pos.y, G.p1.pos.z + dz];
   function enterZone(z) {
     const Z = ZONES[z]; zone = z; S.map = z; if (!S.seen.includes(z)) S.seen.push(z); GAME.clearArena(); ents = []; side = null;
-    WORLD.setMap(Z.map); WORLD.reset(); WORLD.setTime(Z.time); if (Z.rain) WORLD.setWeather('rain'); for (const id of Z.ruin || []) WORLD.ruin(id, .4);
+    WORLD.setMap(Z.map); WORLD.reset(); WORLD.setTime(Z.time); if (Z.rain) WORLD.setWeather('rain'); if (Z.indoor) WORLD.setWeather('indoor'); if (Z.mood) WORLD.setMood(Z.mood, new V3(...Z.start)); for (const id of Z.ruin || []) WORLD.ruin(id, .4);
     SPR.release(['yuji', 'sukunay', 'megumi', 'gojo0', 'curse1', 'curse2', 'nobara', 'todo']);
     G.p1 = new Fighter(S.form || 'yujiow', Z.start, true); applyStats(G.p1);
     syncNpcs();
@@ -102,7 +108,7 @@ window.OW = (function () {
   const MAIN = [
     // 1 · Sendai → Tokyo
     S1('y1', { zone: 'sendai', t: 'Head to Sugisawa Third High', at: [5010, 0, 52], r: 6, start: 'intro', cut: 'gate' }),
-    S1('y1', { zone: 'sendai', t: 'Clear the curses from the school grounds', enter: () => ring(['curse1', 'curse1', 'curse1', 'curse2'], 4, [5010, 0, 0], 16, 'yard'), kill: 'yard' }),
+    S1('y1', { zone: 'school', t: 'Fight through the curses in the 4th-floor hallway', enter: () => { for (const [k, x, z] of [['curse1', 20030, 0], ['curse1', 20046, -10], ['curse2', 20064, 1], ['curse1', 20090, -9], ['curse2', 20108, 0]]) spawn(k, [x, 0, z], 'yard'); AUDIO.play('battle'); }, kill: 'yard' }),
     S1('y1', { zone: 'sendai', t: 'Get onto the school roof (hold Space against the wall)', at: [5010, 15, -56], r: 30, needY: 14.5, place: [5010, 0, -45.5], cut: 'roof' }),
     S1('y1', { zone: 'sendai', t: 'Hold off the curse', enter: () => boss('cboss', [5032, 15, -56], { armor: .08 }), timer: 22, lowHp: .4, cut: 'finger', after: () => become('sukunay') }),
     S1('y1', { zone: 'sendai', t: 'Sukuna has taken over: destroy the curse', enter: () => { const b = bossOf() || boss('cboss', [5032, 15, -56]); b.armor = 1; b.hp = b.maxhp; }, kill: 'boss', cut: 'sukuna', after: () => spawn('gojoow', near(5, 3), 'gojo', { hostile: false }) }),
@@ -112,16 +118,16 @@ window.OW = (function () {
     // 2 · Cursed Womb
     S1('y2', { zone: 'jjh', t: 'Meet the new first-year (talk to Nobara)', talk: 'nobara', cut: 'meet' }),
     S1('y2', { zone: 'eishu', t: 'Go to the Eishū Juvenile Detention Center', at: [7360, 0, -100], r: 9, cut: 'enter' }),
-    S1('y2', { zone: 'eishu', t: 'Clear the curses in the yard', enter: () => { ally('megumi', near(-3, 2)); ally('nobara', near(3, 2)); ring(['curse2', 'curse1'], 6, [7360, 0, -140], 14, 'yard'); }, kill: 'yard' }),
-    S1('y2', { zone: 'eishu', t: 'Face the special grade', enter: () => { WORLD.setMood('womb', new THREE.Vector3(7360, 0, -160)); return boss('wombb', [7360, 0, -165], { armor: .15 }); }, timer: 20, lowHp: .4, cut: 'womb', after: () => { drop('ally'); become('sukunay'); } }),
-    S1('y2', { zone: 'eishu', t: 'Sukuna: destroy the special grade', enter: () => { WORLD.setMood('womb', new THREE.Vector3(7360, 0, -160)); const b = bossOf() || boss('wombb', [7360, 0, -165]); b.armor = 1; b.hp = b.maxhp; }, kill: 'boss', cut: 'betray', after: () => become('megumi') }),
-    S1('y2', { zone: 'eishu', t: 'As Megumi: hold out against Sukuna', enter: () => { WORLD.setMood('womb', new THREE.Vector3(7360, 0, -160)); spawn('sukunab', near(6, 0), 'boss2', { armor: .2 }); AUDIO.play('battle'); }, timer: 20, lowHp: .02, cut: 'death', after: () => { WORLD.setMood(null); drop('boss2'); become('yujiow'); } }),
+    S1('y2', { zone: 'womb', t: 'Search the domain for survivors', enter: () => { ally('megumi', near(-3, 2)); ally('nobara', near(3, 2)); ring(['curse2', 'curse1'], 6, [20500, 0, 30], 14, 'yard'); }, kill: 'yard' }),
+    S1('y2', { zone: 'womb', t: 'Face the special grade', enter: () => boss('wombb', [20500, 0, 10], { armor: .15 }), timer: 20, lowHp: .4, cut: 'womb', after: () => { drop('ally'); become('sukunay'); } }),
+    S1('y2', { zone: 'womb', t: 'Sukuna: destroy the special grade', enter: () => { const b = bossOf() || boss('wombb', [20500, 0, 10]); b.armor = 1; b.hp = b.maxhp; }, kill: 'boss', cut: 'betray', after: () => become('megumi') }),
+    S1('y2', { zone: 'eishu', t: 'As Megumi: hold out against Sukuna in the rain', enter: () => { spawn('sukunab', near(6, 0), 'boss2', { armor: .2 }); AUDIO.play('battle'); }, timer: 20, lowHp: .02, cut: 'death', after: () => { WORLD.setMood(null); drop('boss2'); become('yujiow'); } }),
     // 3 · Mahito and Junpei
     S1('y3', { zone: 'jjh', t: 'Talk to Gojo', talk: 'gojo', cut: 'brief' }),
     S1('y3', { zone: 'suburb', t: 'Find Nanami outside the cinema', talk: 'nanami', cut: 'nanami' }),
-    S1('y3', { zone: 'suburb', t: 'Clear the transfigured humans around the cinema', enter: () => { const n = ents.find(f => f.npc === 'nanami'); if (n) Object.assign(n, { npc: null, ally: true, tag: 'ally' }); else ally('nanami', near(2, 2)); ring('tfh', 6, [7455, 0, 110], 14, 'tfh'); }, kill: 'tfh', cut: 'cinema' }),
-    S1('y3', { zone: 'suburb', t: 'Go to Satozakura High School', at: [7580, 0, -108], r: 10, cut: 'school' }),
-    S1('y3', { zone: 'suburb', t: 'Defeat Mahito', enter: () => { if (!alive('ally')) ally('nanami', near(3, 2)); boss('mahito', [7600, 0, -112]); }, winHp: .3, cut: 'mahito', after: () => { drop('boss'); drop('ally'); } }),
+    S1('y3', { zone: 'cinema', t: 'Clear the transfigured humans in Screen 3', enter: () => { ally('nanami', near(2, -2)); for (let i = 0; i < 6; i++) spawn('tfh', [20806 + i * 9, 0, -20 + (i % 2) * 4], 'tfh'); AUDIO.play('battle'); }, kill: 'tfh', cut: 'cinema' }),
+    S1('y3', { zone: 'gym', t: "Get to Satozakura High's assembly", at: [21240, 0, 6], r: 10, cut: 'school' }),
+    S1('y3', { zone: 'gym', t: 'Defeat Mahito in the gymnasium', enter: () => { if (!alive('ally')) ally('nanami', near(3, 2)); boss('mahito', [21240, 1.3, -24]); }, winHp: .3, cut: 'mahito', after: () => { drop('boss'); drop('ally'); } }),
     // 4 · Kyoto Goodwill Event
     S1('y4', { zone: 'jjh', t: 'Talk to Gojo', talk: 'gojo', cut: 'event' }),
     S1('y4', { zone: 'jjh', t: 'Find Todo in the cedar woods', at: [2500, 0, 172], r: 12, cut: 'todo' }),
@@ -133,15 +139,15 @@ window.OW = (function () {
     S1('y5', { zone: 'canyon', t: 'Defeat Eso and Kechizu under the bridge', place: [15000, 0, 10], enter: () => { ally('nobara', [15003, 0, 12]); spawn('eso', [14988, 0, -6], 'bros'); spawn('kechizu', [15012, 0, -6], 'bros'); AUDIO.play('battle'); }, kill: 'bros', cut: 'brothers', after: () => drop('ally') }),
     // 6 · Shibuya Incident
     S1('y6', { zone: 'jjh', t: 'Talk to Gojo', talk: 'gojo', cut: 'curtain' }),
-    S1('y6', { zone: 'shibuya', t: 'Clear the transfigured humans at the crossing', enter: () => { ally('nanami', near(3, 2)); ring('tfh', 7, [9958, 0, -28], 16, 'tfh'); }, kill: 'tfh', cut: 'nanami', after: () => drop('ally') }),
-    S1('y6', { zone: 'shibuya', t: 'Head toward the station', at: [9985, 0, 80], r: 10, cut: 'choso' }),
-    S1('y6', { zone: 'shibuya', t: 'Survive Choso', enter: () => boss('choso', near(0, 8)), lowHp: .3, timer: 35, cut: 'brother', after: () => drop('boss') }),
+    S1('y6', { zone: 'platform', t: 'Clear the transfigured humans on the B5F platform', enter: () => { ally('nanami', near(3, 2)); for (let i = 0; i < 7; i++) spawn('tfh', [21630 + i * 18, 1.1, (i % 3 - 1) * 3], 'tfh'); AUDIO.play('battle'); }, kill: 'tfh', cut: 'nanami', after: () => drop('ally') }),
+    S1('y6', { zone: 'platform', t: 'Head down the platform', at: [21720, 1.1, 0], r: 10, cut: 'choso' }),
+    S1('y6', { zone: 'platform', t: 'Survive Choso', enter: () => boss('choso', [21745, 1.1, 0]), lowHp: .3, timer: 35, cut: 'brother', after: () => drop('boss') }),
     S1('y6', { zone: 'shibuya', t: 'Sukuna: defeat Jogo', start: 'jogo', enter: () => { become('sukunay'); boss('jogo', near(0, -10)); }, kill: 'boss', cut: 'ruin', after: () => { for (const id of ['centergai', 'shibuya']) WORLD.ruin(id, .5); become('yujiow'); } }),
     S1('y6', { zone: 'shibuya', t: 'Keep going. Find Nanami in Dōgenzaka', at: [9880, 0, 110], r: 10, cut: 'nanami2' }),
     S1('y6', { zone: 'shibuya', t: 'Defeat Mahito with Todo', enter: () => { ally('todob', near(3, 2)); boss('mahito2', near(0, -8)); }, winHp: .08, cut: 'cog', after: () => { drop('boss'); drop('ally'); } }),
     // 7 · Culling Game
     S1('y7', { zone: 'colony', t: 'Clear the colony with Choso', start: 'game', enter: () => { ally('choso', near(3, 2)); ring(['tfh', 'curse2'], 7, [12440, 0, 140], 18, 'wave'); }, kill: 'wave', cut: 'judge' }),
-    S1('y7', { zone: 'colony', t: 'Face Higuruma at his theater', enter: () => { drop('ally'); const h = boss('higub', [12430, 0, 94]); h.dm = 70; }, winHp: .4, lowHp: .3, cut: 'verdict', after: () => drop('boss') }),
+    S1('y7', { zone: 'court', t: 'Face Higuruma inside Deadly Sentencing', enter: () => { drop('ally'); const h = boss('higub', [22250, 0, -12]); h.dm = 40; }, winHp: .4, lowHp: .3, cut: 'verdict', after: () => drop('boss') }),
     // 8 · Shinjuku Showdown
     S1('y8', { zone: 'shinjuku', t: 'Defeat Sukuna', start: 'final', enter: () => { const b = boss('sukunaf', near(0, -12)); b.armor = .8; applyStats(G.p1); GAME.fillHud(); G.p1.dm = 100; }, winHp: .02, cut: 'ending' }),
     S1('y8', { zone: null, t: 'The end. Free roam: T to travel, side quests are blue', end: true })];
@@ -149,7 +155,8 @@ window.OW = (function () {
   const arcName = a => (ARCS.find(x => x[0] === a) || ARCS[0])[2];
   const cur = () => MAIN[Math.min(S.step, MAIN.length - 1)];
   const LINE = (arc, key) => key === 'ending' ? LINES.story.find(c => c.id === 'c7').win.filter(l => !l.tip).concat([{ tip: 'The end. Thank you for playing. Free roam is open: T travels anywhere, and blue markers are side quests.' }]) : LO[arc][key];
-  async function scene(lines, title) { busy = true; pick(); if (WORLD.camera.position.distanceTo(G.p1.pos) > 30) G.camSnap = true; await GAME.cutscene(lines, title || 'Yuji: Story · ' + arcName(cur().arc)); busy = false; if (OW.active && G.mode === 'ow') GAME.show(null); }
+  async function scene(lines, title) { busy = true; pick(); const st = ZONES[zone] ? ZONES[zone].start : [0, 0, 0];
+    lines = lines.map(l => l.shot && Array.isArray(l.shot.at) && Math.hypot(l.shot.at[0] - st[0], l.shot.at[2] - st[2]) > 400 ? Object.assign({}, l, { shot: { cam: 'two' } }) : l); if (WORLD.camera.position.distanceTo(G.p1.pos) > 30) G.camSnap = true; await GAME.cutscene(lines, title || 'Yuji: Story · ' + arcName(cur().arc)); busy = false; if (OW.active && G.mode === 'ow') GAME.show(null); }
   async function begin(fresh) { const q = cur(); busy = !!(fresh && q.start); if (q.zone && q.zone !== zone) enterZone(q.zone); else { syncNpcs(); if (q.enter) { q.enter(); qT = 0; } pick(); }
     if (fresh && q.start) await scene(LINE(q.arc, q.start)); busy = false; if (OW.active) arrive(q); }
   // put Yuji a few steps from a point, on solid ground and outside buildings, with the camera behind him looking at it

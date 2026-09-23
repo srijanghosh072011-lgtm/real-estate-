@@ -208,7 +208,7 @@
       }
       const hitW = WORLD.collide(this.pos, .55, prevY); if (hitW && !hitW.landed) this.wall = .15;
       const sy = WORLD.surfaceY(this.pos.x, this.pos.z, this.pos.y + .3); if (this.pos.y < sy) this.pos.y = sy;
-      const M = WORLD.MAP; this.pos.x = clamp(this.pos.x, M.x0 + 5, M.x1 - 5); this.pos.z = clamp(this.pos.z, M.z0 + 5, M.z1 - 5); this.pos.y = clamp(this.pos.y, 0, 135);
+      const M = WORLD.MAP; this.pos.x = clamp(this.pos.x, M.x0 + 5, M.x1 - 5); this.pos.z = clamp(this.pos.z, M.z0 + 5, M.z1 - 5); const top = M.ceil ? M.ceil - 1.9 : 135; if (this.pos.y > top) { this.pos.y = top; if (this.vy > 0) this.vy = 0; } if (this.pos.y < 0) this.pos.y = 0;
       this.guard = !!I.guard && can;
       if (can && I.act) this.act(I.act, o);
     }
@@ -474,7 +474,7 @@
       const focus = mid.clone().lerp(P.pos, clamp((sep - 26) / 40, 0, .7)); const s2 = Math.min(sep, 38);
       const dist = clamp(7.5 + s2 * .7, 8.5, 32); look = focus.clone().add(new V3(0, 1.3, 0)); pos = look.clone().addScaledVector(perp, dist).add(new V3(0, 2.6 + s2 * .2, 0));
     }
-    if (G.mode === 'cut' || G.mode === 'result') { const roof = WORLD.surfaceY(pos.x, pos.z, 999); if (roof > pos.y - 4 && (shot && shot.cam === 'aerial')) pos.y = roof + 8; } pos.y = Math.max(pos.y, 1);
+    if (G.mode === 'cut' || G.mode === 'result') { const roof = WORLD.surfaceY(pos.x, pos.z, 999); if (roof > pos.y - 4 && (shot && shot.cam === 'aerial')) pos.y = roof + 8; } pos.y = Math.max(pos.y, 1); if (WORLD.MAP.ceil) pos.y = Math.min(pos.y, WORLD.MAP.ceil - .4);
     if (G.camSnap) { camera.position.copy(pos); camLook.copy(look); G.camSnap = false; } else { camera.position.lerp(pos, Math.min(1, dt * (G.mode === 'fight' ? 4 : G.mode === 'ow' ? 10 : 2.2))); camLook.lerp(look, Math.min(1, dt * 5)); }
     camera.lookAt(camLook); focusD = camera.position.distanceTo(camLook);
     if (shakeA > 0) { camera.position.add(new V3(rand(-1, 1), rand(-1, 1), rand(-1, 1)).multiplyScalar(shakeA * .35)); shakeA = Math.max(0, shakeA - dt * 3); }

@@ -57,7 +57,7 @@ window.LINES_OW = {
     "t": "Not a chance. I'm going in."
    },
    {
-    "tip": "Curses are loose on the school grounds. J strikes, E dashes, Q guards."
+    "tip": "The curses are inside the school. J strikes, E dashes, Q guards."
    }
   ],
   "roof": [
@@ -307,7 +307,7 @@ window.LINES_OW = {
     "t": "If it really is special grade, we don't fight it. We find survivors and we get out."
    },
    {
-    "tip": "Megumi and Nobara fight beside you. Clear the curses in the yard."
+    "tip": "Inside the cursed womb's domain. Megumi and Nobara fight beside you."
    }
   ],
   "womb": [
@@ -396,7 +396,7 @@ window.LINES_OW = {
     "t": "Three boys died in this cinema, their bodies twisted by a curse. We investigate."
    },
    {
-    "tip": "Clear the transfigured humans around the cinema."
+    "tip": "Clear the transfigured humans in the theater."
    }
   ],
   "cinema": [
@@ -657,7 +657,7 @@ window.LINES_OW = {
     "t": "Gojo went in alone. He was sealed inside the Prison Realm."
    },
    {
-    "tip": "Shibuya: clear the transfigured humans with Nanami."
+    "tip": "Shibuya Station, B5F. Clear the transfigured humans with Nanami."
    }
   ],
   "nanami": [
