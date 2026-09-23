@@ -389,7 +389,7 @@
     if (D.m.dom === 'shrine' && Math.random() < dt * 9 && D.bl.length) { const b = pick(D.bl); if (b.h > 2) { WORLD.cutB(b, b.base + b.h * rand(.3, .85)); fxSprite(fxTex('slash', '#ff3a52'), new V3(b.x, b.base + b.h * .6, b.z), 9, .25, { rot: rand(0, 6), grow: .4 }); } }
     if (D.t <= 0 || f.dead || o.dead) endDomain();
   }
-  function endDomain() { const f = domain && domain.owner; domain = null; WORLD.setMood(null); if (G.mode === 'fight') AUDIO.play('battle');
+  function endDomain() { const f = domain && domain.owner; domain = null; WORLD.setMood(null); if (G.mode === 'fight' || G.mode === 'ow') AUDIO.play('battle');
     if (f && !f.dead) { f.burn = f.d.rct ? 1.5 : 4; floatText(f.center().add(new V3(0, 1.6, 0)), f.d.rct ? 'BURNOUT · repairing with RCT' : 'TECHNIQUE BURNOUT', '#e2b25c'); if (f.d.rct) later(.6, () => f.bark('burn')); } }
 
   /* =================== INPUT / AI =================== */
@@ -607,7 +607,7 @@
     { n: 'Shinjuku Station', spawn: [[-6, 0, 62], [6, 0, 40]] }, { n: 'Shinjuku Gyoen', spawn: [[322, 0, 120], [346, 0, 118]] }, { n: 'Jujutsu High', map: 'jjh', spawn: [[2496, 0, 40], [2512, 0, 22]] }];
   function startVersus() { const id = ++G.flow; G.story = null; $('#cut').hidden = true; const st = STAGES[G.stage]; setup(G.a, G.b, { time: G.tod, spawn: st.spawn, map: st.map });
     AUDIO.preload(['barks', 'vs']); AUDIO.play('tension'); (async () => { G.mode = 'cut'; await cutscene([{ s: G.a, t: LINES.vs[G.a].vs, id: `vs_${G.a}_vs`, shot: { cam: 'two' } }, { s: G.b, t: LINES.vs[G.b].vs, id: `vs_${G.b}_vs` }], 'Versus · ' + st.n); if (id === G.flow) startFight(); })(); }
-  function toTitle() { G.flow++; if (window.OW) OW.active = false; cutSkip = true; AUDIO.stopVoice(); if (typing) typing(); if (cutRes) { const r = cutRes; cutRes = null; r(); } clearTimeout(autoT); $('#cut').hidden = true;
+  function toTitle() { G.flow++; if (window.OW) OW.active = false; if (domain) endDomain(); clash = null; $('#clash').hidden = true; cutSkip = true; AUDIO.stopVoice(); if (typing) typing(); if (cutRes) { const r = cutRes; cutRes = null; r(); } clearTimeout(autoT); $('#cut').hidden = true;
     G.paused = false; G.story = null; setup('gojo', 'sukuna', { time: 'sunset' }); G.mode = 'title'; show('#title'); AUDIO.play('title'); $('#bStory').focus(); }
   function segRow(el, opts, get, set) { el.innerHTML = opts.map((t, i) => `<button data-i="${i}" class="${get() === i ? 'on' : ''}">${t}</button>`).join('');
     el.querySelectorAll('button').forEach(b => b.onclick = () => { set(+b.dataset.i); AUDIO.sfx('ui'); el.querySelectorAll('button').forEach(x => x.classList.toggle('on', x === b)); }); }
@@ -632,7 +632,7 @@
       const draw = () => b.innerHTML = `<span>${label}${note ? `<small>${note}</small>` : ''}</span><b>${val()}</b>`; draw();
       b.onclick = () => { settings[k] = k === 'lang' ? (settings.lang === 'ja' ? 'en' : 'ja') : !settings[k]; if (k !== 'auto') AUDIO.set(k, settings[k]); save(); draw(); AUDIO.sfx('ui'); }; el.appendChild(b); } el.firstChild.focus(); }
   $('#bStory').onclick = () => { AUDIO.sfx('ui'); openStory(); };
-  $('#bYuji').onclick = () => { AUDIO.sfx('ui'); G.mode = 'menu'; show('#owmenu'); $('#owCont').hidden = !OW.hasSave(); ($('#owCont').hidden ? $('#owNew') : $('#owCont')).focus(); };
+  $('#bYuji').onclick = () => { AUDIO.sfx('ui'); G.mode = 'menu'; show('#owmenu'); OW.menu(); ($('#owCont').hidden ? $('#owNew') : $('#owCont')).focus(); };
   $('#owCont').onclick = () => { AUDIO.sfx('ui'); OW.start(false); }; $('#owNew').onclick = () => { AUDIO.sfx('ui'); OW.start(true); }; $('#bVersus').onclick = () => { AUDIO.sfx('ui'); openVersus(); }; $('#bHelp').onclick = () => { AUDIO.sfx('ui'); show('#help'); };
   $('#bSettings').onclick = () => { AUDIO.sfx('ui'); openSettings(); }; $('#bFight').onclick = () => { AUDIO.sfx('ui'); startVersus(); };
   document.querySelectorAll('.back').forEach(b => b.onclick = () => { AUDIO.sfx('ui'); show('#title'); G.mode = 'title'; });

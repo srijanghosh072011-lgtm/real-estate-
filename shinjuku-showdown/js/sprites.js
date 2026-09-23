@@ -589,6 +589,28 @@ window.SPR = (function () {
     mats: { skin: SK.skinW, hair: CHARS.sukuna.mats.hair, brow: flat('#0e1019'), iris: flat('#4a5a80'), irisD: flat('#141c30'), hood: CHARS.yuji.mats.jacket, gold2: flat('#c8a050') } });
   CHARS.curse1 = variant('rika', { mats: { skin: ['#3a4a2a', '#6a8048', '#a4b878', '#dce8b8'], rag: ['#140e08', '#2a2014', '#40321e', '#5a4a30'], hair: ['#0a0c06', '#161a0c', '#262c16', '#3c4424'] } });
   CHARS.curse2 = variant('rika', { mats: { skin: ['#4a2a3e', '#80486a', '#b87aa0', '#e8b8d4'], rag: ['#0a0610', '#18101e', '#281c30', '#3c2c46'], hair: ['#08040a', '#140a18', '#221428', '#36223c'] } });
+  const H = (base, o) => Object.assign({}, CHARS[base].head, o);
+  CHARS.nobara = variant('maki0', { head: H('maki0', { topFn: null, backFn: null, back: [[[3.4, 1], [-.6, 4], [-1.4, 10.4], 4.6, 'hair'], [[3, 5], [.6, 9], [1.6, 12.6], 3.6, 'hair']] }),
+    mats: { hair: ['#4a2210', '#8a4a24', '#c07844', '#eaa874'], brow: flat('#6a3418'), iris: flat('#a86a3a'), irisD: flat('#4a2410') } });
+  CHARS.nanami = variant('higuruma', { head: H('higuruma', { faceFn: null, topFn(P, X, Y) { const o = { ord: 999, w: .45 };
+      for (const [a, b, c, d] of [[5.4, 8.4, 13.2, 8.2], [5.4, 8.4, 5.8, 11.4], [5.8, 11.4, 9.4, 11.6], [9.4, 11.6, 10, 10], [10, 10, 10.8, 11.6], [10.8, 11.6, 13, 11.2], [13, 11.2, 13.2, 8.2]]) P.line(X(a), Y(b), X(c), Y(d), 'frame', 0, o);
+      P.px(X(7), Y(9.4), 'glass', 4, { ord: 999, fine: 1 }); P.px(X(11.6), Y(9.4), 'glass', 4, { ord: 999, fine: 1 }); } }),
+    mats: { hair: ['#8a6a20', '#c8a040', '#ecd070', '#fff0b0'], brow: flat('#a88030'), suit: ['#6a5a3a', '#a08a60', '#c8b488', '#ece0bc'], tie: ['#4a3a10', '#8a7020', '#c8a830', '#f0d860'], frame: flat('#1a1a14'), glass: flat('#8ad0a0') } });
+  CHARS.mahito = variant('yuji', { head: H('geto', { eyes: eyesStd({ style: 'sharp', browAng: .3 }), faceFn(P, X, Y) { const o = { w: .35 };
+      for (const [a, b, c, d] of [[4, 6, 12, 5], [8, 5.4, 9.6, 16], [3.4, 13, 7.6, 16.4]]) P.line(X(a), Y(b), X(c), Y(d), 'mark', 0, o); for (let t = 0; t < 1; t += .2) P.line(X(8.3 + t * 1.3 - .6), Y(5.4 + t * 10.6), X(8.3 + t * 1.3 + .6), Y(5.4 + t * 10.6), 'mark', 0, o); } }),
+    mats: { skin: ['#7a7a8a', '#b8b8c8', '#e0e0ea', '#ffffff'], hair: ['#2a3448', '#4a5a78', '#7a8cae', '#b8c8e4'], brow: flat('#4a5a78'), iris: flat('#5a8ab0'), irisD: flat('#1a3050'),
+      jacket: ['#2a3040', '#4a5468', '#6e7a92', '#a8b4c8'], hood: ['#2a3040', '#4a5468', '#6e7a92', '#a8b4c8'], gold2: flat('#a8b4c8') } });
+  CHARS.junpei = variant('yuji', { head: H('yuta', { eyes: eyesStd({ style: 'tired', browAng: -.3 }) }),
+    mats: { skin: SK.skinW, hair: ['#0a0808', '#1a1414', '#2c2424', '#463a3a'], brow: flat('#1a1414'), iris: flat('#4a3a30'), irisD: flat('#1a1210'), hood: CHARS.yuji.mats.jacket } });
+  CHARS.choso = variant('geto', { head: H('geto', { back: [[[3.6, 1], [.6, -2.4], [-1.4, -4.6], 3.6, 'hair'], [[9.6, .4], [11.8, -2.6], [13, -5], 3.4, 'hair']], backFn: null,
+      front: CHARS.yuji.head.front, eyes: eyesStd({ style: 'tired', browAng: .2 }), faceFn(P, X, Y) { P.line(X(5), Y(11.4), X(13.4), Y(11), 'blood', 0, { w: .7 }); } }),
+    mats: { blood: flat('#8a1020'), robe: ['#1a1420', '#2e2438', '#463a54', '#6e5e80'], kesa: ['#2a2430', '#4a4054', '#6e627a', '#9a8ca8'] } });
+  CHARS.hanami = variant('rika', { mats: { skin: ['#6a6a58', '#a8a890', '#dcdcc4', '#ffffff'], hair: ['#1a3a14', '#2e5a24', '#4a8a3a', '#8ac878'], rag: ['#2a1c10', '#4a3420', '#6a4e30', '#9a7a50'] } });
+  CHARS.jogo = variant('rika', { mats: { skin: ['#6a5a4a', '#a08a70', '#d0b89a', '#f4e4cc'], hair: ['#2a1410', '#4a2418', '#6a3420', '#9a4a2a'], rag: ['#3a1a0c', '#6a3018', '#9a4a24', '#d8743a'] } });
+  CHARS.eso = variant('kuchisake', { mats: { skin: ['#3a5a3a', '#6a9060', '#9ac088', '#d4ecc0'], coat: ['#3a0e10', '#6a1a1e', '#9a2a30', '#d05a5e'], mask: ['#3a5a3a', '#6a9060', '#9ac088', '#d4ecc0'] } });
+  CHARS.kechizu = variant('rika', { mats: { skin: ['#5a2a2a', '#8a4a44', '#b8766a', '#e8b0a0'], hair: ['#1a0808', '#2e1010', '#461c1c', '#6a2c2c'], rag: ['#140a0a', '#2a1414', '#401e1e', '#5a2e2e'] } });
+  CHARS.tfh = variant('rika', { mats: { skin: ['#4a4650', '#7a7482', '#a8a2b0', '#d8d2e0'], rag: ['#101014', '#1e1e26', '#2e2e3a', '#44445a'] } });
+  CHARS.womb = variant('rika', { mats: { skin: ['#3a2a2a', '#6a4a44', '#9a7466', '#d0aa96'], hair: ['#0a0406', '#180a0e', '#281218', '#3e1e26'] } });
   function prep(key) { const C = CHARS[key]; if (!C.M) { C.mats.iris = C.mats.iris || flat('#333'); C.mats.irisD = C.mats.irisD || flat('#111'); C.mats.lash = C.mats.lash || flat('#1b1024'); C.M = materials(C); C.heads = {}; } return C; }
   function headOf(C, e) { return C.heads[e] || (C.heads[e] = renderHead({ mats: C.M, head: C.head }, e)); }
   function frameInto(C, name, ctx, nctx, x, y) { const p = pose(C, name), J = rig(C.pr, p), buf = new Buf(OW, OH), P = new Painter(buf, C.M, K);

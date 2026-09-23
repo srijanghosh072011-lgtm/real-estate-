@@ -43,6 +43,14 @@ CAST = {
     "yutag":    (("am_liam",), 0.95, "aecho=0.8:0.5:30:0.06," + NORM),
     "megumi":   (("am_eric",), 0.95, NORM),
     "sukunay":  (("am_onyx", "am_michael"), 0.9, DEMON),
+    "nobara":   (("af_nova",), 1.02, NORM),
+    "nanami":   (("bm_daniel",), 0.92, NORM),
+    "mahito":   (("am_echo",), 1.05, "aecho=0.8:0.5:25:0.08," + NORM),
+    "junpei":   (("am_adam",), 1.0, NORM),
+    "hanami":   (("bm_fable",), 0.88, "aecho=0.8:0.7:60|120:0.25|0.12," + NORM),
+    "eso":      (("am_santa",), 0.9, "rubberband=pitch=0.9:formant=preserved,aecho=0.8:0.6:40:0.15," + NORM),
+    "choso":    (("am_onyx",), 0.92, NORM),
+    "jogo":     (("am_santa", "am_echo"), 0.95, "aecho=0.8:0.5:30:0.1," + NORM),
 }
 
 # Japanese track: Kokoro ships one Japanese male voice (jm_kumo) and four female ones, so the male
@@ -67,6 +75,14 @@ CAST_JA = {
     "yutag":    (("jf_tebukuro",), 0.96, ja(0.9, "aecho=0.8:0.5:30:0.06,")),
     "megumi":   (("jm_kumo",), 0.97, ja(0.98)),
     "sukunay":  (("jm_kumo",), 0.9, DEMON),
+    "nobara":   (("jf_gongitsune",), 1.02, ja(1.0)),
+    "nanami":   (("jm_kumo",), 0.9, ja(0.88)),
+    "mahito":   (("jm_kumo",), 1.04, ja(1.07, "aecho=0.8:0.5:25:0.08,")),
+    "junpei":   (("jm_kumo",), 1.0, ja(1.12)),
+    "hanami":   (("jf_nezumi",), 0.88, ja(0.8, "aecho=0.8:0.7:60|120:0.25|0.12,")),
+    "eso":      (("jm_kumo",), 0.9, ja(0.84, "aecho=0.8:0.6:40:0.15,")),
+    "choso":    (("jm_kumo",), 0.92, ja(0.9)),
+    "jogo":     (("jm_kumo",), 0.95, ja(0.95, "aecho=0.8:0.5:30:0.1,")),
 }
 
 

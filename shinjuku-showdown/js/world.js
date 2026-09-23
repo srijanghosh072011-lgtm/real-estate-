@@ -5,7 +5,9 @@ window.WORLD = (function () {
   const R = (a, b) => a + rnd() * (b - a), pick = a => a[rnd() * a.length | 0], clamp = (v, a, b) => Math.max(a, Math.min(b, v));
   // two maps in one world, far apart: Shinjuku (2018) and Tokyo Jujutsu High (Season 0, 2017)
   const MAPS = { shinjuku: { x0: -480, x1: 440, z0: -280, z1: 280, ms: .26 }, jjh: { x0: 2350, x1: 2650, z0: -150, z1: 190, ms: .5 },
-    sendai: { x0: 4720, x1: 5280, z0: -280, z1: 280, ms: .3 } };
+    sendai: { x0: 4720, x1: 5280, z0: -280, z1: 280, ms: .3 },
+    suburb: { x0: 7220, x1: 7780, z0: -280, z1: 280, ms: .3 },
+    shibuya: { x0: 9720, x1: 10280, z0: -280, z1: 280, ms: .3 } };
   const MAP = Object.assign({}, MAPS.shinjuku);
 
   /* ---------------- districts (first match wins) ---------------- */
@@ -32,7 +34,19 @@ window.WORLD = (function () {
     { id: 'jjh', name: 'Jujutsu High · Cedar Forest', jp: '呪術高専 杉林', x0: 2100, z0: -400, x1: 2900, z1: 400, type: 5 },
     // Sendai, where Yuji's story starts (the town layout is ours)
     { id: 'sugisawa', name: 'Sugisawa Third High School', jp: '杉沢第三高校', x0: 4950, z0: -75, x1: 5070, z1: 40, type: 4 },
-    { id: 'sendai', name: 'Sendai', jp: '仙台', x0: 4700, z0: -300, x1: 5300, z1: 300, cx: 34, cz: 30, sw: 8, h: [5, 14], styles: ['residential', 'residential', 'brown', 'office'], type: 0 }
+    { id: 'sendai', name: 'Sendai', jp: '仙台', x0: 4700, z0: -300, x1: 5300, z1: 300, cx: 34, cz: 30, sw: 8, h: [5, 14], styles: ['residential', 'residential', 'brown', 'office'], type: 0 },
+    // the suburbs of the early arcs (layout is ours): the detention center, Junpei's school, a river crossed by Yasohachi Bridge
+    { id: 'eishu', name: 'Eishū Juvenile Detention Center', jp: '英集少年院', x0: 7300, z0: -230, x1: 7420, z1: -110, type: 4 },
+    { id: 'satozakura', name: 'Satozakura High School', jp: '里桜高校', x0: 7560, z0: -200, x1: 7680, z1: -90, type: 4 },
+    { id: 'river', name: 'Yasohachi Bridge', jp: '八十八橋', x0: 7200, z0: 170, x1: 7800, z1: 230, type: 6 },
+    { id: 'suburb', name: 'Suburbs', jp: '郊外', x0: 7200, z0: -300, x1: 7800, z1: 300, cx: 32, cz: 30, sw: 8, h: [5, 16], styles: ['residential', 'residential', 'brown', 'office'], type: 0 },
+    // Shibuya, around the station (approximate real layout: the scramble crossing west of the station, 109 at the Dōgenzaka fork, Center Gai to the north-west)
+    { id: 'scramble', name: 'Shibuya Scramble Crossing', jp: '渋谷スクランブル交差点', x0: 9925, z0: -60, x1: 9990, z1: 5, type: 3 },
+    { id: 'shibuyasta', name: 'Shibuya Station', jp: '渋谷駅', x0: 9990, z0: -300, x1: 10035, z1: 300, type: 2 },
+    { id: 'centergai', name: 'Center Gai', jp: 'センター街', x0: 9820, z0: -200, x1: 9925, z1: -30, cx: 26, cz: 22, sw: 6, h: [8, 22], styles: ['neon', 'neon', 'dept'], type: 0, neon: 1 },
+    { id: 'dogenzaka', name: 'Dōgenzaka', jp: '道玄坂', x0: 9780, z0: 5, x1: 9990, z1: 200, cx: 34, cz: 30, sw: 8, h: [10, 30], styles: ['neon', 'office', 'dept'], type: 0, neon: .5 },
+    { id: 'shibuyae', name: 'Shibuya East', jp: '渋谷東', x0: 10035, z0: -300, x1: 10300, z1: 300, cx: 44, cz: 40, sw: 12, h: [16, 50], styles: ['glass', 'office', 'darkglass'], type: 0 },
+    { id: 'shibuya', name: 'Shibuya', jp: '渋谷', x0: 9700, z0: -300, x1: 9990, z1: 300, cx: 38, cz: 34, sw: 10, h: [12, 34], styles: ['office', 'dept', 'neon', 'glass'], type: 0, neon: .3 }
   ];
   const AVE = [{ x0: 55, z0: -78, x1: 440, z1: -66, name: 'Yasukuni-dōri' }];
   function district(x, z) { for (const d of D) if (x >= d.x0 && x < d.x1 && z >= d.z0 && z < d.z1) return d; return D[3]; }
@@ -113,7 +127,7 @@ window.WORLD = (function () {
     dusk: { top: '#0e1030', mid: '#3a2458', hor: '#9a4a62', sunC: '#ff8a70', sunI: .5, sun: [-0.9, 0.05, 0.4], hs: '#8a7ab8', hg: '#2a1830', hI: .62, fog: '#3a2848', fogD: .0045, night: .85, grade: [1, .95, 1.08], lift: [.01, 0, .03], sprite: '#c8b8e8', lamps: 1, bloomTh: .62, fuji: '#2a2448' },
     night: { top: '#04050e', mid: '#0e1430', hor: '#26244a', sunC: '#9fb4ff', sunI: .38, sun: [0.35, 0.7, -0.4], hs: '#4a5a9a', hg: '#18121e', hI: .55, fog: '#141a30', fogD: .0045, night: 1, grade: [.95, .98, 1.12], lift: [0, .005, .03], sprite: '#a8b4e0', lamps: 1, bloomTh: .55, fuji: '#12142a' }
   };
-  const U = { night: { value: 0 }, cut: { value: [new THREE.Vector4(), new THREE.Vector4()] } };
+  const U = { night: { value: 0 }, cut: { value: [new THREE.Vector4(), new THREE.Vector4()] }, time: { value: 0 } };
   let TOD = TIMES.noon;
   function setTime(k) {
     TOD = TIMES[k] || TIMES.noon; const t = TOD;
@@ -184,11 +198,11 @@ window.WORLD = (function () {
   const groundMat = new THREE.MeshLambertMaterial({ color: 0xffffff });
   groundMat.onBeforeCompile = sh => {
     const dd = D.map(d => new THREE.Vector4(d.x0, d.z0, d.x1, d.z1)), gg = D.map(d => new THREE.Vector4(d.cx || 1, d.cz || 1, d.sw || 0, d.type));
-    while (dd.length < 24) { dd.push(new THREE.Vector4(0, 0, -1, -1)); gg.push(new THREE.Vector4(1, 1, 0, 0)); }
+    while (dd.length < 34) { dd.push(new THREE.Vector4(0, 0, -1, -1)); gg.push(new THREE.Vector4(1, 1, 0, 0)); }
     const aa = AVE.map(a => new THREE.Vector4(a.x0, a.z0, a.x1, a.z1)); while (aa.length < 4) aa.push(new THREE.Vector4(0, 0, -1, -1));
-    Object.assign(sh.uniforms, { uD: { value: dd }, uG: { value: gg }, uA: { value: aa }, uCut: U.cut });
+    Object.assign(sh.uniforms, { uD: { value: dd }, uG: { value: gg }, uA: { value: aa }, uCut: U.cut, uT: U.time });
     sh.vertexShader = 'varying vec3 vWP;\n' + sh.vertexShader.replace('#include <project_vertex>', '#include <project_vertex>\nvWP = (modelMatrix * vec4(position,1.)).xyz;');
-    sh.fragmentShader = 'varying vec3 vWP; uniform vec4 uD[24]; uniform vec4 uG[24]; uniform vec4 uA[4];\n' + GLSL_HASH + `
+    sh.fragmentShader = 'varying vec3 vWP; uniform vec4 uD[34]; uniform vec4 uG[34]; uniform vec4 uA[4]; uniform float uT;\n' + GLSL_HASH + `
       vec3 asph(vec2 p){ return vec3(.2,.2,.22) + hh(floor(p*5.))*.05 + vn(p*.25)*.05; }
       vec3 pave(vec2 p){ vec2 t=fract(p*.8); float g=step(t.x,.08)+step(t.y,.08); return mix(vec3(.55,.53,.5)+hh(floor(p*.8))*.06, vec3(.38,.37,.36), clamp(g,0.,1.)); }
       vec3 lot(vec2 p){ return vec3(.34,.33,.32)+hh(floor(p*2.))*.04; }
@@ -208,8 +222,9 @@ window.WORLD = (function () {
         return lot(p); }
       vec3 groundAt(vec2 p){
         for(int i=0;i<4;i++){ vec4 a=uA[i]; if(a.z<=a.x) continue; if(p.x>a.x&&p.x<a.z&&p.y>a.y&&p.y<a.w){ vec3 c=asph(p); float m=(a.y+a.w)*.5; if(abs(p.y-m)<.25&&abs(p.y-m)>.08) c=vec3(.86,.72,.22); else if(abs(abs(p.y-m)-3.)<.08&&fract(p.x/5.)<.5) c=vec3(.8); return c; } }
-        for(int i=0;i<24;i++){ vec4 d=uD[i]; if(d.z<=d.x) continue; if(p.x<d.x||p.x>=d.z||p.y<d.y||p.y>=d.w) continue; vec4 g=uG[i];
-          if(g.w<.5) return urban(p,d,g); if(g.w<1.5) return grass(p); if(g.w<2.5) return rails(p); if(g.w<3.5) return plaza(p); if(g.w<4.5) return gravel(p); return forest(p); }
+        for(int i=0;i<34;i++){ vec4 d=uD[i]; if(d.z<=d.x) continue; if(p.x<d.x||p.x>=d.z||p.y<d.y||p.y>=d.w) continue; vec4 g=uG[i];
+          if(g.w<.5) return urban(p,d,g); if(g.w<1.5) return grass(p); if(g.w<2.5) return rails(p); if(g.w<3.5) return plaza(p); if(g.w<4.5) return gravel(p); if(g.w<5.5) return forest(p);
+          float bank=abs(p.y-(d.y+d.w)*.5); return bank<18.? vec3(.14,.24,.3)+vn(p*.3+vec2(0.,uT))*.06 : mix(vec3(.3,.36,.2),vec3(.42,.4,.3),hh(floor(p*3.))*.5); }
         return lot(p); }
       ` + CUT_FRAG.replace('uniform vec4 uCut[2];', 'uniform vec4 uCut[2];') + sh.fragmentShader.replace('#include <map_fragment>', 'diffuseColor.rgb *= groundAt(vWP.xz);');
   };
@@ -273,6 +288,8 @@ window.WORLD = (function () {
   // timber halls on stone platforms, a five-storey pagoda, stone lanterns and cedar woods)
   const JR = [];   // roofs to build for these buildings
   reserve(4945, -80, 5075, 45); reserve(4855, -178, 4905, -122);   // Sendai: school grounds, hospital
+  reserve(7295, -235, 7425, -105); reserve(7555, -205, 7685, -85); reserve(7200, 165, 7800, 235); reserve(7430, 40, 7475, 85);   // suburbs
+  reserve(9880, -30, 9925, 10); reserve(10040, -45, 10080, 5); reserve(9920, -95, 9960, -60);   // Shibuya: 109, Hikarie, QFront
   { const J = (st, x, z, w, d, h, o = {}) => addB(st, x, z, w, d, h, Object.assign({ map: 'jjh', tint: R(.94, 1.04) }, o));
     for (let k = 0; k < 3; k++) J('stone', 2505, -40, 54 - k * 4, 34 - k * 4, .55, { base: k * .55 });   // walkable steps
     JR.push({ b: J('temple', 2505, -40, 38, 18, 9, { base: 1.65 }), eave: 4, rh: 8 });
@@ -304,6 +321,16 @@ window.WORLD = (function () {
   const S = (st, x, z, w, d, h, o = {}) => addB(st, x, z, w, d, h, Object.assign({ map: 'sendai', tint: R(.95, 1.05) }, o));
   S('residential', 5010, -56, 72, 14, 15, { lm: 'school', tint: 1.06 }); S('residential', 5010, -56, 20, 16, 4, { base: 15, lm: 'school' }); S('brown', 4968, -30, 22, 26, 11, { lm: 'gym' });
   S('office', 4880, -150, 36, 24, 20, { lm: 'hospital', tint: 1.1 });
+  const SB = (st, x, z, w, d, h, o = {}) => addB(st, x, z, w, d, h, Object.assign({ map: 'suburb', tint: R(.95, 1.05) }, o));
+  for (const [x, z, w, d] of [[7330, -190, 40, 14], [7385, -190, 14, 40], [7340, -140, 30, 12]]) SB('residential', x, z, w, d, 12, { lm: 'eishu', tint: .9 });   // cell blocks
+  for (const [x, z, w, d] of [[7360, -229, 124, 1.2], [7360, -111, 124, 1.2], [7299, -170, 1.2, 118], [7421, -170, 1.2, 118]]) SB('granite', x, z, w, d, 5, { lm: 'eishu-wall' });
+  SB('residential', 7620, -180, 90, 14, 14, { lm: 'satozakura', tint: 1.05 }); SB('brown', 7580, -130, 24, 30, 10, { lm: 'satozakura-gym' });   // the gym hosts the assembly
+  SB('dept', 7452, 62, 36, 36, 12, { lm: 'cinema', tint: .85 });
+  SB('granite', 7500, 200, 12, 70, 1, { base: 4.5, lm: 'bridge' }); for (const z of [175, 200, 225]) SB('granite', 7500, z, 3, 3, 4.5, { lm: 'bridge-pier' });
+  for (const z of [168, 232]) SB('granite', 7500, z, 12, 8, 4.5, { lm: 'bridge-ramp' });
+  const SH = (st, x, z, w, d, h, o = {}) => addB(st, x, z, w, d, h, Object.assign({ map: 'shibuya', tint: R(.95, 1.05) }, o));
+  SH('glass', 10060, -20, 34, 44, 72, { lm: 'hikarie', tint: 1.05 }); SH('dept', 9940, -78, 34, 30, 22, { lm: 'qfront', tint: .8 }); SH('office', 9955, 30, 40, 18, 24, { lm: 'markcity' });
+  const b109 = SH('darkglass', 9902, -10, 16, 16, 34, { lm: '109' }); b109.hidden = true;
   // instanced meshes
   const box = new THREE.BoxGeometry(1, 1, 1), M4 = new THREE.Matrix4(), Q = new THREE.Quaternion(), S3 = new V3(), P3 = new V3(), COL = new THREE.Color();
   const inst = {};
@@ -457,6 +484,16 @@ window.WORLD = (function () {
     instanced(new THREE.BoxGeometry(1.5, .12, .12).translate(0, 7.9, 0), new THREE.MeshLambertMaterial({ color: 0x3a3a3e }), poles, pole);
     const wg = new THREE.BufferGeometry(); wg.setAttribute('position', new THREE.Float32BufferAttribute(wp, 3)); scene.add(new THREE.LineSegments(wg, new THREE.LineBasicMaterial({ color: 0x18181c }))); }
 
+  // suburbs + Shibuya: ground planes, 109, signs and the big screens
+  for (const x of [7500, 10000]) { const g = new THREE.Mesh(new THREE.PlaneGeometry(900, 900), groundMat); g.rotation.x = -Math.PI / 2; g.position.set(x, 0, 0); g.receiveShadow = true; scene.add(g); }
+  { const t = special(new THREE.CylinderGeometry(.5, .5, 1, 20), MATS.office, 9902, 17, -10, 18, 34, 18); t.userData.core = 1; const b = B.find(q => q.lm === '109'); b.spec = t; t.userData.b = b;
+    const sg = (w, h, draw, x, y, z, ry) => { const m = new THREE.Mesh(new THREE.PlaneGeometry(w, h), new THREE.MeshBasicMaterial({ map: canvasTex(w * 12, h * 12, draw, false), side: THREE.DoubleSide })); m.position.set(x, y, z); m.rotation.y = ry || 0; scene.add(m); return m; };
+    sg(9, 3, (c, w, h) => { c.fillStyle = '#101010'; c.fillRect(0, 0, w, h); c.fillStyle = '#f2f2f2'; c.font = 'bold 26px sans-serif'; c.textAlign = 'center'; c.fillText('SHIBUYA109', w / 2, 27); }, 9902, 30, .2, 0);
+    sg(16, 9, (c, w, h) => { const g = c.createLinearGradient(0, 0, w, h); g.addColorStop(0, '#ff6a1a'); g.addColorStop(1, '#6a1aff'); c.fillStyle = g; c.fillRect(0, 0, w, h); c.fillStyle = '#fff'; c.font = 'bold 30px sans-serif'; c.textAlign = 'center'; c.fillText('HALLOWEEN', w / 2, 50); c.font = 'bold 20px sans-serif'; c.fillText('10.31 SHIBUYA', w / 2, 80); }, 9940, 14, -62.8, 0);
+    sg(6, 2, (c, w, h) => { c.fillStyle = '#1a3a6a'; c.fillRect(0, 0, w, h); c.fillStyle = '#fff'; c.font = 'bold 16px sans-serif'; c.textAlign = 'center'; c.fillText('渋谷駅 SHIBUYA', w / 2, 16); }, 9989, 7, -20, Math.PI / 2);
+    sg(10, 2.4, (c, w, h) => { c.fillStyle = '#20202a'; c.fillRect(0, 0, w, h); c.fillStyle = '#ffd24a'; c.font = 'bold 15px sans-serif'; c.textAlign = 'center'; c.fillText('映画館 CINEMA', w / 2, 21); }, 7452, 10, 80.2, 0);
+    const hachi = new THREE.Mesh(box, new THREE.MeshLambertMaterial({ color: 0x6a5a3a })); hachi.scale.set(.6, 1.2, 1.4); hachi.position.set(9978, .6, -12); scene.add(hachi);
+    const water = new THREE.Mesh(new THREE.PlaneGeometry(600, 36), new THREE.MeshLambertMaterial({ color: 0x2a4a60, transparent: true, opacity: .85 })); water.rotation.x = -Math.PI / 2; water.position.set(7500, .08, 200); scene.add(water); }
   // Sendai: ground, school gate and signs
   { const g3 = new THREE.Mesh(new THREE.PlaneGeometry(900, 900), groundMat); g3.rotation.x = -Math.PI / 2; g3.position.set(5000, 0, 0); g3.receiveShadow = true; scene.add(g3);
     const sign = (w, h, draw, x, y, z, ry) => { const m = new THREE.Mesh(new THREE.PlaneGeometry(w, h), new THREE.MeshBasicMaterial({ map: canvasTex(w * 16, h * 16, draw, false), side: THREE.DoubleSide })); m.position.set(x, y, z); m.rotation.y = ry || 0; scene.add(m); };
@@ -615,7 +652,7 @@ window.WORLD = (function () {
   /* ---------------- per-frame ---------------- */
   let T = 0, smokeCd = 0;
   function update(dt, focus) {
-    T += dt;
+    T += dt; U.time.value = T * .4;
     // smoke columns drifting up from burning buildings near the camera
     if ((smokeCd -= dt) <= 0 && fires.length) { smokeCd = .16; const f = fires[Math.random() * fires.length | 0];
       if (f.life > 4 && f.o.position.distanceToSquared(camera.position) < 62500) dustAt(f.o.position.clone().add(new V3(R(-1, 1), f.s * .8, R(-1, 1))), R(5, 9), TOD.night > .5 ? 0x2c2830 : 0x55504e, R(6, 9), new V3(R(.2, 1.2), R(3.5, 5.5), R(-.5, .5))); }
@@ -651,7 +688,7 @@ window.WORLD = (function () {
   const mini = document.createElement('canvas'); mini.width = Math.ceil((MAP.x1 - MAP.x0) * MAP.ms); mini.height = Math.ceil((MAP.z1 - MAP.z0) * MAP.ms);
   function drawMini() { const g = mini.getContext('2d'), MS = MAP.ms; g.fillStyle = '#1c1a22'; g.fillRect(0, 0, mini.width, mini.height);
     const X = x => (x - MAP.x0) * MS, Z = z => (z - MAP.z0) * MS;
-    for (const d of [...D].reverse()) { g.fillStyle = ['#2a2832', '#23422a', '#3a3640', '#4a4650', '#4e4a44', '#1d3320'][d.type]; g.fillRect(X(d.x0), Z(d.z0), (d.x1 - d.x0) * MS, (d.z1 - d.z0) * MS);
+    for (const d of [...D].reverse()) { g.fillStyle = ['#2a2832', '#23422a', '#3a3640', '#4a4650', '#4e4a44', '#1d3320', '#23405a'][d.type]; g.fillRect(X(d.x0), Z(d.z0), (d.x1 - d.x0) * MS, (d.z1 - d.z0) * MS);
       if (d.type === 0) { g.fillStyle = '#4a4854'; for (let x = d.x0; x < d.x1; x += d.cx) g.fillRect(X(x), Z(d.z0), Math.max(1, d.sw * MS), (d.z1 - d.z0) * MS); for (let z = d.z0; z < d.z1; z += d.cz) g.fillRect(X(d.x0), Z(z), (d.x1 - d.x0) * MS, Math.max(1, d.sw * MS)); }
       if (d.type === 2) { g.fillStyle = '#6a6470'; for (let x = -34; x < 36; x += 4.6) g.fillRect(X(x), Z(d.z0), 1, (d.z1 - d.z0) * MS); } }
     for (const a of AVE) { g.fillStyle = '#5a5866'; g.fillRect(X(a.x0), Z(a.z0), (a.x1 - a.x0) * MS, (a.z1 - a.z0) * MS); }
