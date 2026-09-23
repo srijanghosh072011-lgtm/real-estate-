@@ -692,10 +692,103 @@ window.LINES = {
    ]
   },
   {
+   "id": "c6g",
+   "hero": "yutag",
+   "foe": "sukunah",
+   "title": "Chapter 7 · Borrowed Body",
+   "sub": "Yuta (in Gojo's body) vs. Sukuna",
+   "time": "night",
+   "spawn": [
+    [
+     300,
+     0,
+     -30
+    ],
+    [
+     322,
+     0,
+     -36
+    ]
+   ],
+   "sk": 0.7,
+   "ruin": "nishi",
+   "intro": [
+    {
+     "id": "c6gi01",
+     "s": "n",
+     "t": "Yuta had fallen. But before the battle he had copied Kenjaku's technique, and made one last plan: if he died, his mind would move into Satoru Gojo's body.",
+     "shot": {
+      "cam": "aerial",
+      "at": [
+       310,
+       0,
+       -32
+      ],
+      "r": 60,
+      "h": 32
+     }
+    },
+    {
+     "id": "c6gi02",
+     "s": "n",
+     "t": "Stitched together, with the Six Eyes and Limitless, Yuta Okkotsu stood up again. The body would not accept him for long."
+    },
+    {
+     "id": "c6gi03",
+     "s": "sukunah",
+     "t": "Gojo's body, with a stranger inside it. Disgusting."
+    },
+    {
+     "id": "c6gi04",
+     "s": "yutag",
+     "t": "I know. That's why I only need five minutes."
+    },
+    {
+     "tip": "Yuta in Gojo's body has Gojo's techniques: Infinity, Blue, Red and Hollow Purple. But the body rejects him. When the timer runs out, he starts losing health fast."
+    }
+   ],
+   "win": [
+    {
+     "id": "c6gw01",
+     "s": "n",
+     "t": "Hollow Purple, fired from a borrowed body, tore straight through Sukuna's guard.",
+     "shot": {
+      "cam": "two"
+     }
+    },
+    {
+     "id": "c6gw02",
+     "s": "yutag",
+     "t": "Gojo-sensei. I'll give this back to you now."
+    },
+    {
+     "tip": "What if: in the manga, the borrowed body gave out before Yuta could finish it."
+    }
+   ],
+   "lose": [
+    {
+     "id": "c6gl01",
+     "s": "n",
+     "t": "Yuta pushed the borrowed body past its limit, and it finally gave out. But Sukuna was running out of strength too.",
+     "shot": {
+      "cam": "two"
+     }
+    },
+    {
+     "id": "c6gl02",
+     "s": "yutag",
+     "t": "Yuji. The rest is up to you."
+    },
+    {
+     "tip": "This is what happened in the manga."
+    }
+   ]
+  },
+  {
    "id": "c7",
    "hero": "yuji",
    "foe": "sukunah",
-   "title": "Chapter 7 · The Last Cog",
+   "title": "Chapter 8 · The Last Cog",
    "sub": "Yuji vs. Sukuna",
    "time": "night",
    "spawn": [
@@ -878,6 +971,11 @@ window.LINES = {
    "vs": "I'll show the whole Zenin clan.",
    "win": "Not bad for someone with no cursed energy, right?",
    "lose": "Damn it. Not yet."
+  },
+  "yutag": {
+   "vs": "Five minutes. That's all I need.",
+   "win": "Gojo-sensei. Thank you.",
+   "lose": "This body... won't hold."
   }
  },
  "barks": {
@@ -971,6 +1069,12 @@ window.LINES = {
    "k": "Hah!",
    "l": "Out of my way!",
    "i": "Too slow."
+  },
+  "yutag": {
+   "start": "Sensei. Lend me your strength.",
+   "k": "Blue.",
+   "l": "Red.",
+   "i": "Hollow Purple."
   }
  },
  "story0": [

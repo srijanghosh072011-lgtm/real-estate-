@@ -96,6 +96,10 @@ kbd{font-family:inherit;background:#0b0912;border:1px solid var(--gold);padding:
 #floats{position:fixed;inset:0;pointer-events:none;overflow:hidden}
 .ft{position:absolute;transform:translate(-50%,-50%);font-family:'Pixelify Sans',monospace;font-weight:700;font-size:16px;text-shadow:0 2px 0 #0b0912,2px 0 0 #0b0912,-2px 0 0 #0b0912,0 -2px 0 #0b0912;white-space:nowrap}
 .ft.big{font-size:24px}
+#owhud{position:fixed;inset:0;pointer-events:none}
+#owq{position:absolute;top:calc(104px + env(safe-area-inset-top,0px));left:16px;max-width:min(380px,60vw);background:var(--panel);box-shadow:inset 0 0 0 1px #e2b25c88;padding:8px 12px;font-size:13px;line-height:1.6}
+#owq b{color:var(--gold);font-weight:normal;margin-right:6px}#owq i{color:var(--blue);font-style:normal;margin-right:6px}
+#owp{position:absolute;left:50%;bottom:26%;transform:translateX(-50%);background:var(--panel);box-shadow:inset 0 0 0 1px var(--gold);padding:8px 14px;font-size:14px}
 /* cutscene */
 #cut{position:fixed;inset:0;cursor:pointer}
 #cut .lb{position:absolute;left:0;right:0;height:11vh;background:#000}
@@ -139,12 +143,22 @@ kbd{font-family:inherit;background:#0b0912;border:1px solid var(--gold);padding:
     <p class="tag">From the Night Parade of 2017 to December 24, 2018 · The Strongest of Today vs. The Strongest in History</p>
   </div>
   <nav class="menu">
+    <button id="bYuji">Yuji: Story</button>
     <button id="bStory">Story Mode</button>
     <button id="bVersus">Versus</button>
     <button id="bHelp">How to Play</button>
     <button id="bSettings">Sound &amp; Voice</button>
   </nav>
   <p class="fine">Fan-made tribute. Jujutsu Kaisen © Gege Akutami / Shueisha. Story mode follows Jujutsu Kaisen 0 and the manga's Shinjuku Showdown arc and contains spoilers. Music is original. Voices (Japanese or English) are generated with an open-source speech model and are not the anime cast.</p>
+</section>
+
+<section id="owmenu" class="screen" hidden>
+  <div class="panel" style="max-width:620px">
+    <h2>Yuji: Story</h2>
+    <p class="info">An open-world adventure as Yuji Itadori, from the night he swallows Sukuna's finger. Roam Sendai and Tokyo Jujutsu High, follow the main quest, and take on a few side quests. This update covers the prologue; each later arc arrives in its own update.</p>
+    <p class="info"><b>Controls:</b> WASD move · Space jump (hold against a wall to run up it) · Shift sprint · J strike · K technique · E dash · Q guard · F talk · drag the mouse or Z / X to turn the camera · T travel (once you reach Tokyo) · Esc pause. Progress saves automatically.</p>
+    <div class="row" style="margin-top:14px"><button class="back">Back</button><button id="owNew" style="margin-left:auto">New Game</button><button id="owCont">Continue</button></div>
+  </div>
 </section>
 
 <section id="story" class="screen" hidden>
@@ -213,6 +227,7 @@ kbd{font-family:inherit;background:#0b0912;border:1px solid var(--gold);padding:
   <div id="moves"></div>
   <div class="hint" id="hint"></div>
 </div>
+<div id="owhud" hidden><div id="owq"></div><div id="owp" hidden></div></div>
 <div id="clash" hidden><div class="disp">DOMAIN CLASH · mash O / J</div><div id="clashbar"><i></i></div></div>
 
 <div id="touch" hidden>
@@ -252,4 +267,6 @@ kbd{font-family:inherit;background:#0b0912;border:1px solid var(--gold);padding:
 <script charset="utf-8" src="js/sprites.js"></script>
 <script charset="utf-8" src="js/world.js"></script>
 <script charset="utf-8" src="js/audio.js"></script>
+<script charset="utf-8" src="js/lines-ow.js"></script>
 <script charset="utf-8" src="js/game.js"></script>
+<script charset="utf-8" src="js/yuji.js"></script>

@@ -3,7 +3,7 @@
 (function () {
   const $ = q => document.querySelector(q), rand = (a, b) => a + Math.random() * (b - a), clamp = (v, a, b) => Math.max(a, Math.min(b, v)), pick = a => a[Math.random() * a.length | 0];
   const V3 = THREE.Vector3, UP = new V3(0, 1, 0), RM = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const { scene, camera } = WORLD, PX2U = 1.9 / 158, { OW, OH, ATW, ATH } = SPR;
+  const { scene, camera } = WORLD, PX2U = 1.9 / 158, { OW: FW, OH, ATW, ATH } = SPR;
 
   /* =================== ROSTER =================== */
   const RO = {
@@ -78,9 +78,13 @@
   RO.yuta.moves.u = { n: 'Rika', kind: 'summon', sum: 'rika', cost: 30, cd: 28 };
   RO.yuta.passive = 'Rika, the Queen of Curses, gives him a nearly bottomless reserve of cursed energy. U manifests her; Pure Love hits harder while she is here.';
   RO.gojo0 = Object.assign({}, RO.gojo, { title: 'The Strongest · 2017', moves: Object.assign({}, RO.gojo.moves) });
+  // Yuta's mind in Gojo's body (ch. 261): Gojo's techniques, but the body only accepts him for so long
+  RO.yutag = Object.assign({}, RO.gojo, { name: 'Yuta Okkotsu', jp: '乙骨憂太', title: "In Gojo's Body", hp: 1150, aura: '#9adfff', body: 100,
+    passive: "Gojo's Six Eyes, Infinity and Limitless, borrowed. After 100 seconds the body rejects him and he loses health fast.",
+    moves: { k: RO.gojo.moves.k, l: RO.gojo.moves.l, i: RO.gojo.moves.i } });
   RO.sukunah = Object.assign({}, RO.sukuna, { name: 'Ryomen Sukuna', title: 'King of Curses · True Form', hp: 1500, spd: 11.5, bf: .1, moves: Object.assign({}, RO.sukuna.moves) });
   const WORLD_SLASH = { n: 'World-Cutting Slash', kind: 'beam', cost: 25, cd: 5, dmg: 220, w: 1.4, charge: .45, col: '#ffffff', len: 160, pierce: 1, world: 1, launch: 30 };
-  const PLAYABLE = ['gojo', 'sukuna', 'sukunah', 'yuji', 'yuta', 'kashimo', 'higuruma', 'maki', 'todo', 'geto', 'gojo0', 'maki0'];
+  const PLAYABLE = ['gojo', 'sukuna', 'sukunah', 'yuji', 'yuta', 'yutag', 'kashimo', 'higuruma', 'maki', 'todo', 'geto', 'gojo0', 'maki0'];
   const summonOf = k => RO[k].moves.u && (RO[k].moves.u.sum || 'mahoraga');
 
   /* =================== ASSETS =================== */
@@ -145,7 +149,7 @@
       this.hurt = this.stun = this.poseT = this.comboT = this.conf = this.slow = this.dash = this.inv = this.bfBonus = this.launched = this.burn = 0;
       this.combo = 0; this.face = 1; this.pose = 'idle0'; this.buff = null; this.charge = null; this.lunge = null; this.used = false; this.dead = false; this.guard = false;
       this.mv = Object.assign({}, d.moves); this.ai = { t: 1, strafe: 1 }; this.summons = []; this.adaptPts = 0; this.adapted = false; this.lastBark = -9; this.animT = rand(0, 3); this.scale = d.scale || 1;
-      const A = this.A = SPR.build(key), tx = c => { const t = new THREE.CanvasTexture(c); t.magFilter = THREE.NearestFilter; t.minFilter = THREE.NearestMipmapNearestFilter; return t; };
+      const A = this.A = SPR.build(d.spr || key), tx = c => { const t = new THREE.CanvasTexture(c); t.magFilter = THREE.NearestFilter; t.minFilter = THREE.NearestMipmapNearestFilter; return t; };
       this.tex = tx(A.canvas); this.ntex = tx(A.ncanvas); this.flip = { value: 1 };
       this.spr = new THREE.Sprite(litMat(this.tex, this.ntex, this.flip));
       this.sh = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), new THREE.MeshBasicMaterial({ map: shadowTex, transparent: true, opacity: .6, depthWrite: false })); this.sh.rotation.x = -Math.PI / 2;
@@ -162,8 +166,8 @@
       // atlas: 26 frames of OW x OH along the top row; the lying-down frame (OH x OH) under the first ones
       const t = this.tex, s = PX2U * this.scale, f = face > 0 ? 1 : -1; this.flip.value = f;
       if (name === 'down') { t.repeat.set(f * OH / ATW, OH / ATH); t.offset.set(f > 0 ? 0 : OH / ATW, 0); this.spr.center.set(.5, 8 / OH); this.spr.scale.set(OH * s, OH * s, 1); return; }
-      const i = this.A.frames[name]; t.repeat.set(f * OW / ATW, OH / ATH); t.offset.set((i + (f > 0 ? 0 : 1)) * OW / ATW, 1 - OH / ATH);
-      this.spr.center.set(f > 0 ? SPR.PXO / OW : 1 - SPR.PXO / OW, (OH - SPR.GYO) / OH); this.spr.scale.set(OW * s, OH * s, 1);
+      const i = this.A.frames[name]; t.repeat.set(f * FW / ATW, OH / ATH); t.offset.set((i + (f > 0 ? 0 : 1)) * FW / ATW, 1 - OH / ATH);
+      this.spr.center.set(f > 0 ? SPR.PXO / FW : 1 - SPR.PXO / FW, (OH - SPR.GYO) / OH); this.spr.scale.set(FW * s, OH * s, 1);
     }
     update(dt, I, o) {
       for (const k in this.cd) this.cd[k] = Math.max(0, this.cd[k] - dt);
@@ -172,6 +176,8 @@
       if (this.dead) { this.pos.addScaledVector(this.kb, dt); this.kb.multiplyScalar(Math.pow(.05, dt)); this.pos.y = Math.max(WORLD.surfaceY(this.pos.x, this.pos.z, this.pos.y), this.pos.y - 14 * dt); return; }
       this.ce = Math.min(100, this.ce + (this.d.ceRegen || 9) * dt);
       if (this.d.regen) this.hp = Math.min(this.maxhp, this.hp + this.d.regen * dt);
+      if (this.d.body && G.mode === 'fight') { this.bodyT = (this.bodyT ?? this.d.body) - dt;
+        if (this.bodyT < 0) { this.hp -= 40 * dt; if (this.hp <= 0) { KO(this.opp, this); return; } } }
       if (this.buff && (this.buff.t -= dt) <= 0) this.buff = null;
       if (this.charge) { const c = this.charge; c.t -= dt; if (c.t > c.m.charge * .35) c.aim = o.center();
         c.orb.position.copy(this.center()).add(new V3(0, .3, 0)).addScaledVector(camRight, this.face * .9); c.orb.scale.setScalar(.6 + (c.big ? 4 : 2.6) * (1 - c.t / c.m.charge));
@@ -187,23 +193,27 @@
         if (this.kb.length() < 5 || this.launched <= 0) { this.launched = 0; this.hurt = Math.max(this.hurt, .2); }
       } else if (this.lunge) { const L = this.lunge; L.t += dt; this.pos.lerpVectors(L.from, L.to, Math.min(1, L.t / L.T)); if (L.trail && Math.random() < .7) afterimage(this); if (L.t >= L.T) this.lunge = null; }
       else {
-        const spd = this.d.spd * (this.buff ? this.buff.spd : 1) * (this.slow > 0 ? .5 : 1) * (this.guard ? .35 : 1);
+        const spd = this.d.spd * (this.buff ? this.buff.spd : 1) * (this.slow > 0 ? .5 : 1) * (this.guard ? .35 : 1) * (I.sprint ? 1.6 : 1);
         const want = can ? I.mv.clone().multiplyScalar(spd) : new V3();
         if (this.dash > 0) want.copy(this.dashDir).multiplyScalar(30);
         this.vel.lerp(want, Math.min(1, dt * 12)); this.pos.addScaledVector(this.vel, dt);
         const sy = WORLD.surfaceY(this.pos.x, this.pos.z, this.pos.y + .3);
-        if (can && I.my) this.pos.y += I.my * spd * .85 * dt; else if (!this.d.fly && this.pos.y > sy) this.pos.y = Math.max(sy, this.pos.y - 7 * dt);
+        if (this.d.jumper) {   // no flying: gravity, jumps, and running up walls while holding jump against them
+          const ground = this.pos.y <= sy + .05; this.vy = (this.vy || 0) - 32 * dt; if (ground && this.vy < 0) { this.vy = 0; this.pos.y = sy; }
+          if (can && I.jump && ground) { this.vy = 15; AUDIO.sfx('whoosh', .35); } else if (can && I.jump && this.wall > 0 && this.vy < 9) this.vy = 9;
+          this.pos.y += this.vy * dt; this.wall = (this.wall || 0) - dt; }
+        else if (can && I.my) this.pos.y += I.my * spd * .85 * dt; else if (!this.d.fly && this.pos.y > sy) this.pos.y = Math.max(sy, this.pos.y - 7 * dt);
         if (this.dash > 0 && Math.random() < .5) afterimage(this);
         this.pos.addScaledVector(this.kb, dt); this.kb.multiplyScalar(Math.pow(.02, dt));
       }
-      WORLD.collide(this.pos, .55, prevY);
+      const hitW = WORLD.collide(this.pos, .55, prevY); if (hitW && !hitW.landed) this.wall = .15;
       const sy = WORLD.surfaceY(this.pos.x, this.pos.z, this.pos.y + .3); if (this.pos.y < sy) this.pos.y = sy;
       const M = WORLD.MAP; this.pos.x = clamp(this.pos.x, M.x0 + 5, M.x1 - 5); this.pos.z = clamp(this.pos.z, M.z0 + 5, M.z1 - 5); this.pos.y = clamp(this.pos.y, 0, 135);
       this.guard = !!I.guard && can;
       if (can && I.act) this.act(I.act, o);
     }
     msg(t) { if (this.isP) floatText(this.center().add(new V3(0, 1.7, 0)), t, '#a99fb8'); }
-    bark(key, force) { if (!force && G.time - this.lastBark < 2.2) return; this.lastBark = G.time; AUDIO.say('b_' + this.k + '_' + key, { cut: false, vol: this.isP ? 1 : .85 }); }
+    bark(key, force) { if (!force && G.time - this.lastBark < 2.2) return; this.lastBark = G.time; AUDIO.say('b_' + (d0 => d0.bark || d0.spr || this.k)(this.d) + '_' + key, { cut: false, vol: this.isP ? 1 : .85 }); }
     act(a, o) {
       const tgt = aimTarget(this);
       if (a === 'j') { if (this.cd.j > 0) return; this.combo = this.comboT > 0 ? (this.combo + 1) % 3 : 0; this.comboT = .7; this.cd.j = this.combo === 2 ? .45 : .26;
@@ -246,7 +256,7 @@
   }
 
   /* =================== COMBAT =================== */
-  const foes = f => { const o = f.owner ? f.owner.opp : f.opp; if (!o) return []; return [o, ...o.summons.filter(s => !s.dead)]; };
+  const foes = f => { if (G.mode === 'ow' || G.mode === 'cut' && window.OW && OW.active) return OW.foesOf(f); const o = f.owner ? f.owner.opp : f.opp; if (!o) return []; return [o, ...o.summons.filter(s => !s.dead)]; };
   function aimTarget(f) { const list = foes(f); let best = list[0], bd = best ? best.pos.distanceTo(f.pos) : 1e9; for (const s of list.slice(1)) { const d = s.pos.distanceTo(f.pos); if (d < bd * .6) { best = s; bd = d; } } return best || f; }
   const KIND = {
     proj(f, o, m) { const n = m.count || 1; for (let i = 0; i < n; i++) { const dir = o.center().sub(f.center()).normalize().applyAxisAngle(UP, (i - (n - 1) / 2) * (m.spread || 0));
@@ -325,6 +335,7 @@
         fxSprite(fxTex('bf', 'x'), tgt.center(), 5, .35, { normal: 1, rot: rand(0, 6), grow: .5 }); flash('#000', .55); later(.05, () => flash('#ff1030', .35)); hitstop = .14; AUDIO.sfx('bf');
         floatText(tgt.center().add(new V3(0, 1.4, 0)), '黒閃 BLACK FLASH', '#ff3040', true); } }
     if (tgt.adaptMap && opt.kind) { const r = tgt.adaptMap[opt.kind] || 0; a *= 1 - r; if (r < .75 && !tgt.adaptCd) { tgt.adaptMap[opt.kind] = r + .25; tgt.wheelT += Math.PI / 4; AUDIO.sfx('wheel'); tgt.adaptCd = 1; later(1.2, () => tgt.adaptCd = 0); } }
+    if (tgt.armor != null) a *= tgt.armor;
     let blocked = false;
     if (tgt.d.infinity && tgt.ce > 5 && !opt.pierce && !srcF.adapted && !opt.sure) { blocked = true; tgt.ce = Math.max(0, tgt.ce - a * .09); a *= .3;
       if (Math.random() < .35) { floatText(tgt.center().add(new V3(0, 1, 0)), 'INFINITY', '#5ed4ff'); AUDIO.sfx('infinity'); }
@@ -339,7 +350,7 @@
     floatText(tgt.center().add(new V3(rand(-.4, .4), .7, 0)), Math.round(a), a > 90 ? '#ffd070' : '#fff', a > 90);
     if (!opt.sure) { AUDIO.sfx(a > 70 ? 'heavy' : 'hit'); shake(a / 150); if (a > 60) hitstop = Math.max(hitstop, .06); }
     if (tgt.hp <= 0) { if (tgt.owner) { tgt.dead = true; tgt.hp = 0; const mh = tgt.k === 'mahoraga'; banner('', tgt.d.name + (mh ? ' destroyed' : ' is gone'), mh && !tgt.owner.adapted && tgt.owner.adaptPts ? 'The wheel keeps what it learned.' : '', 1600, tgt.d.aura); for (let i = 0; i < 6; i++) WORLD.dustAt(tgt.center().add(new V3(rand(-2, 2), 0, rand(-2, 2))), rand(5, 8)); }
-      else if (G.mode === 'fight') KO(srcF, tgt); }
+      else if (G.mode === 'fight') KO(srcF, tgt); else if (G.mode === 'ow') OW.died(tgt, srcF); }
     return true;
   }
 
@@ -387,7 +398,8 @@
   function press(code, down) { if (down && !keys[code]) pressed.add(code); keys[code] = down;
     if (down) { AUDIO.init(); if (G.mode === 'cut' && (code === 'Enter' || code === 'Space' || code === 'KeyJ')) advance();
       if (clash && (code === 'KeyO' || code === 'KeyJ')) { if (clash.a.isP) clash.pa++; else clash.pb++; }
-      if (code === 'Escape') { if (G.mode === 'cut') skipCut(); else if (G.mode === 'fight' || G.mode === 'ready') setPause(!G.paused); } } }
+      if (code === 'Escape') { if (G.mode === 'cut') skipCut(); else if (G.mode === 'fight' || G.mode === 'ready' || G.mode === 'ow') setPause(!G.paused); }
+      if (code === 'KeyF' && G.mode === 'ow') OW.talk(); } }
   addEventListener('keydown', e => { if (e.target.tagName === 'BUTTON' && (e.code === 'Enter' || e.code === 'Space') && G.mode !== 'fight' && G.mode !== 'cut') return;
     if (['Space', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.code)) e.preventDefault(); if (!e.repeat) press(e.code, true); });
   addEventListener('keyup', e => press(e.code, false));
@@ -444,11 +456,12 @@
   function camUpdate(dt) {
     const P = G.p1, Q = G.p2; if (!P) return; let pos, look;
     if (G.mode === 'title' || G.mode === 'menu' || G.mode === 'boot') { const a = G.time * .04; const c = new V3(-220, 0, 10); pos = c.clone().add(new V3(Math.sin(a) * 170, 95, Math.cos(a) * 170)); look = c.clone().add(new V3(0, 30, 0)); focusD = 180; }
+    else if (G.mode === 'ow') { [pos, look] = OW.cam(dt); }
     else if (G.mode === 'cut' || G.mode === 'result') {
       const s = shot || { cam: 'two' }; shotT += dt;
       if (s.cam === 'aerial') { const c = spot(s.at), a = shotT * .05 + (s.a0 || 0); pos = c.clone().add(new V3(Math.sin(a) * s.r, s.h, Math.cos(a) * s.r)); look = c.clone().add(new V3(0, s.h * .15, 0)); focusD = s.r; }
       else if (s.cam === 'dolly') { const k = clamp(shotT / 7, 0, 1), e = k * k * (3 - 2 * k); pos = new V3(...s.from).lerp(new V3(...s.to), e); look = new V3(...s.look); focusD = pos.distanceTo(P.pos); }
-      else if (s.cam === 'close') { const f = s.who === 'p2' ? Q : s.who === 'p1' ? P : (G.extra.find(e => e.k === s.who) || P), o = f === P ? Q : P, ax = o.pos.clone().sub(f.pos).setY(0), side = new V3();
+      else if (s.cam === 'close') { const f = s.who === 'p2' ? Q : s.who === 'p1' ? P : (G.extra.find(e => e.k === s.who || e.d.spr === s.who) || P), o = f === P ? Q : P, ax = o.pos.clone().sub(f.pos).setY(0), side = new V3();
         if (ax.lengthSq() < .01) ax.set(1, 0, 0); ax.normalize(); side.set(-ax.z, 0, ax.x); const k = f.scale;
         look = f.center().add(new V3(0, .35 * k, 0)); pos = look.clone().addScaledVector(ax, 3.2 * k).addScaledVector(side, (3.4 + Math.sin(shotT * .3) * .3) * k).add(new V3(0, .5, 0)); unblock(pos, look); }
       else { const mid = P.pos.clone().add(Q.pos).multiplyScalar(.5), ax = Q.pos.clone().sub(P.pos).setY(0), a = shotT * .04, r = clamp(8 + P.pos.distanceTo(Q.pos) * .9, 11, 30);
@@ -462,7 +475,7 @@
       const dist = clamp(7.5 + s2 * .7, 8.5, 32); look = focus.clone().add(new V3(0, 1.3, 0)); pos = look.clone().addScaledVector(perp, dist).add(new V3(0, 2.6 + s2 * .2, 0));
     }
     if (G.mode === 'cut' || G.mode === 'result') { const roof = WORLD.surfaceY(pos.x, pos.z, 999); if (roof > pos.y - 4 && (shot && shot.cam === 'aerial')) pos.y = roof + 8; } pos.y = Math.max(pos.y, 1);
-    if (G.camSnap) { camera.position.copy(pos); camLook.copy(look); G.camSnap = false; } else { camera.position.lerp(pos, Math.min(1, dt * (G.mode === 'fight' ? 4 : 2.2))); camLook.lerp(look, Math.min(1, dt * 5)); }
+    if (G.camSnap) { camera.position.copy(pos); camLook.copy(look); G.camSnap = false; } else { camera.position.lerp(pos, Math.min(1, dt * (G.mode === 'fight' ? 4 : G.mode === 'ow' ? 10 : 2.2))); camLook.lerp(look, Math.min(1, dt * 5)); }
     camera.lookAt(camLook); focusD = camera.position.distanceTo(camLook);
     if (shakeA > 0) { camera.position.add(new V3(rand(-1, 1), rand(-1, 1), rand(-1, 1)).multiplyScalar(shakeA * .35)); shakeA = Math.max(0, shakeA - dt * 3); }
     camera.updateMatrixWorld(); camRight.setFromMatrixColumn(camera.matrixWorld, 0).setY(0).normalize(); camFwd.crossVectors(UP, camRight).normalize();
@@ -484,7 +497,7 @@
     [[P, 1], [Q, 2]].forEach(([f, i]) => { f.trail += (Math.max(0, f.hp) - f.trail) * .04;
       $('#h' + i).style.width = Math.max(0, f.hp) / f.maxhp * 100 + '%'; $('#t' + i).style.width = f.trail / f.maxhp * 100 + '%'; $('#c' + i).style.width = f.ce + '%'; $('#d' + i).style.width = f.dm + '%';
       $('#dm' + i + 'w').classList.toggle('full', f.dm >= 100 && !!f.mv.o); $('#dm' + i + 'w').style.visibility = f.mv.o ? 'visible' : 'hidden';
-      const tg = []; if (f.buff) tg.push('AMBER'); if (f.conf > 0) tg.push('CONFISCATED ' + Math.ceil(f.conf) + 's'); if (f.burn > 0) tg.push('BURNOUT'); if (f.d.infinity && f.ce > 5 && !f.opp.adapted) tg.push('INFINITY');
+      const tg = []; if (f.buff) tg.push('AMBER'); if (f.conf > 0) tg.push('CONFISCATED ' + Math.ceil(f.conf) + 's'); if (f.burn > 0) tg.push('BURNOUT'); if (f.d.infinity && f.ce > 5 && !f.opp.adapted) tg.push('INFINITY'); if (f.d.body) tg.push(f.bodyT > 0 || f.bodyT === undefined ? `BODY ${Math.ceil(f.bodyT ?? f.d.body)}s` : 'BODY REJECTING');
       const mh = f.summons.find(s => !s.dead); if (mh) tg.push(`${mh.d.name.split(' ')[0].toUpperCase()} ${Math.ceil(mh.hp)}`); if (f.summons.some(s => s.k === 'mahoraga') && !f.adapted && f.opp.d.infinity) tg.push(`WHEEL ${Math.min(4, f.adaptPts / 4 | 0)}/4`); if (f.adapted) tg.push('ADAPTED');
       if (f.dm >= 100 && f.mv.o) tg.push('DOMAIN READY'); $('#g' + i).textContent = tg.join(' · '); });
     document.querySelectorAll('#moves .mv').forEach(el => { const s = el.dataset.s, m = P.mv[s]; if (s === 'k' && m) el.querySelector('span').textContent = m.n + ' ';
@@ -504,8 +517,8 @@
   let settings = { music: true, voice: true, sfx: true, auto: true, lang: 'ja' }; try { Object.assign(settings, JSON.parse(localStorage.getItem('ss2-settings') || '{}')); } catch (e) { }
   const save = () => { try { localStorage.setItem('ss2-progress', JSON.stringify(prog)); localStorage.setItem('ss2-settings', JSON.stringify(settings)); } catch (e) { } };
   for (const k of ['music', 'voice', 'sfx', 'lang']) AUDIO.set(k, settings[k]);
-  const screens = ['#title', '#story', '#versus', '#help', '#settings', '#result', '#pause'];
-  function show(id) { for (const s of screens) $(s).hidden = s !== id; const fight = id === null && ['fight', 'ready', 'ko'].includes(G.mode);
+  const screens = ['#title', '#story', '#versus', '#help', '#settings', '#result', '#pause', '#owmenu'];
+  function show(id) { for (const s of screens) $(s).hidden = s !== id; const fight = id === null && ['fight', 'ready', 'ko', 'ow'].includes(G.mode); $('#owhud').hidden = !(fight && G.mode === 'ow');
     $('#hud').hidden = !fight; $('#touch').hidden = !(fight && matchMedia('(pointer:coarse)').matches); }
   function clearArena() { for (const f of [G.p1, G.p2, ...G.extra]) if (f) f.remove(); G.extra = [];
     for (const x of FX) scene.remove(x.o); FX.length = 0; for (const p of PR) scene.remove(p.o); PR.length = 0; for (const t of FT) t.el.remove(); FT.length = 0; EV = []; domain = null; clash = null; $('#clash').hidden = true; }
@@ -547,7 +560,7 @@
     b.push(['Title', () => toTitle()]);
     $('#rB').innerHTML = ''; b.forEach(([t, fn]) => { const e = document.createElement('button'); e.textContent = t; e.onclick = () => { AUDIO.sfx('ui'); fn(); }; $('#rB').appendChild(e); }); $('#rB').firstChild.focus(); }
   function setPause(p, quit) { G.paused = p; $('#pause').hidden = !p; if (p) $(quit ? '#bQuit' : '#bResume').focus(); }
-  const restart = () => G.story != null ? playChapter(G.story) : startVersus();
+  const restart = () => window.OW && OW.active ? OW.restart() : G.story != null ? playChapter(G.story) : startVersus();
   $('#bResume').onclick = () => setPause(false); $('#bQuit').onclick = () => { setPause(false); toTitle(); }; $('#bRestart').onclick = () => { setPause(false); restart(); };
   $('#bExit').onclick = () => { AUDIO.sfx('ui'); setPause(true, true); };
   $('#cutExit').onclick = () => { AUDIO.sfx('ui'); toTitle(); };
@@ -567,7 +580,7 @@
   function say(ln) { return new Promise(async res => {
     if (ln.stage) restage(ln.stage);
     if (ln.shot) setShot(ln.shot); else if (ln.stage) setShot({ cam: 'two' });
-    else if (ln.s && ln.s !== 'n') { const who = G.p1 && G.p1.k === ln.s ? 'p1' : G.p2 && G.p2.k === ln.s ? 'p2' : G.extra.some(e => e.k === ln.s && !e.dead) ? ln.s : null;
+    else if (ln.s && ln.s !== 'n') { const is = f => f && (f.k === ln.s || f.d.spr === ln.s), who = is(G.p1) ? 'p1' : is(G.p2) ? 'p2' : G.extra.some(e => is(e) && !e.dead) ? ln.s : null;
       if (who && (!shot || shot.cam !== 'close' || shot.who !== who)) setShot({ cam: 'close', who }); }
     if (ln.fx === 'slash') { flash('#fff', .9); AUDIO.sfx('slash'); }
     const d = $('#dlg'), tip = !!ln.tip; d.classList.toggle('narr', !ln.s || ln.s === 'n'); d.classList.toggle('tip', tip); const hasP = ln.s && ln.s !== 'n' && SPR.CHARS[ln.s];
@@ -594,7 +607,7 @@
     { n: 'Shinjuku Station', spawn: [[-6, 0, 62], [6, 0, 40]] }, { n: 'Shinjuku Gyoen', spawn: [[322, 0, 120], [346, 0, 118]] }, { n: 'Jujutsu High', map: 'jjh', spawn: [[2496, 0, 40], [2512, 0, 22]] }];
   function startVersus() { const id = ++G.flow; G.story = null; $('#cut').hidden = true; const st = STAGES[G.stage]; setup(G.a, G.b, { time: G.tod, spawn: st.spawn, map: st.map });
     AUDIO.preload(['barks', 'vs']); AUDIO.play('tension'); (async () => { G.mode = 'cut'; await cutscene([{ s: G.a, t: LINES.vs[G.a].vs, id: `vs_${G.a}_vs`, shot: { cam: 'two' } }, { s: G.b, t: LINES.vs[G.b].vs, id: `vs_${G.b}_vs` }], 'Versus · ' + st.n); if (id === G.flow) startFight(); })(); }
-  function toTitle() { G.flow++; cutSkip = true; AUDIO.stopVoice(); if (typing) typing(); if (cutRes) { const r = cutRes; cutRes = null; r(); } clearTimeout(autoT); $('#cut').hidden = true;
+  function toTitle() { G.flow++; if (window.OW) OW.active = false; cutSkip = true; AUDIO.stopVoice(); if (typing) typing(); if (cutRes) { const r = cutRes; cutRes = null; r(); } clearTimeout(autoT); $('#cut').hidden = true;
     G.paused = false; G.story = null; setup('gojo', 'sukuna', { time: 'sunset' }); G.mode = 'title'; show('#title'); AUDIO.play('title'); $('#bStory').focus(); }
   function segRow(el, opts, get, set) { el.innerHTML = opts.map((t, i) => `<button data-i="${i}" class="${get() === i ? 'on' : ''}">${t}</button>`).join('');
     el.querySelectorAll('button').forEach(b => b.onclick = () => { set(+b.dataset.i); AUDIO.sfx('ui'); el.querySelectorAll('button').forEach(x => x.classList.toggle('on', x === b)); }); }
@@ -618,7 +631,9 @@
       const b = document.createElement('button'); b.className = 'toggle'; const val = () => k === 'lang' ? (settings.lang === 'ja' ? '日本語' : 'English') : settings[k] ? 'ON' : 'OFF';
       const draw = () => b.innerHTML = `<span>${label}${note ? `<small>${note}</small>` : ''}</span><b>${val()}</b>`; draw();
       b.onclick = () => { settings[k] = k === 'lang' ? (settings.lang === 'ja' ? 'en' : 'ja') : !settings[k]; if (k !== 'auto') AUDIO.set(k, settings[k]); save(); draw(); AUDIO.sfx('ui'); }; el.appendChild(b); } el.firstChild.focus(); }
-  $('#bStory').onclick = () => { AUDIO.sfx('ui'); openStory(); }; $('#bVersus').onclick = () => { AUDIO.sfx('ui'); openVersus(); }; $('#bHelp').onclick = () => { AUDIO.sfx('ui'); show('#help'); };
+  $('#bStory').onclick = () => { AUDIO.sfx('ui'); openStory(); };
+  $('#bYuji').onclick = () => { AUDIO.sfx('ui'); G.mode = 'menu'; show('#owmenu'); $('#owCont').hidden = !OW.hasSave(); ($('#owCont').hidden ? $('#owNew') : $('#owCont')).focus(); };
+  $('#owCont').onclick = () => { AUDIO.sfx('ui'); OW.start(false); }; $('#owNew').onclick = () => { AUDIO.sfx('ui'); OW.start(true); }; $('#bVersus').onclick = () => { AUDIO.sfx('ui'); openVersus(); }; $('#bHelp').onclick = () => { AUDIO.sfx('ui'); show('#help'); };
   $('#bSettings').onclick = () => { AUDIO.sfx('ui'); openSettings(); }; $('#bFight').onclick = () => { AUDIO.sfx('ui'); startVersus(); };
   document.querySelectorAll('.back').forEach(b => b.onclick = () => { AUDIO.sfx('ui'); show('#title'); G.mode = 'title'; });
 
@@ -630,11 +645,12 @@
     slow = rdt > 1 / 32 ? slow + rdt : Math.max(0, slow - rdt * .5); if (slow > 3 && degraded < 2) { slow = 0; WORLD.degrade(++degraded); }
     const dt = G.paused ? 0 : rdt * (hitstop > 0 ? .06 : slowmo); hitstop -= rdt;
     const P = G.p1, Q = G.p2;
-    if (P && ['fight', 'ko', 'ready'].includes(G.mode) && dt > 0) {
+    if (P && ['fight', 'ko', 'ready', 'ow'].includes(G.mode) && dt > 0) {
       const live = G.mode === 'fight', none = { mv: new V3(), my: 0 };
+      if (G.mode === 'ow') OW.step(dt, playerIntent()); else {
       P.update(dt, live ? playerIntent() : none, aimTarget(P)); Q.update(dt, live ? aiIntent(Q, P, dt) : none, aimTarget(Q));
       for (const s of G.extra) { if (s.dead) { s.update(dt, none, P); continue; } if (live) updateSummon(s, dt); else s.update(dt, none, P); }
-      const tmp = Q.pos.clone().sub(P.pos), d = tmp.length(); if (d < 1.1 && d > 0) { tmp.multiplyScalar((1.1 - d) / d / 2); P.pos.sub(tmp); Q.pos.add(tmp); }
+      const tmp = Q.pos.clone().sub(P.pos), d = tmp.length(); if (d < 1.1 && d > 0) { tmp.multiplyScalar((1.1 - d) / d / 2); P.pos.sub(tmp); Q.pos.add(tmp); } }
       for (let i = EV.length - 1; i >= 0; i--) { if (!EV[i]) continue; EV[i].t -= dt; if (EV[i].t <= 0) { const e = EV.splice(i, 1)[0]; e.fn(); } }
       for (let i = PR.length - 1; i >= 0; i--) { const p = PR[i], m = p.m; p.life -= dt;
         const want = p.tgt.center().sub(p.o.position).normalize().multiplyScalar(m.spd); p.vel.lerp(want, Math.min(1, (m.hom || 0) * dt));
@@ -647,7 +663,7 @@
         if (hit || p.life <= 0 || p.o.position.y < 0) { scene.remove(p.o); PR.splice(i, 1); if (!hit && p.o.position.y < 0) { spark(p.o.position, m.col, 1); WORLD.crater(p.o.position.clone().setY(0), 1.2); } } }
       updateDomain(dt);
       AUDIO.setIntensity(P.hp < P.maxhp * .35 || Q.hp < Q.maxhp * .35 ? 1 : 0);
-      if (live) pressed.clear();
+      if (live || G.mode === 'ow') pressed.clear();
     } else pressed.clear();
     for (let i = FX.length - 1; i >= 0; i--) { const x = FX[i]; x.life -= rdt; const k = 1 - x.life / x.max;
       if (x.beam) { const w = x.w * (1 - k * .8); x.beam[0].scale.x = x.beam[0].scale.z = w; x.beam[1].scale.x = x.beam[1].scale.z = w * .4; x.beam[0].material.opacity = .75 * (1 - k); x.beam[1].material.opacity = .9 * (1 - k); }
@@ -656,14 +672,14 @@
       else if (x.max < 50) { x.o.scale.setScalar(x.s0 * (1 + x.grow * k)); x.o.material.opacity = 1 - k; }
       if (x.life <= 0) { scene.remove(x.o); FX.splice(i, 1); } }
     if (P) { camUpdate(rdt); updateLit();
-      for (const [f, o] of [[P, Q], [Q, P], ...G.extra.map(s => [s, aimTarget(s)])]) { if (!f.dead) { const s = o.pos.clone().sub(f.pos).dot(camRight); if (Math.abs(s) > .2) f.face = s > 0 ? 1 : -1; } f.visual(G.time); } }
+      for (const [f, o] of [[P, Q], [Q, P], ...G.extra.map(s => [s, aimTarget(s)])]) { if (!f.dead && !f.faceLock) { const s = o.pos.clone().sub(f.pos).dot(camRight); if (Math.abs(s) > .2) f.face = s > 0 ? 1 : -1; } f.visual(G.time); } }
     for (let i = FT.length - 1; i >= 0; i--) { const t = FT[i]; t.life -= rdt; t.pos.y += rdt * 1.2; const v = t.pos.clone().project(camera);
       t.el.style.left = (v.x + 1) / 2 * innerWidth + 'px'; t.el.style.top = (1 - v.y) / 2 * innerHeight + 'px'; t.el.style.opacity = Math.min(1, t.life / t.max * 2); t.el.hidden = v.z > 1; if (t.life <= 0) { t.el.remove(); FT.splice(i, 1); } }
-    if (['fight', 'ko', 'ready'].includes(G.mode)) hud();
-    const focus = P ? (['title', 'menu', 'boot'].includes(G.mode) ? camLook : P.pos.clone().add(Q.pos).multiplyScalar(.5)) : new V3();
+    if (['fight', 'ko', 'ready', 'ow'].includes(G.mode)) hud(); if (G.mode === 'ow') OW.hud();
+    const focus = P ? (['title', 'menu', 'boot'].includes(G.mode) ? camLook : G.mode === 'ow' || window.OW && OW.active ? P.pos.clone() : P.pos.clone().add(Q.pos).multiplyScalar(.5)) : new V3();
     WORLD.update(rdt, focus); WORLD.compM.uniforms.dof.value = ['title', 'menu', 'boot'].includes(G.mode) ? .7 : 1; WORLD.render(focusD);
   }
-  window.GAME = { onCrash, G, RO };
+  window.GAME = { onCrash, G, RO, Fighter, aiIntent, cutscene, setShot, banner, floatText, flash, fillHud, show, clearArena, keys, pressed, later, spark, toTitle, wait, save: () => save(), settings, prog, SEASONS };
   addEventListener('resize', () => WORLD.resize());
   document.addEventListener('visibilitychange', () => { WORLD.renderer.setAnimationLoop(document.hidden ? null : frame); last = performance.now(); if (document.hidden && G.mode === 'fight') setPause(true); });
 

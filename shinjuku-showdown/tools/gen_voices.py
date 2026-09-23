@@ -40,6 +40,9 @@ CAST = {
     "gojo0":    (("am_puck",), 1.0, "aecho=0.8:0.5:30:0.06," + NORM),
     "maki0":    (("bf_emma",), 1.0, NORM),
     "rika":     (("af_sky",), 0.85, RIKA),
+    "yutag":    (("am_liam",), 0.95, "aecho=0.8:0.5:30:0.06," + NORM),
+    "megumi":   (("am_eric",), 0.95, NORM),
+    "sukunay":  (("am_onyx", "am_michael"), 0.9, DEMON),
 }
 
 # Japanese track: Kokoro ships one Japanese male voice (jm_kumo) and four female ones, so the male
@@ -61,6 +64,9 @@ CAST_JA = {
     "todo":     (("jm_kumo",), 0.98, ja(0.84, "bass=g=4,")),
     "geto":     (("jm_kumo",), 0.92, ja(0.95, "aecho=0.8:0.5:35:0.07,")),
     "rika":     (("jf_nezumi",), 0.85, RIKA),
+    "yutag":    (("jf_tebukuro",), 0.96, ja(0.9, "aecho=0.8:0.5:30:0.06,")),
+    "megumi":   (("jm_kumo",), 0.97, ja(0.98)),
+    "sukunay":  (("jm_kumo",), 0.9, DEMON),
 }
 
 
@@ -73,6 +79,13 @@ def load_lines():
             for ln in ch[part]:
                 if "id" in ln:
                     banks.setdefault(ch["id"], []).append((ln["id"], ln["s"], ln["t"]))
+    ow = os.path.join(ROOT, "js", "lines-ow.js")   # Yuji: Story, one bank per slice
+    if os.path.exists(ow):
+        for bank, scenes in json.loads(re.sub(r";\s*$", "", open(ow, encoding="utf-8").read().split("=", 1)[1].strip())).items():
+            for lines in scenes.values():
+                for ln in lines:
+                    if "id" in ln:
+                        banks.setdefault(bank, []).append((ln["id"], ln["s"], ln["t"]))
     for who, q in data["vs"].items():
         for k, t in q.items():
             banks.setdefault("vs", []).append((f"vs_{who}_{k}", who, t))

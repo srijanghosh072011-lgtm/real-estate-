@@ -4,7 +4,8 @@ window.WORLD = (function () {
   const V3 = THREE.Vector3, rnd = (() => { let s = 20181224; return () => { s |= 0; s = s + 0x6D2B79F5 | 0; let t = Math.imul(s ^ s >>> 15, 1 | s); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; })();
   const R = (a, b) => a + rnd() * (b - a), pick = a => a[rnd() * a.length | 0], clamp = (v, a, b) => Math.max(a, Math.min(b, v));
   // two maps in one world, far apart: Shinjuku (2018) and Tokyo Jujutsu High (Season 0, 2017)
-  const MAPS = { shinjuku: { x0: -480, x1: 440, z0: -280, z1: 280, ms: .26 }, jjh: { x0: 2350, x1: 2650, z0: -150, z1: 190, ms: .5 } };
+  const MAPS = { shinjuku: { x0: -480, x1: 440, z0: -280, z1: 280, ms: .26 }, jjh: { x0: 2350, x1: 2650, z0: -150, z1: 190, ms: .5 },
+    sendai: { x0: 4720, x1: 5280, z0: -280, z1: 280, ms: .3 } };
   const MAP = Object.assign({}, MAPS.shinjuku);
 
   /* ---------------- districts (first match wins) ---------------- */
@@ -28,7 +29,10 @@ window.WORLD = (function () {
     { id: 'jjhpath', name: 'Jujutsu High · Approach', jp: '呪術高専 参道', x0: 2494, z0: -20, x1: 2516, z1: 200, type: 3 },
     { id: 'jjhdorm', name: 'Jujutsu High · Dormitories', jp: '呪術高専 学生寮', x0: 2540, z0: -60, x1: 2630, z1: 95, type: 4 },
     { id: 'jjhcourt', name: 'Jujutsu High · Courtyard', jp: '呪術高専 境内', x0: 2420, z0: -80, x1: 2600, z1: 95, type: 4 },
-    { id: 'jjh', name: 'Jujutsu High · Cedar Forest', jp: '呪術高専 杉林', x0: 2100, z0: -400, x1: 2900, z1: 400, type: 5 }
+    { id: 'jjh', name: 'Jujutsu High · Cedar Forest', jp: '呪術高専 杉林', x0: 2100, z0: -400, x1: 2900, z1: 400, type: 5 },
+    // Sendai, where Yuji's story starts (the town layout is ours)
+    { id: 'sugisawa', name: 'Sugisawa Third High School', jp: '杉沢第三高校', x0: 4950, z0: -75, x1: 5070, z1: 40, type: 4 },
+    { id: 'sendai', name: 'Sendai', jp: '仙台', x0: 4700, z0: -300, x1: 5300, z1: 300, cx: 34, cz: 30, sw: 8, h: [5, 14], styles: ['residential', 'residential', 'brown', 'office'], type: 0 }
   ];
   const AVE = [{ x0: 55, z0: -78, x1: 440, z1: -66, name: 'Yasukuni-dōri' }];
   function district(x, z) { for (const d of D) if (x >= d.x0 && x < d.x1 && z >= d.z0 && z < d.z1) return d; return D[3]; }
@@ -180,11 +184,11 @@ window.WORLD = (function () {
   const groundMat = new THREE.MeshLambertMaterial({ color: 0xffffff });
   groundMat.onBeforeCompile = sh => {
     const dd = D.map(d => new THREE.Vector4(d.x0, d.z0, d.x1, d.z1)), gg = D.map(d => new THREE.Vector4(d.cx || 1, d.cz || 1, d.sw || 0, d.type));
-    while (dd.length < 20) { dd.push(new THREE.Vector4(0, 0, -1, -1)); gg.push(new THREE.Vector4(1, 1, 0, 0)); }
+    while (dd.length < 24) { dd.push(new THREE.Vector4(0, 0, -1, -1)); gg.push(new THREE.Vector4(1, 1, 0, 0)); }
     const aa = AVE.map(a => new THREE.Vector4(a.x0, a.z0, a.x1, a.z1)); while (aa.length < 4) aa.push(new THREE.Vector4(0, 0, -1, -1));
     Object.assign(sh.uniforms, { uD: { value: dd }, uG: { value: gg }, uA: { value: aa }, uCut: U.cut });
     sh.vertexShader = 'varying vec3 vWP;\n' + sh.vertexShader.replace('#include <project_vertex>', '#include <project_vertex>\nvWP = (modelMatrix * vec4(position,1.)).xyz;');
-    sh.fragmentShader = 'varying vec3 vWP; uniform vec4 uD[20]; uniform vec4 uG[20]; uniform vec4 uA[4];\n' + GLSL_HASH + `
+    sh.fragmentShader = 'varying vec3 vWP; uniform vec4 uD[24]; uniform vec4 uG[24]; uniform vec4 uA[4];\n' + GLSL_HASH + `
       vec3 asph(vec2 p){ return vec3(.2,.2,.22) + hh(floor(p*5.))*.05 + vn(p*.25)*.05; }
       vec3 pave(vec2 p){ vec2 t=fract(p*.8); float g=step(t.x,.08)+step(t.y,.08); return mix(vec3(.55,.53,.5)+hh(floor(p*.8))*.06, vec3(.38,.37,.36), clamp(g,0.,1.)); }
       vec3 lot(vec2 p){ return vec3(.34,.33,.32)+hh(floor(p*2.))*.04; }
@@ -204,7 +208,7 @@ window.WORLD = (function () {
         return lot(p); }
       vec3 groundAt(vec2 p){
         for(int i=0;i<4;i++){ vec4 a=uA[i]; if(a.z<=a.x) continue; if(p.x>a.x&&p.x<a.z&&p.y>a.y&&p.y<a.w){ vec3 c=asph(p); float m=(a.y+a.w)*.5; if(abs(p.y-m)<.25&&abs(p.y-m)>.08) c=vec3(.86,.72,.22); else if(abs(abs(p.y-m)-3.)<.08&&fract(p.x/5.)<.5) c=vec3(.8); return c; } }
-        for(int i=0;i<20;i++){ vec4 d=uD[i]; if(d.z<=d.x) continue; if(p.x<d.x||p.x>=d.z||p.y<d.y||p.y>=d.w) continue; vec4 g=uG[i];
+        for(int i=0;i<24;i++){ vec4 d=uD[i]; if(d.z<=d.x) continue; if(p.x<d.x||p.x>=d.z||p.y<d.y||p.y>=d.w) continue; vec4 g=uG[i];
           if(g.w<.5) return urban(p,d,g); if(g.w<1.5) return grass(p); if(g.w<2.5) return rails(p); if(g.w<3.5) return plaza(p); if(g.w<4.5) return gravel(p); return forest(p); }
         return lot(p); }
       ` + CUT_FRAG.replace('uniform vec4 uCut[2];', 'uniform vec4 uCut[2];') + sh.fragmentShader.replace('#include <map_fragment>', 'diffuseColor.rgb *= groundAt(vWP.xz);');
@@ -268,6 +272,7 @@ window.WORLD = (function () {
   // Tokyo Jujutsu High: a temple compound in the forested hills on the edge of Tokyo (layout is ours; the anime shows
   // timber halls on stone platforms, a five-storey pagoda, stone lanterns and cedar woods)
   const JR = [];   // roofs to build for these buildings
+  reserve(4945, -80, 5075, 45); reserve(4855, -178, 4905, -122);   // Sendai: school grounds, hospital
   { const J = (st, x, z, w, d, h, o = {}) => addB(st, x, z, w, d, h, Object.assign({ map: 'jjh', tint: R(.94, 1.04) }, o));
     for (let k = 0; k < 3; k++) J('stone', 2505, -40, 54 - k * 4, 34 - k * 4, .55, { base: k * .55 });   // walkable steps
     JR.push({ b: J('temple', 2505, -40, 38, 18, 9, { base: 1.65 }), eave: 4, rh: 8 });
@@ -295,6 +300,10 @@ window.WORLD = (function () {
       }
     }
   }
+  // Sugisawa Third High: the classroom block the curse climbs, the gym, and the hospital where Yuji's grandfather died
+  const S = (st, x, z, w, d, h, o = {}) => addB(st, x, z, w, d, h, Object.assign({ map: 'sendai', tint: R(.95, 1.05) }, o));
+  S('residential', 5010, -56, 72, 14, 15, { lm: 'school', tint: 1.06 }); S('residential', 5010, -56, 20, 16, 4, { base: 15, lm: 'school' }); S('brown', 4968, -30, 22, 26, 11, { lm: 'gym' });
+  S('office', 4880, -150, 36, 24, 20, { lm: 'hospital', tint: 1.1 });
   // instanced meshes
   const box = new THREE.BoxGeometry(1, 1, 1), M4 = new THREE.Matrix4(), Q = new THREE.Quaternion(), S3 = new V3(), P3 = new V3(), COL = new THREE.Color();
   const inst = {};
@@ -366,6 +375,7 @@ window.WORLD = (function () {
     }
   }
   for (let i = 0; i < 26; i++) trees.push([R(-395, -322), R(-130, 125), R(3, 5.5)]);
+  { const free = ([x, z]) => !RES.some(r => x > r[0] && x < r[2] && z > r[1] && z < r[3]); for (const L of [lamps, cars, vend]) { const k = L.filter(free); L.length = 0; L.push(...k); } }
   const poleG = new THREE.BoxGeometry(.18, 6, .18); poleG.translate(0, 3, 0); const headG = new THREE.BoxGeometry(.9, .22, .4); headG.translate(.35, 6, 0);
   const lampFn = ([x, z], m) => m.compose(P3.set(x, 0, z), Q.identity(), S3.set(1, 1, 1));
   instanced(poleG, new THREE.MeshLambertMaterial({ color: 0x3a3c44 }), lamps, lampFn, true); instanced(headG, lampMat, lamps, lampFn);
@@ -447,6 +457,13 @@ window.WORLD = (function () {
     instanced(new THREE.BoxGeometry(1.5, .12, .12).translate(0, 7.9, 0), new THREE.MeshLambertMaterial({ color: 0x3a3a3e }), poles, pole);
     const wg = new THREE.BufferGeometry(); wg.setAttribute('position', new THREE.Float32BufferAttribute(wp, 3)); scene.add(new THREE.LineSegments(wg, new THREE.LineBasicMaterial({ color: 0x18181c }))); }
 
+  // Sendai: ground, school gate and signs
+  { const g3 = new THREE.Mesh(new THREE.PlaneGeometry(900, 900), groundMat); g3.rotation.x = -Math.PI / 2; g3.position.set(5000, 0, 0); g3.receiveShadow = true; scene.add(g3);
+    const sign = (w, h, draw, x, y, z, ry) => { const m = new THREE.Mesh(new THREE.PlaneGeometry(w, h), new THREE.MeshBasicMaterial({ map: canvasTex(w * 16, h * 16, draw, false), side: THREE.DoubleSide })); m.position.set(x, y, z); m.rotation.y = ry || 0; scene.add(m); };
+    const gm = new THREE.MeshLambertMaterial({ color: 0x9a9690 }); for (const x of [5004, 5016]) { const p = new THREE.Mesh(box, gm); p.scale.set(1, 3, 1); p.position.set(x, 1.5, 42); p.castShadow = true; scene.add(p); }
+    sign(2.4, .6, (c, w, h) => { c.fillStyle = '#e8e4da'; c.fillRect(0, 0, w, h); c.fillStyle = '#1a1a1a'; c.font = 'bold 12px serif'; c.textAlign = 'center'; c.fillText('杉沢第三高校', w / 2, 11); }, 5003.4, 2.2, 42.6);
+    sign(8, 3, (c, w, h) => { c.fillStyle = '#f2f2f2'; c.fillRect(0, 0, w, h); c.fillStyle = '#d02020'; c.fillRect(8, 10, 28, 8); c.fillRect(18, 0, 8, 28); c.fillStyle = '#203050'; c.font = 'bold 22px sans-serif'; c.fillText('仙台総合病院', 42, 30); }, 4880, 16, -137.9); }
+
   /* ---------------- Tokyo Jujutsu High set dressing ---------------- */
   const cityList = scene.children.filter(o => ![sky, hemi, sun, sun.target, fuji].includes(o) && !JJH_STY.includes(o.userData.sty));
   const jjh = new THREE.Group(); jjh.visible = false; scene.add(jjh); jjh.add(ground2);
@@ -484,7 +501,7 @@ window.WORLD = (function () {
       pos.push(...p(a0, -40), ...p(a1, -40), ...p(a1, hgt(a1)), ...p(a0, -40), ...p(a1, hgt(a1)), ...p(a0, hgt(a0))); }
     const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); const m = new THREE.Mesh(g, ridgeM[li]); m.frustumCulled = false; jjh.add(m); });
   let mapK = 'shinjuku';
-  function setMap(k) { if (!MAPS[k]) k = 'shinjuku'; mapK = k; Object.assign(MAP, MAPS[k]); const j = k === 'jjh';
+  function setMap(k) { if (!MAPS[k]) k = 'shinjuku'; mapK = k; Object.assign(MAP, MAPS[k]); const j = k === 'jjh';   // Sendai shares the city meshes
     for (const o of cityList) o.visible = !j; for (const s of STY) inst[s].visible = JJH_STY.includes(s) === j; jjh.visible = j;
     mini.width = Math.ceil((MAP.x1 - MAP.x0) * MAP.ms); mini.height = Math.ceil((MAP.z1 - MAP.z0) * MAP.ms); drawMini(); }
 

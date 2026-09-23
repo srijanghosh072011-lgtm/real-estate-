@@ -575,6 +575,20 @@ window.SPR = (function () {
 
   function materials(C) { const names = [], ramps = []; for (const [k, v] of Object.entries({ ...COMMON, ...C.mats })) { names.push(k); ramps.push(six(v)); }
     const noSep = names.map(n => (C.noSep || []).includes(n) || ['eyeW', 'hi', 'mark', 'teeth', 'mouth', 'lash', 'pupil', 'iris', 'irisD', 'brow'].includes(n)); return { names, ramps, noSep }; }
+  // variants: an existing rig with another head or palette
+  const variant = (base, o) => Object.assign({}, CHARS[base], o, { mats: Object.assign({}, CHARS[base].mats, o.mats || {}) });
+  CHARS.yutag = variant('yuta', { stance: 'pockets',     // Yuta in Gojo's body (Shinjuku, ch. 261): Gojo's head, Kenjaku-style stitches, Yuta's uniform
+    head: Object.assign({}, CHARS.gojo.head, { topFn(P, X, Y) { P.line(X(2.6), Y(3.6), X(13.4), Y(3.2), 'mark', 0, { w: .45 });
+      for (let x = 3.4; x < 13; x += 1.3) P.line(X(x), Y(2.8), X(x + .5), Y(4.2), 'mark', 0, { w: .3 }); } }),
+    mats: { hair: CHARS.gojo.mats.hair, brow: CHARS.gojo.mats.brow, iris: CHARS.gojo.mats.iris, irisD: CHARS.gojo.mats.irisD, lash: CHARS.gojo.mats.lash } });
+  CHARS.sukunay = variant('yuji', {                     // Sukuna in control of Yuji: swept-back hair, second eyes, red irises
+    head: Object.assign({}, CHARS.yuji.head, { cap: CHARS.sukunah.head.cap, back: CHARS.sukunah.head.back, front: CHARS.sukunah.head.front, eyes: eyesStd({ style: 'sharp', browAng: .9 }), faceFn: CHARS.sukuna.head.faceFn }),
+    mats: { iris: flat('#ff4636'), irisD: flat('#8a0f14'), lash: flat('#12060c') } });
+  CHARS.megumi = variant('yuji', {                      // Megumi: spiky black hair, plain black uniform
+    head: Object.assign({}, CHARS.sukuna.head, { faceFn: null, eyes: eyesStd({ browAng: .8 }) }),
+    mats: { skin: SK.skinW, hair: CHARS.sukuna.mats.hair, brow: flat('#0e1019'), iris: flat('#4a5a80'), irisD: flat('#141c30'), hood: CHARS.yuji.mats.jacket, gold2: flat('#c8a050') } });
+  CHARS.curse1 = variant('rika', { mats: { skin: ['#3a4a2a', '#6a8048', '#a4b878', '#dce8b8'], rag: ['#140e08', '#2a2014', '#40321e', '#5a4a30'], hair: ['#0a0c06', '#161a0c', '#262c16', '#3c4424'] } });
+  CHARS.curse2 = variant('rika', { mats: { skin: ['#4a2a3e', '#80486a', '#b87aa0', '#e8b8d4'], rag: ['#0a0610', '#18101e', '#281c30', '#3c2c46'], hair: ['#08040a', '#140a18', '#221428', '#36223c'] } });
   function prep(key) { const C = CHARS[key]; if (!C.M) { C.mats.iris = C.mats.iris || flat('#333'); C.mats.irisD = C.mats.irisD || flat('#111'); C.mats.lash = C.mats.lash || flat('#1b1024'); C.M = materials(C); C.heads = {}; } return C; }
   function headOf(C, e) { return C.heads[e] || (C.heads[e] = renderHead({ mats: C.M, head: C.head }, e)); }
   function frameInto(C, name, ctx, nctx, x, y) { const p = pose(C, name), J = rig(C.pr, p), buf = new Buf(OW, OH), P = new Painter(buf, C.M, K);
