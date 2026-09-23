@@ -16,8 +16,10 @@ window.WORLD = (function () {
     cinema: { x0: 20792, x1: 20868, z0: -34, z1: 34, ms: 2, ceil: 11 },
     gym: { x0: 21192, x1: 21288, z0: -30, z1: 30, ms: 1.6, ceil: 12 },
     platform: { x0: 21584, x1: 21776, z0: -14, z1: 14, ms: 1, ceil: 7.2 },
-    court: { x0: 22200, x1: 22300, z0: -50, z1: 50, ms: 1.2 } };
-  const INDOOR = ['school', 'womb', 'cinema', 'gym', 'platform', 'court'];
+    court: { x0: 22200, x1: 22300, z0: -50, z1: 50, ms: 1.2 },
+    ruins: { x0: 22596, x1: 22704, z0: -26, z1: 26, ms: 1.6, ceil: 4.6 },
+    sewer: { x0: 22996, x1: 23204, z0: -8, z1: 8, ms: 1, ceil: 6 } };
+  const INDOOR = ['school', 'womb', 'cinema', 'gym', 'platform', 'court', 'ruins', 'sewer'];
   const CITY = ['shinjuku', 'sendai', 'suburb', 'shibuya', 'ikebukuro'];
   const MAP = Object.assign({}, MAPS.shinjuku);
 
@@ -70,7 +72,10 @@ window.WORLD = (function () {
     { id: 'cinemain', name: 'Cinema · Screen 3', jp: '映画館 三番スクリーン', x0: 20780, z0: -40, x1: 20880, z1: 40, type: 10 },
     { id: 'gymin', name: 'Satozakura High · Gymnasium', jp: '里桜高校 体育館', x0: 21180, z0: -40, x1: 21300, z1: 40, type: 8 },
     { id: 'platformin', name: 'Shibuya Station · B5F Fukutoshin Line', jp: '渋谷駅 地下五階 副都心線', x0: 21570, z0: -20, x1: 21790, z1: 20, type: 9 },
-    { id: 'courtin', name: 'Domain Expansion · Deadly Sentencing', jp: '領域展開 誅伏賜死', x0: 22180, z0: -70, x1: 22320, z1: 70, type: 12 }
+    { id: 'courtin', name: 'Domain Expansion · Deadly Sentencing', jp: '領域展開 誅伏賜死', x0: 22180, z0: -70, x1: 22320, z1: 70, type: 12 },
+    { id: 'ruinsin', name: 'Roppongi · abandoned building', jp: '六本木 廃ビル', x0: 22580, z0: -40, x1: 22720, z1: 40, type: 13 },
+    { id: 'sewerwater', name: "Sewers · Mahito's hideout", jp: '下水道', x0: 22980, z0: -2.2, x1: 23220, z1: 2.2, type: 6 },
+    { id: 'sewerin', name: "Sewers · Mahito's hideout", jp: '下水道', x0: 22980, z0: -20, x1: 23220, z1: 20, type: 13 }
   ];
   const AVE = [{ x0: 55, z0: -78, x1: 440, z1: -66, name: 'Yasukuni-dōri' }];
   function district(x, z) { for (const d of D) if (x >= d.x0 && x < d.x1 && z >= d.z0 && z < d.z1) return d; return D[3]; }
@@ -232,11 +237,11 @@ window.WORLD = (function () {
   const groundMat = new THREE.MeshLambertMaterial({ color: 0xffffff });
   groundMat.onBeforeCompile = sh => {
     const dd = D.map(d => new THREE.Vector4(d.x0, d.z0, d.x1, d.z1)), gg = D.map(d => new THREE.Vector4(d.cx || 1, d.cz || 1, d.sw || 0, d.type));
-    while (dd.length < 48) { dd.push(new THREE.Vector4(0, 0, -1, -1)); gg.push(new THREE.Vector4(1, 1, 0, 0)); }
+    while (dd.length < 52) { dd.push(new THREE.Vector4(0, 0, -1, -1)); gg.push(new THREE.Vector4(1, 1, 0, 0)); }
     const aa = AVE.map(a => new THREE.Vector4(a.x0, a.z0, a.x1, a.z1)); while (aa.length < 4) aa.push(new THREE.Vector4(0, 0, -1, -1));
     Object.assign(sh.uniforms, { uD: { value: dd }, uG: { value: gg }, uA: { value: aa }, uCut: U.cut, uT: U.time });
     sh.vertexShader = 'varying vec3 vWP;\n' + sh.vertexShader.replace('#include <project_vertex>', '#include <project_vertex>\nvWP = (modelMatrix * vec4(position,1.)).xyz;');
-    sh.fragmentShader = 'varying vec3 vWP; uniform vec4 uD[48]; uniform vec4 uG[48]; uniform vec4 uA[4]; uniform float uT;\n' + GLSL_HASH + `
+    sh.fragmentShader = 'varying vec3 vWP; uniform vec4 uD[52]; uniform vec4 uG[52]; uniform vec4 uA[4]; uniform float uT;\n' + GLSL_HASH + `
       vec3 asph(vec2 p){ return vec3(.2,.2,.22) + hh(floor(p*5.))*.05 + vn(p*.25)*.05; }
       vec3 pave(vec2 p){ vec2 t=fract(p*.8); float g=step(t.x,.08)+step(t.y,.08); return mix(vec3(.55,.53,.5)+hh(floor(p*.8))*.06, vec3(.38,.37,.36), clamp(g,0.,1.)); }
       vec3 lot(vec2 p){ return vec3(.34,.33,.32)+hh(floor(p*2.))*.04; }
@@ -256,7 +261,7 @@ window.WORLD = (function () {
         return lot(p); }
       vec3 groundAt(vec2 p){
         for(int i=0;i<4;i++){ vec4 a=uA[i]; if(a.z<=a.x) continue; if(p.x>a.x&&p.x<a.z&&p.y>a.y&&p.y<a.w){ vec3 c=asph(p); float m=(a.y+a.w)*.5; if(abs(p.y-m)<.25&&abs(p.y-m)>.08) c=vec3(.86,.72,.22); else if(abs(abs(p.y-m)-3.)<.08&&fract(p.x/5.)<.5) c=vec3(.8); return c; } }
-        for(int i=0;i<48;i++){ vec4 d=uD[i]; if(d.z<=d.x) continue; if(p.x<d.x||p.x>=d.z||p.y<d.y||p.y>=d.w) continue; vec4 g=uG[i];
+        for(int i=0;i<52;i++){ vec4 d=uD[i]; if(d.z<=d.x) continue; if(p.x<d.x||p.x>=d.z||p.y<d.y||p.y>=d.w) continue; vec4 g=uG[i];
           if(g.w<.5) return urban(p,d,g); if(g.w<1.5) return grass(p); if(g.w<2.5) return rails(p); if(g.w<3.5) return plaza(p); if(g.w<4.5) return gravel(p); if(g.w<5.5) return forest(p);
           if(g.w>6.5){ vec2 t=fract(p*.5); float seam=step(t.x,.04)+step(t.y,.04);
             if(g.w<7.5) return mix(vec3(.46,.5,.46)+hh(floor(p*.5))*.03, vec3(.36,.38,.36), clamp(seam,0.,1.));
@@ -264,7 +269,8 @@ window.WORLD = (function () {
             if(g.w<9.5){ vec3 c=vec3(.52,.52,.5)+hh(floor(p*2.))*.04; if(abs(abs(p.y-(d.y+d.w)*.5)-4.)<.25) c=vec3(.86,.72,.16); return c; }
             if(g.w<10.5) return vec3(.3,.07,.1)*(.8+step(.5,fract((p.x+p.y)*.7))*.2);
             if(g.w<11.5) return vec3(.18,.08,.08)+vn(p*.2)*.08;
-            return vec3(.32,.2,.12)*(.85+hh(floor(p*vec2(1.,.3)))*.2); }
+            if(g.w<12.5) return vec3(.32,.2,.12)*(.85+hh(floor(p*vec2(1.,.3)))*.2);
+            return vec3(.34,.33,.3)+vn(p*.4)*.08-hh(floor(p*3.))*.05; }
           float bank=abs(p.y-(d.y+d.w)*.5); return bank<18.? vec3(.14,.24,.3)+vn(p*.3+vec2(0.,uT))*.06 : mix(vec3(.3,.36,.2),vec3(.42,.4,.3),hh(floor(p*3.))*.5); }
         return lot(p); }
       ` + CUT_FRAG.replace('uniform vec4 uCut[2];', 'uniform vec4 uCut[2];') + sh.fragmentShader.replace('#include <map_fragment>', 'diffuseColor.rgb *= groundAt(vWP.xz);');
@@ -277,7 +283,7 @@ window.WORLD = (function () {
   /* ---------------- buildings ---------------- */
   const STY = ['glass', 'office', 'granite', 'darkglass', 'residential', 'neon', 'dept', 'brown', 'temple', 'plaster', 'stone', 'rock', 'schoolwall', 'concrete', 'woodwall', 'tilewall', 'school'],
     JJH_STY = ['temple', 'plaster', 'stone', 'rock', 'schoolwall', 'concrete', 'woodwall', 'tilewall'];
-  const STY_MAPS = { temple: ['jjh'], plaster: ['jjh'], stone: ['jjh', 'canyon', 'court'], rock: ['canyon', 'womb'], schoolwall: ['school'], concrete: ['womb', 'platform', 'gym'], woodwall: ['cinema', 'gym', 'court'], tilewall: ['platform'] };   // everything else belongs to the city maps
+  const STY_MAPS = { temple: ['jjh'], plaster: ['jjh'], stone: ['jjh', 'canyon', 'court'], rock: ['canyon', 'womb'], schoolwall: ['school'], concrete: ['womb', 'platform', 'gym', 'ruins', 'sewer'], woodwall: ['cinema', 'gym', 'court'], tilewall: ['platform'] };   // everything else belongs to the city maps
   const TILE = { glass: [4, 3.4], office: [5, 3.4], granite: [4, 3.4], darkglass: [4, 3.4], residential: [4.4, 3], neon: [4, 3], dept: [6, 4], brown: [4, 3.4], temple: [8, 9], plaster: [7, 6], stone: [2.4, 1.1], rock: [14, 9], schoolwall: [8, 4.2], concrete: [8, 4], woodwall: [4, 5], tilewall: [4, 4], school: [4, 3.6] };
   const MATS = {}; for (const s of STY) MATS[s] = buildingMat(facadeTex(s), new THREE.Vector2(...TILE[s]), s, !JJH_STY.includes(s) && s !== 'school');
   const B = [], plan = {}; for (const s of STY) plan[s] = [];
@@ -390,6 +396,11 @@ window.WORLD = (function () {
   const train = IN('platform', 'concrete', 21660, 9.5, 120, 3.2, 4.2); train.hidden = true;
   // Deadly Sentencing: a courtroom in the dark, the judge's bench, two stands
   IN('court', 'woodwall', 22250, -22, 30, 5, 4.5); IN('court', 'woodwall', 22238, 2, 5, 3, 1.4); IN('court', 'woodwall', 22262, 2, 5, 3, 1.4); IN('court', 'woodwall', 22250, 12, 40, .8, 1.2);
+  // Roppongi: an abandoned office floor, rooms off a corridor, some walls broken through
+  for (const [x, z, w, d] of [[22650, -24.6, 104, .6], [22650, 24.6, 104, .6], [22598, 0, .6, 50], [22702, 0, .6, 50], [22625, -12, 30, .5], [22672, -12, 36, .5], [22630, 10, 40, .5], [22682, 10, 24, .5], [22640, -18, .5, 12], [22662, 17, .5, 14]])
+    IN('ruins', 'concrete', x, z, w, d, 4.6, { tint: .75 });
+  // the sewers under the city where Mahito hides: a long tunnel, a channel of water down the middle
+  IN('sewer', 'concrete', 23100, -7.3, 204, .6, 6, { tint: .6 }); IN('sewer', 'concrete', 23100, 7.3, 204, .6, 6, { tint: .6 }); IN('sewer', 'concrete', 22998, 0, .6, 15, 6, { tint: .6 }); IN('sewer', 'concrete', 23202, 0, .6, 15, 6, { tint: .6 });
   const IK = (st, x, z, w, d, h, o = {}) => addB(st, x, z, w, d, h, Object.assign({ map: 'ikebukuro', tint: R(.95, 1.05) }, o));
   IK('darkglass', 12605, -25, 34, 34, 112, { lm: 'sunshine', tint: .95 }); IK('office', 12605, -25, 60, 60, 10, { lm: 'sunshine-podium' }); IK('dept', 12430, 72, 36, 28, 16, { lm: 'theater', tint: .8 });
   // canyon walls: uneven blocks of rock either side of the gorge, forest on top; the bridge deck crosses at the rim
@@ -670,6 +681,12 @@ window.WORLD = (function () {
       trainT.wrapS = THREE.RepeatWrapping; trainT.repeat.set(8, 1); const tr = new THREE.Mesh(new THREE.BoxGeometry(120, 4.2, 3.2), new THREE.MeshLambertMaterial({ map: trainT })); tr.position.set(21660, 2.1, 9.5); tr.castShadow = true; g.add(tr);
       for (let x = 21600; x < 21770; x += 36) for (const z of [-14.25, 14.25]) plane(g, 6, 1.4, x, 4.6, z, basic(tex(96, 22, (c, w, h) => { c.fillStyle = '#20242c'; c.fillRect(0, 0, w, h); c.fillStyle = '#9c5e31'; c.beginPath(); c.arc(11, 11, 8, 0, 7); c.fill(); c.fillStyle = '#fff'; c.font = 'bold 9px sans-serif'; c.fillText('F16', 4, 14); c.font = 'bold 12px sans-serif'; c.fillText('渋谷 Shibuya', 24, 15); })), 0, z > 0 ? Math.PI : 0);
       const benches = []; for (let x = 21602; x < 21770; x += 24) benches.push([x, 1.1, -3.5]); put(g, new THREE.BoxGeometry(3, .45, .7).translate(0, .45, 0), lam(0x5a6a7a), benches, at()); }
+    // Roppongi's abandoned building: grimy ceiling, bare lights, rubble
+    { const g = MAPG.ruins; floor(g, 22650, 0); ceiling(g, 104, 50, 22650, 4.6, 0, lightsTex('#3a3834', '#6a6658'));
+      const rub = []; for (let i = 0; i < 60; i++) rub.push([22605 + rnd() * 92, 0, -22 + rnd() * 44, rnd() * 3]); put(g, new THREE.BoxGeometry(.8, .4, .6).translate(0, .2, 0), lam(0x6a6660), rub, at()); }
+    // sewers: pipes along the walls, dim lamps
+    { const g = MAPG.sewer; floor(g, 23100, 0); ceiling(g, 204, 15, 23100, 6, 0, lightsTex('#262a24', '#8a9a6a'));
+      const pipes = []; for (const z of [-6.6, 6.6]) for (const y of [3.8, 4.6]) pipes.push([23100, y, z]); put(g, new THREE.CylinderGeometry(.25, .25, 200, 8).rotateZ(Math.PI / 2), lam(0x4a5a4a), pipes, at()); }
     // Deadly Sentencing
     { const g = MAPG.court; floor(g, 22250, 0);
       for (const [x, z] of [[22250, -22], [22238, 2], [22262, 2]]) { const c = new THREE.Mesh(new THREE.ConeGeometry(5, 26, 20, 1, true), new THREE.MeshBasicMaterial({ color: 0xfff2c8, transparent: true, opacity: .08, blending: THREE.AdditiveBlending, depthWrite: false, fog: false })); c.position.set(x, 13, z); g.add(c); }

@@ -371,6 +371,38 @@ window.LINES_OW = {
     "s": "gojo0",
     "t": "Welcome back. Everyone thinks you're dead, so let's keep it that way for a while. Special training time."
    }
+  ],
+  "roppongi": [
+   {
+    "id": "y2r01",
+    "s": "gojo0",
+    "t": "Your first mission together. An abandoned building in Roppongi, crawling with curses. Show me what you can do."
+   },
+   {
+    "id": "y2r02",
+    "s": "nobara",
+    "t": "Watch closely. This is how a real sorcerer works."
+   },
+   {
+    "tip": "Clear the curses in the building with Nobara."
+   }
+  ],
+  "roppongiEnd": [
+   {
+    "id": "y2r03",
+    "s": "n",
+    "t": "Nobara drove a nail through a straw doll, and the curse it was bound to burst apart. Resonance."
+   },
+   {
+    "id": "y2r04",
+    "s": "yuji",
+    "t": "Whoa. That's so cool!"
+   },
+   {
+    "id": "y2r05",
+    "s": "nobara",
+    "t": "Obviously. Now let's go, I want to go shopping."
+   }
   ]
  },
  "y3": {
@@ -482,6 +514,45 @@ window.LINES_OW = {
    },
    {
     "tip": "Return to Tokyo Jujutsu High (T) and talk to Gojo."
+   }
+  ],
+  "movies": [
+   {
+    "id": "y3m01",
+    "s": "n",
+    "t": "While the world thought he was dead, Yuji trained in a basement, watching movie after movie while holding a cursed doll that punched him whenever his cursed energy wavered."
+   },
+   {
+    "id": "y3m02",
+    "s": "gojo0",
+    "t": "Keep your cursed energy steady, even while you laugh or cry. That's the basics."
+   }
+  ],
+  "sewer": [
+   {
+    "id": "y3s01",
+    "s": "n",
+    "t": "Nanami tracked the curse behind the cinema deaths into the sewers under the city. It was waiting for him."
+   },
+   {
+    "id": "y3s02",
+    "s": "mahito",
+    "t": "I'm Mahito. Nice to meet you. Shall we play?"
+   },
+   {
+    "tip": "You are Nanami. Ratio Technique strikes hardest at the seven-to-three point. Hold your own against Mahito."
+   }
+  ],
+  "sewerEnd": [
+   {
+    "id": "y3s03",
+    "s": "n",
+    "t": "Nanami's blade cut deep, but Mahito's body simply reshaped itself. Both of them withdrew, the fight unfinished."
+   },
+   {
+    "id": "y3s04",
+    "s": "nanami",
+    "t": "A curse that reshapes souls. This is going to be troublesome overtime."
    }
   ]
  },
@@ -798,6 +869,78 @@ window.LINES_OW = {
     "s": "n",
     "t": "The Shibuya Incident was over. Gojo was sealed, Nanami was dead, and Yuji was sentenced to death again."
    }
+  ],
+  "curtainOnly": [
+   {
+    "id": "y6a01",
+    "s": "n",
+    "t": "October 31, 2018. Halloween in Shibuya. A curtain fell over the station, and the curses demanded one thing: bring them Satoru Gojo."
+   },
+   {
+    "tip": "Gojo goes in alone."
+   }
+  ],
+  "b5f": [
+   {
+    "id": "y6g1",
+    "s": "n",
+    "t": "Gojo went down alone to the Fukutoshin Line platform on B5F, into a crowd of civilians and transfigured humans. Jogo, Hanami and Choso were waiting.",
+    "shot": {
+     "cam": "two"
+    }
+   },
+   {
+    "id": "y6g2",
+    "s": "gojo0",
+    "t": "Don't worry. I'm the strongest."
+   },
+   {
+    "tip": "You are Gojo. Defeat Jogo, Hanami and Choso on the platform."
+   }
+  ],
+  "prison": [
+   {
+    "id": "y6g3",
+    "s": "n",
+    "t": "To spare the crowd, Gojo expanded Unlimited Void for just 0.2 seconds, and in the time it bought he cut down a thousand transfigured humans. Hanami fell."
+   },
+   {
+    "id": "y6g4",
+    "s": "n",
+    "t": "Then a man stepped out of the crowd: Suguru Geto, his best friend, who had died a year before. For one moment, Gojo froze. The Prison Realm opened."
+   },
+   {
+    "id": "y6g5",
+    "s": "gojo0",
+    "t": "Who are you?"
+   },
+   {
+    "id": "y6g6",
+    "s": "n",
+    "t": "Satoru Gojo was sealed. The strongest was gone from the board."
+   }
+  ],
+  "mahoraga": [
+   {
+    "id": "y6h1",
+    "s": "n",
+    "t": "Megumi, cornered by a curse user, summoned Mahoraga to take the man down with him. Sukuna took the fight for himself."
+   },
+   {
+    "id": "y6h2",
+    "s": "sukunay",
+    "t": "Megumi Fushiguro. You don't get to die yet."
+   },
+   {
+    "tip": "You are Sukuna. Defeat Mahoraga."
+   }
+  ],
+  "ruin2": [
+   {
+    "id": "y6h3",
+    "s": "n",
+    "t": "Sukuna's Malevolent Shrine cut everything within its reach to pieces. Mahoraga fell, and half of Shibuya with it. Many people died."
+   }
   ]
  },
  "y7": {
@@ -865,6 +1008,33 @@ window.LINES_OW = {
    {
     "tip": "New technique: L, Piercing Blood. Travel to Shinjuku when you're ready."
    }
+  ],
+  "yuta": [
+   {
+    "id": "y7y1",
+    "s": "n",
+    "t": "After Shibuya, Yuji and Choso hunted curses in the ruins. The higher-ups sent Yuta Okkotsu to execute Yuji."
+   },
+   {
+    "id": "y7y2",
+    "s": "yuta",
+    "t": "Itadori-kun. I'm sorry. I'm here to kill you."
+   },
+   {
+    "tip": "Fight Yuta."
+   }
+  ],
+  "yutaEnd": [
+   {
+    "id": "y7y3",
+    "s": "n",
+    "t": "Yuta's blade went through Yuji's heart. Then Yuta healed him with reverse cursed technique, while everyone watching believed Yuji was dead."
+   },
+   {
+    "id": "y7y4",
+    "s": "yuta",
+    "t": "Gojo-sensei asked me to look after his students if anything happened to him. That includes you."
+   }
   ]
  },
  "y8": {
@@ -896,6 +1066,138 @@ window.LINES_OW = {
    },
    {
     "tip": "Your full power: K Divergent Fist, L Piercing Blood, I Black Flash, U Dismantle, O Domain Expansion. Defeat Sukuna."
+   }
+  ],
+  "gojo": [
+   {
+    "id": "y8g1",
+    "s": "n",
+    "t": "December 24, 2018. The Prison Realm was opened, and Satoru Gojo walked into Shinjuku to face Sukuna, now wearing Megumi's body."
+   },
+   {
+    "id": "y8g2",
+    "s": "n",
+    "t": "Before the fight, someone asked him whether he would lose."
+   },
+   {
+    "id": "y8g3",
+    "s": "gojo",
+    "t": "Nah. I'd win."
+   },
+   {
+    "tip": "You are Gojo. Fight Sukuna. Both of you have domains."
+   }
+  ],
+  "gojoEnd": [
+   {
+    "id": "y8g4",
+    "s": "n",
+    "t": "It was the greatest battle of the modern era. Domain against domain, Hollow Purple against Divine Flame. Gojo was winning."
+   },
+   {
+    "id": "y8g5",
+    "s": "n",
+    "t": "Then Sukuna, using what Mahoraga had learned, cut through space itself. Satoru Gojo fell."
+   },
+   {
+    "id": "y8g6",
+    "s": "sukuna",
+    "t": "Satoru Gojo. I will never forget you as long as I live."
+   }
+  ],
+  "kashimo": [
+   {
+    "id": "y8k1",
+    "s": "n",
+    "t": "Hajime Kashimo, a sorcerer from four hundred years ago, stepped in next. He had waited centuries for a fight like this."
+   },
+   {
+    "id": "y8k2",
+    "s": "kashimo",
+    "t": "Finally. Someone strong enough to kill me."
+   },
+   {
+    "tip": "You are Kashimo."
+   }
+  ],
+  "kashimoEnd": [
+   {
+    "id": "y8k3",
+    "s": "n",
+    "t": "Kashimo spent everything in one burst of Mythical Beast Amber. It wasn't enough. Sukuna took his true form."
+   }
+  ],
+  "higuruma": [
+   {
+    "id": "y8h1",
+    "s": "n",
+    "t": "Yuji arrived, and Higuruma with him. The plan: confiscate Sukuna's technique with Deadly Sentencing."
+   },
+   {
+    "id": "y8h2",
+    "s": "higuruma",
+    "t": "I'll give you one chance, Itadori. Use it."
+   },
+   {
+    "tip": "Fight Sukuna alongside Higuruma."
+   }
+  ],
+  "higurumaEnd": [
+   {
+    "id": "y8h3",
+    "s": "n",
+    "t": "The verdict landed, and Sukuna's technique was confiscated. But before the Executioner's Sword could fall, Sukuna cut Higuruma down."
+   }
+  ],
+  "yuta": [
+   {
+    "id": "y8y1",
+    "s": "n",
+    "t": "Then Yuta Okkotsu joined the fight, with Rika at his side."
+   },
+   {
+    "id": "y8y2",
+    "s": "yuta",
+    "t": "Rika. Let's go. All of it."
+   },
+   {
+    "tip": "You are Yuta. U calls Rika."
+   }
+  ],
+  "yutaEnd": [
+   {
+    "id": "y8y3",
+    "s": "n",
+    "t": "Yuta, Maki and Todo held the line against the King of Curses, until Yuta fell."
+   }
+  ],
+  "maki": [
+   {
+    "id": "y8m1",
+    "s": "n",
+    "t": "Maki Zen'in cut in, while Todo's Boogie Woogie swapped her into every opening."
+   },
+   {
+    "id": "y8m2",
+    "s": "maki",
+    "t": "Keep up, Todo."
+   },
+   {
+    "tip": "You are Maki. Todo fights with you."
+   }
+  ],
+  "makiEnd": [
+   {
+    "id": "y8m3",
+    "s": "n",
+    "t": "Then something no one expected: Yuta rose again, in Satoru Gojo's body."
+   }
+  ],
+  "yutagEnd": [
+   {
+    "id": "y8u1",
+    "s": "n",
+    "t": "Five minutes of the Six Eyes and Limitless. When the body gave out, Sukuna was near his limit too."
    }
   ]
  }

@@ -400,6 +400,7 @@
       if (clash && (code === 'KeyO' || code === 'KeyJ')) { if (clash.a.isP) clash.pa++; else clash.pb++; }
       if (code === 'Escape') { if (G.mode === 'cut') skipCut(); else if (G.mode === 'fight' || G.mode === 'ready' || G.mode === 'ow') setPause(!G.paused); }
       if (code === 'KeyF' && G.mode === 'ow') OW.talk(); } }
+  $('#bQuests').onclick = () => { AUDIO.sfx('ui'); OW.quests(); };
   addEventListener('keydown', e => { if (e.target.tagName === 'BUTTON' && (e.code === 'Enter' || e.code === 'Space') && G.mode !== 'fight' && G.mode !== 'cut') return;
     if (['Space', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.code)) e.preventDefault(); if (!e.repeat) press(e.code, true); });
   addEventListener('keyup', e => press(e.code, false));
@@ -517,7 +518,7 @@
   let settings = { music: true, voice: true, sfx: true, auto: true, lang: 'ja' }; try { Object.assign(settings, JSON.parse(localStorage.getItem('ss2-settings') || '{}')); } catch (e) { }
   const save = () => { try { localStorage.setItem('ss2-progress', JSON.stringify(prog)); localStorage.setItem('ss2-settings', JSON.stringify(settings)); } catch (e) { } };
   for (const k of ['music', 'voice', 'sfx', 'lang']) AUDIO.set(k, settings[k]);
-  const screens = ['#title', '#story', '#versus', '#help', '#settings', '#result', '#pause', '#owmenu'];
+  const screens = ['#title', '#story', '#versus', '#help', '#settings', '#result', '#pause', '#owmenu', '#quests'];
   function show(id) { for (const s of screens) $(s).hidden = s !== id; const fight = id === null && ['fight', 'ready', 'ko', 'ow'].includes(G.mode); $('#owhud').hidden = !(fight && G.mode === 'ow');
     $('#hud').hidden = !fight; $('#touch').hidden = !(fight && matchMedia('(pointer:coarse)').matches); }
   function clearArena() { for (const f of [G.p1, G.p2, ...G.extra]) if (f) f.remove(); G.extra = [];

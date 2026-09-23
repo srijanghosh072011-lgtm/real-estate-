@@ -97,7 +97,21 @@ kbd{font-family:inherit;background:#0b0912;border:1px solid var(--gold);padding:
 .ft{position:absolute;transform:translate(-50%,-50%);font-family:'Pixelify Sans',monospace;font-weight:700;font-size:16px;text-shadow:0 2px 0 #0b0912,2px 0 0 #0b0912,-2px 0 0 #0b0912,0 -2px 0 #0b0912;white-space:nowrap}
 .ft.big{font-size:24px}
 #owhud{position:fixed;inset:0;pointer-events:none}
-#owq{position:absolute;top:calc(104px + env(safe-area-inset-top,0px));left:16px;max-width:min(380px,60vw);background:var(--panel);box-shadow:inset 0 0 0 1px #e2b25c88;padding:8px 12px;font-size:13px;line-height:1.6}
+#qlist{max-height:58vh;overflow:auto;padding:4px;margin:10px 0 14px}
+#qlist h3{font-family:'Pixelify Sans',monospace;font-size:16px;margin:14px 0 6px;color:var(--gold);display:flex;align-items:center;gap:10px}
+#qlist h3 button{margin-left:auto;font-size:12px;padding:4px 10px}
+#qlist ol{margin:0;padding-left:0;list-style:none}
+#qlist li{display:flex;gap:10px;align-items:baseline;padding:4px 6px;font-size:13px;line-height:1.5}
+#qlist li i{font-style:normal;width:4.5em;flex:none;font-size:11px;color:var(--dim)}
+#qlist li.now{background:#e2b25c22;box-shadow:inset 3px 0 0 var(--gold)}#qlist li.now i{color:var(--gold)}
+#qlist li.done{color:var(--dim)}#qlist li.done i{color:#9affc8}
+#qlist li.lock{opacity:.5}
+#qlist li small{margin-left:auto;color:var(--dim);white-space:nowrap}
+#qlist li button{margin-left:8px;font-size:12px;padding:3px 10px}
+#qnow{background:#e2b25c22;box-shadow:inset 0 0 0 1px #e2b25c88;padding:10px 12px;font-size:14px;line-height:1.6}
+#owQuests{pointer-events:auto;font-size:12px;padding:6px 12px;min-height:32px}
+#owqw{position:absolute;top:calc(104px + env(safe-area-inset-top,0px));left:16px;max-width:min(380px,60vw);display:flex;flex-direction:column;align-items:flex-start;gap:6px}
+#owq{background:var(--panel);box-shadow:inset 0 0 0 1px #e2b25c88;padding:8px 12px;font-size:13px;line-height:1.6}
 #owq b{color:var(--gold);font-weight:normal;margin-right:6px}#owq i{color:var(--blue);font-style:normal;margin-right:6px}
 #owp{position:absolute;left:50%;bottom:26%;transform:translateX(-50%);background:var(--panel);box-shadow:inset 0 0 0 1px var(--gold);padding:8px 14px;font-size:14px}
 /* cutscene */
@@ -144,6 +158,7 @@ kbd{font-family:inherit;background:#0b0912;border:1px solid var(--gold);padding:
   </div>
   <nav class="menu">
     <button id="bYuji">Yuji: Story</button>
+    <button id="bQuests">Quests</button>
     <button id="bStory">Story Mode</button>
     <button id="bVersus">Versus</button>
     <button id="bHelp">How to Play</button>
@@ -152,11 +167,20 @@ kbd{font-family:inherit;background:#0b0912;border:1px solid var(--gold);padding:
   <p class="fine">Fan-made tribute. Jujutsu Kaisen © Gege Akutami / Shueisha. Story mode follows Jujutsu Kaisen 0 and the manga's Shinjuku Showdown arc and contains spoilers. Music is original. Voices (Japanese or English) are generated with an open-source speech model and are not the anime cast.</p>
 </section>
 
+<section id="quests" class="screen" hidden>
+  <div class="panel" style="max-width:760px">
+    <h2>Quests</h2>
+    <div id="qnow"></div>
+    <div id="qlist"></div>
+    <div class="row"><button id="qClose">Close</button><span class="info" style="margin-left:auto">Tab opens this during play</span></div>
+  </div>
+</section>
+
 <section id="owmenu" class="screen" hidden>
   <div class="panel" style="max-width:620px">
     <h2>Yuji: Story</h2>
     <p class="info">An open-world adventure as Yuji Itadori, from the night he swallows Sukuna's finger to the last fight in Shinjuku. Eight arcs across Sendai, Tokyo Jujutsu High, the suburbs, Shibuya, a Culling Game colony and Shinjuku, with allies who fight beside you and short side quests (blue markers).</p>
-    <p class="info"><b>Controls:</b> WASD move · Space jump (hold against a wall to run up it) · Shift sprint · J strike · K technique · E dash · Q guard · F talk · drag the mouse or Z / X to turn the camera · T travel between places you've been · Esc pause. Progress saves automatically.</p>
+    <p class="info"><b>Controls:</b> WASD move · Space jump (hold against a wall to run up it) · Shift sprint · J strike · K technique · E dash · Q guard · F talk · drag the mouse or Z / X to turn the camera · T travel between places you've been · Tab Quests (every story step and side quest, with a Go button) · Esc pause. Progress saves automatically.</p>
     <div class="row" style="margin-top:14px"><button class="back">Back</button><button id="owNew" style="margin-left:auto">New Game</button><button id="owCont">Continue</button></div>
     <p class="info" style="margin-top:14px"><b>Chapters</b> (unlock as you play):</p><div class="row seg" id="owArcs"></div>
   </div>
@@ -228,7 +252,7 @@ kbd{font-family:inherit;background:#0b0912;border:1px solid var(--gold);padding:
   <div id="moves"></div>
   <div class="hint" id="hint"></div>
 </div>
-<div id="owhud" hidden><div id="owq"></div><div id="owp" hidden></div></div>
+<div id="owhud" hidden><div id="owqw"><div id="owq"></div><button id="owQuests">Quests · Tab</button></div><div id="owp" hidden></div></div>
 <div id="clash" hidden><div class="disp">DOMAIN CLASH · mash O / J</div><div id="clashbar"><i></i></div></div>
 
 <div id="touch" hidden>

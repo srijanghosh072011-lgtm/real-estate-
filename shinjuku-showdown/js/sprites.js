@@ -611,6 +611,7 @@ window.SPR = (function () {
   CHARS.kechizu = variant('rika', { mats: { skin: ['#5a2a2a', '#8a4a44', '#b8766a', '#e8b0a0'], hair: ['#1a0808', '#2e1010', '#461c1c', '#6a2c2c'], rag: ['#140a0a', '#2a1414', '#401e1e', '#5a2e2e'] } });
   CHARS.tfh = variant('rika', { mats: { skin: ['#4a4650', '#7a7482', '#a8a2b0', '#d8d2e0'], rag: ['#101014', '#1e1e26', '#2e2e3a', '#44445a'] } });
   CHARS.womb = variant('rika', { mats: { skin: ['#3a2a2a', '#6a4a44', '#9a7466', '#d0aa96'], hair: ['#0a0406', '#180a0e', '#281218', '#3e1e26'] } });
+  CHARS.kenjaku = variant('geto', { head: H('geto', { topFn: CHARS.yutag.head.topFn }) });   // Geto's body, Kenjaku's stitches
   function prep(key) { const C = CHARS[key]; if (!C.M) { C.mats.iris = C.mats.iris || flat('#333'); C.mats.irisD = C.mats.irisD || flat('#111'); C.mats.lash = C.mats.lash || flat('#1b1024'); C.M = materials(C); C.heads = {}; } return C; }
   function headOf(C, e) { return C.heads[e] || (C.heads[e] = renderHead({ mats: C.M, head: C.head }, e)); }
   function frameInto(C, name, ctx, nctx, x, y) { const p = pose(C, name), J = rig(C.pr, p), buf = new Buf(OW, OH), P = new Painter(buf, C.M, K);
