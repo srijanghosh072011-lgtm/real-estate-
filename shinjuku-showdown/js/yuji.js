@@ -80,7 +80,7 @@ window.OW = (function () {
     jjh: s => [s < I('y6.gojo') && ['gojoow', [2505, 0, -19], 'gojo', 'Go get them, Yuji.'], ['megumi', [2470, 0, 30], 'megumi', 'Train harder.'], s >= I('y2.meet') && ['nobara', [2532, 0, 32], 'nobara', "Don't slow me down."],
       s >= I('y5.brief') && ['todob', [2485, 0, 70], 'todo', 'Brother! Let us train until the sun goes down!']],
     suburb: s => s >= I('y3.nanami') && s <= I('y3.cinema') ? [['nanami', [7452, 0, 86], 'nanami', 'Overtime is against my principles.']] : [] };
-  let ents = [], zone = null, busy = false, qT = 0, T = 0, yaw = 0, pitch = .3, drag = null, side = null, lastHp = 0, calm = 0;
+  let ents = [], zone = null, busy = false, qT = 0, T = 0, yaw = 0, pitch = .3, camTouch = -9, drag = null, side = null, lastHp = 0, calm = 0;
 
   function spawn(key, at, tag, o = {}) { const f = new Fighter(key, at, false); Object.assign(f, { hostile: true, tag }, o); f.opp = G.p1; ents.push(f); return f; }
   const ally = (key, at) => spawn(key, at, 'ally', { hostile: false, ally: true });
@@ -232,9 +232,11 @@ window.OW = (function () {
   function step(dt, I) {
     const p = G.p1, k = GAME.keys; T += dt; qT += dt; if (busy) return;
     Object.assign(I, { my: 0, jump: !!k.Space, sprint: !!(k.ShiftLeft || k.ShiftRight), guard: !!k.KeyQ });
-    if (k.KeyZ) yaw += dt * 2.2; if (k.KeyX) yaw -= dt * 2.2;
+    if (k.KeyZ) { yaw += dt * 2.2; camTouch = T; } if (k.KeyX) { yaw -= dt * 2.2; camTouch = T; }
     pick(); const Q = G.p2, fighting = Q !== p && Q.hostile && !Q.dead && Q.pos.distanceTo(p.pos) < 16;
-    p.faceLock = !fighting; if (!fighting) { const r = new V3().setFromMatrixColumn(WORLD.camera.matrixWorld, 0), s = p.vel.dot(r); if (Math.abs(s) > .5) p.face = s > 0 ? 1 : -1; }
+    p.faceLock = !fighting;
+    // soft lock: in a fight the camera swings round behind Yuji to face his target, unless you've just turned it yourself
+    if (fighting && T - camTouch > 1.2) { const dx = p.pos.x - Q.pos.x, dz = p.pos.z - Q.pos.z; if (dx * dx + dz * dz > 6) { let d = Math.atan2(dx, dz) - yaw; d = Math.atan2(Math.sin(d), Math.cos(d)); yaw += d * Math.min(1, dt * 2.4); } } if (!fighting) { const r = new V3().setFromMatrixColumn(WORLD.camera.matrixWorld, 0), s = p.vel.dot(r); if (Math.abs(s) > .5) p.face = s > 0 ? 1 : -1; }
     p.update(dt, I, Q);
     for (const sm of p.summons) if (!ents.includes(sm)) { Object.assign(sm, { ally: true, hostile: false, tag: 'ally' }); ents.push(sm); }
     const hostiles = ents.filter(f => f.hostile && !f.dead), friends = [p, ...ents.filter(f => f.ally && !f.dead)];
@@ -279,13 +281,16 @@ window.OW = (function () {
 
   /* ---------------- camera: behind Yuji, orbit with drag or Z/X, pulled in when a building is in the way ---------------- */
   addEventListener('pointerdown', e => { if (G.mode === 'ow' && e.target.id === 'cv') drag = [e.clientX, e.clientY]; });
-  addEventListener('pointermove', e => { if (!drag) return; yaw -= (e.clientX - drag[0]) * .006; pitch = Math.max(.05, Math.min(1.1, pitch + (e.clientY - drag[1]) * .004)); drag = [e.clientX, e.clientY]; });
+  addEventListener('pointermove', e => { if (!drag) return; camTouch = T; yaw -= (e.clientX - drag[0]) * .006; pitch = Math.max(.05, Math.min(1.1, pitch + (e.clientY - drag[1]) * .004)); drag = [e.clientX, e.clientY]; });
   addEventListener('pointerup', () => drag = null);
   addEventListener('keydown', e => { if (e.code === 'KeyT' && G.mode === 'ow') travel(); });
-  function cam() { const p = G.p1, look = p.pos.clone().add(new V3(0, 1.6, 0)), dist = 8.5;
-    const off = new V3(Math.sin(yaw) * Math.cos(pitch), Math.sin(pitch), Math.cos(yaw) * Math.cos(pitch)).multiplyScalar(dist);
-    let best = dist; for (const { p: hp } of WORLD.segment(look, look.clone().add(off), .3)) best = Math.min(best, Math.max(2.2, hp.distanceTo(look) - 1.2));
-    return [look.clone().add(off.setLength(best)), look]; }
+  function cam() { const p = G.p1, look = p.pos.clone().add(new V3(0, 1.6, 0)), Q = G.p2, dist = Q && Q !== p && Q.hostile && !Q.dead && Q.pos.distanceTo(p.pos) < 16 ? 10 : 8.5;
+    const offAt = y => new V3(Math.sin(y) * Math.cos(pitch), Math.sin(pitch), Math.cos(y) * Math.cos(pitch)).multiplyScalar(dist);
+    const room = y => { let best = dist; for (const { p: hp } of WORLD.segment(look, look.clone().add(offAt(y)), .3)) best = Math.min(best, Math.max(2.2, hp.distanceTo(look) - 1.2)); return best; };
+    let best = room(yaw);
+    // wall behind Yuji and nobody steering: swing to the nearest angle with a clear view instead of zooming into his back
+    if (best < 5 && T - camTouch > 1.2) for (const d of [.35, -.35, .7, -.7, 1.1, -1.1, 1.6, -1.6]) { const r = room(yaw + d); if (r > best + 1.5) { yaw += d * .15; break; } }
+    return [look.clone().add(offAt(yaw).setLength(best)), look]; }
 
   /* ---------------- HUD: quest box, talk prompt, markers ---------------- */
   const mkBeam = c => { const b = new THREE.Mesh(new THREE.CylinderGeometry(.6, .6, 60, 8, 1, true).translate(0, 30, 0), new THREE.MeshBasicMaterial({ color: c, transparent: true, opacity: .35, blending: THREE.AdditiveBlending, depthWrite: false, fog: false })); b.userData.keep = 1; b.frustumCulled = false; return b; };
@@ -294,8 +299,16 @@ window.OW = (function () {
     const f = q.kill ? ents.find(e => e.tag === q.kill && !e.dead) : q.winHp ? bossOf() : q.talk ? ents.find(e => e.npc === q.talk) : null; return f && [f.pos.x, f.pos.y, f.pos.z]; }
   function sideTarget() { if (side) { if (side.s.kind === 'race') { const c = side.s.pts[side.i]; return [c[0], 0, c[1]]; } return null; }
     const s = SIDE.find(sideOpen); if (!s) return null; if (s.at) return s.at; const f = ents.find(e => e.npc === s.npc); return f && [f.pos.x, 0, f.pos.z]; }
+  const mark = new THREE.Mesh(new THREE.RingGeometry(.9, 1.15, 28).rotateX(-Math.PI / 2), new THREE.MeshBasicMaterial({ color: 0xff4a5a, transparent: true, opacity: .7, depthWrite: false, fog: false })); mark.userData.keep = 1;
+  const bars = [];
+  function overhead(p, Q) { const cam = WORLD.camera, list = ents.filter(f => f.hostile && !f.dead && f.pos.distanceTo(p.pos) < 45).sort((a, b) => a.pos.distanceTo(p.pos) - b.pos.distanceTo(p.pos)).slice(0, 12);
+    list.forEach((f, i) => { let b = bars[i]; if (!b) { b = bars[i] = document.createElement('div'); b.className = 'ohb'; b.innerHTML = '<i></i>'; $('#owhud').appendChild(b); }
+      const v = f.center().add(new V3(0, 1.3 * Math.max(1, f.scale), 0)).project(cam); b.hidden = v.z > 1 || Math.abs(v.x) > 1.1 || Math.abs(v.y) > 1.1;
+      b.style.left = (v.x + 1) / 2 * innerWidth + 'px'; b.style.top = (1 - v.y) / 2 * innerHeight + 'px'; b.classList.toggle('tgt', f === Q); b.firstChild.style.width = Math.max(0, f.hp / f.maxhp * 100) + '%'; });
+    for (let i = list.length; i < bars.length; i++) bars[i].hidden = true;
+    const on = Q && Q !== p && Q.hostile && !Q.dead; if (on && !mark.parent) WORLD.scene.add(mark); if (!on && mark.parent) WORLD.scene.remove(mark); if (on) { mark.position.set(Q.pos.x, Q.pos.y + .06, Q.pos.z); mark.scale.setScalar(Math.max(1, Q.scale)); } }
   function hud() {
-    const p = G.p1, Q = G.p2, q = cur(), o = objective(), st = sideTarget();
+    const p = G.p1, Q = G.p2, q = cur(), o = objective(), st = sideTarget(); overhead(p, Q);
     [o, st].forEach((pt, i) => { const b = beams[i]; if (pt && !b.parent) WORLD.scene.add(b); if (!pt && b.parent) WORLD.scene.remove(b); if (pt) b.position.set(pt[0], 0, pt[2]); b.material.opacity = .25 + Math.sin(T * 3) * .1; });
     const where = q.zone && q.zone !== zone ? ` <i>(${ZONES[q.zone].name}${S.step >= I('y1.tokyo') ? ': press T' : ''})</i>` : '';
     const lines = [`<b>${arcName(q.arc)}</b> ${q.t}${where}${q.timer && q.zone === zone ? ` · ${Math.max(0, Math.ceil(q.timer - qT))}s` : ''}`];
