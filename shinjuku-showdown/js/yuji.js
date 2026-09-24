@@ -62,7 +62,7 @@ window.OW = (function () {
     jjh: { map: 'jjh', time: 'afternoon', song: 'title', start: [2500, 0, 150], yaw: 0, name: 'Tokyo Jujutsu High' },
     suburb: { map: 'suburb', time: 'dusk', song: 'tension', start: [7500, 0, 110], yaw: 0, name: 'The Suburbs' },
     eishu: { map: 'suburb', time: 'dusk', rain: 1, song: 'tension', start: [7360, 0, -92], yaw: 0, name: 'Eishū Juvenile Detention Center · West Tokyo' },
-    canyon: { map: 'canyon', time: 'sunset', song: 'tension', start: [15000, 30, 50], yaw: 0, name: 'Yasohachi Bridge · Koinokuchi Canyon' },
+    canyon: { map: 'canyon', time: 'canyon', song: 'tension', start: [15000, 30, 50], yaw: 0, name: 'Yasohachi Bridge · Koinokuchi Canyon' },
     shibuya: { map: 'shibuya', time: 'night', song: 'tension', start: [9960, 0, 45], yaw: 0, name: 'Shibuya · October 31, 2018' },
     school: { map: 'school', time: 'indoorNight', indoor: 1, song: 'tension', start: [20008, 0, 0], yaw: -PI / 2, name: 'Sugisawa Third High · 4th floor, night' },
     womb: { map: 'womb', time: 'domain', indoor: 1, mood: 'womb', song: 'tension', start: [20500, 0, 60], yaw: 0, name: "Inside the Cursed Womb's Innate Domain" },
@@ -70,10 +70,10 @@ window.OW = (function () {
     gym: { map: 'gym', time: 'indoor', indoor: 1, song: 'tension', start: [21240, 0, 20], yaw: 0, name: 'Satozakura High · Gymnasium' },
     platform: { map: 'platform', time: 'indoor', indoor: 1, song: 'tension', start: [21600, 1.1, 0], yaw: -PI / 2, name: 'Shibuya Station · B5F Fukutoshin Line' },
     court: { map: 'court', time: 'domain', indoor: 1, song: 'shrine', start: [22250, 0, 22], yaw: 0, name: 'Domain Expansion · Deadly Sentencing' },
-    ruinshibuya: { map: 'shibuya', time: 'dusk', song: 'tension', ruin: ['centergai', 'dogenzaka', 'shibuya', 'shibuyae'], start: [9960, 0, 45], yaw: 0, name: 'Shibuya ruins · November 2018' },
+    ruinshibuya: { map: 'shibuya', time: 'sunset', song: 'tension', ruin: ['centergai', 'dogenzaka', 'shibuya', 'shibuyae'], ruinF: .8, start: [9960, 0, 45], yaw: 0, name: 'Shibuya ruins · November 2018' },
     ruins: { map: 'ruins', time: 'indoor', indoor: 1, song: 'tension', start: [22606, 0, 0], yaw: -PI / 2, name: 'Roppongi · abandoned building' },
     sewer: { map: 'sewer', time: 'indoorNight', indoor: 1, song: 'tension', start: [23012, 0, 4], yaw: -PI / 2, name: "Sewers · Mahito's hideout" },
-    colony: { map: 'ikebukuro', time: 'dusk', song: 'tension', ruin: ['ikebukuro'], start: [12430, 0, 130], yaw: 0, name: 'Ikebukuro · Tokyo Colony No. 1' },
+    colony: { map: 'ikebukuro', time: 'afternoon', song: 'tension', ruin: ['ikebukuro'], start: [12430, 0, 130], yaw: 0, name: 'Ikebukuro · Tokyo Colony No. 1' },
     shinjuku: { map: 'shinjuku', time: 'night', song: 'battle', ruin: ['nishi', 'sanchome'], start: [236, 0, -72], yaw: 0, name: 'Shinjuku · December 24, 2018' } };
   const ORDER = ['jjh', 'sendai', 'eishu', 'suburb', 'canyon', 'shibuya', 'ruinshibuya', 'colony', 'shinjuku'];
   const NPCS = { sendai: s => [['megumi', [5010, 0, 47], 'megumi', 'Go home. Gojo-sensei is waiting for you in Tokyo.']],
@@ -90,7 +90,7 @@ window.OW = (function () {
   const near = (dx, dz) => [G.p1.pos.x + dx, G.p1.pos.y, G.p1.pos.z + dz];
   function enterZone(z) {
     const Z = ZONES[z]; zone = z; S.map = z; if (!S.seen.includes(z)) S.seen.push(z); GAME.clearArena(); ents = []; side = null;
-    WORLD.setMap(Z.map); WORLD.reset(); WORLD.setTime(Z.time); if (Z.rain) WORLD.setWeather('rain'); if (Z.indoor) WORLD.setWeather('indoor'); if (Z.mood) WORLD.setMood(Z.mood, new V3(...Z.start)); for (const id of Z.ruin || []) WORLD.ruin(id, .4);
+    WORLD.setMap(Z.map); WORLD.reset(); WORLD.setTime(Z.time); if (Z.rain) WORLD.setWeather('rain'); if (Z.indoor) WORLD.setWeather('indoor'); if (Z.mood) WORLD.setMood(Z.mood, new V3(...Z.start)); for (const id of Z.ruin || []) WORLD.ruin(id, Z.ruinF || .4);
     SPR.release(['yuji', 'sukunay', 'megumi', 'gojo0', 'curse1', 'curse2', 'nobara', 'todo']);
     G.p1 = new Fighter(S.form || 'yujiow', Z.start, true); applyStats(G.p1);
     syncNpcs();
@@ -134,7 +134,7 @@ window.OW = (function () {
     S1('y2', 'y2.search', { zone: 'womb', t: 'Search the domain for survivors', enter: () => { ally('megumi', near(-3, 2)); ally('nobara', near(3, 2)); ring(['curse2', 'curse1'], 6, [20500, 0, 30], 14, 'yard'); }, kill: 'yard' }),
     S1('y2', 'y2.womb', { zone: 'womb', t: 'Face the special grade', enter: () => boss('wombb', [20500, 0, 10], { armor: .15 }), timer: 20, lowHp: .4, cut: 'womb', after: () => { drop('ally'); become('sukunay'); } }),
     S1('y2', 'y2.sukuna', { zone: 'womb', t: 'Sukuna: destroy the special grade', enter: () => { const b = bossOf() || boss('wombb', [20500, 0, 10]); b.armor = 1; b.hp = b.maxhp; }, kill: 'boss', cut: 'betray', after: () => become('megumi') }),
-    S1('y2', 'y2.megumi', { zone: 'eishu', t: 'As Megumi: hold out against Sukuna in the rain', enter: () => { spawn('sukunab', near(6, 0), 'boss2', { armor: .2 }); AUDIO.play('battle'); }, timer: 20, lowHp: .02, cut: 'death', after: () => { drop('boss2'); become('yujiow'); } }),
+    S1('y2', 'y2.megumi', { zone: 'eishu', t: 'As Megumi: hold out against Sukuna in the rain', place: [7396, 0, -126], enter: () => { spawn('sukunab', near(6, 0), 'boss2', { armor: .2 }); AUDIO.play('battle'); }, timer: 20, lowHp: .02, cut: 'death', after: () => { drop('boss2'); become('yujiow'); } }),
     // 3 · Mahito and Junpei
     S1('y3', 'y3.brief', { zone: 'jjh', t: 'Talk to Gojo', talk: 'gojo', cut: 'brief' }),
     S1('y3', 'y3.movies', { zone: 'jjh', t: 'Secret training: movies and the cursed doll', at: [2505, 1.65, -34], r: 6, cut: 'movies' }),

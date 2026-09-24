@@ -75,7 +75,13 @@ window.WORLD = (function () {
     { id: 'courtin', name: 'Domain Expansion · Deadly Sentencing', jp: '領域展開 誅伏賜死', x0: 22180, z0: -70, x1: 22320, z1: 70, type: 12 },
     { id: 'ruinsin', name: 'Roppongi · abandoned building', jp: '六本木 廃ビル', x0: 22580, z0: -40, x1: 22720, z1: 40, type: 13 },
     { id: 'sewerwater', name: "Sewers · Mahito's hideout", jp: '下水道', x0: 22980, z0: -2.2, x1: 23220, z1: 2.2, type: 6 },
-    { id: 'sewerin', name: "Sewers · Mahito's hideout", jp: '下水道', x0: 22980, z0: -20, x1: 23220, z1: 20, type: 13 }
+    { id: 'sewerin', name: "Sewers · Mahito's hideout", jp: '下水道', x0: 22980, z0: -20, x1: 23220, z1: 20, type: 13 },
+    // outskirts past the edge of each city map (not walkable): one building per block, so the skyline carries on
+    { id: 'shinjukuout', name: 'Shinjuku', jp: '新宿', x0: -760, z0: -560, x1: 720, z1: 560, cx: 52, cz: 48, sw: 12, h: [14, 60], styles: ['office', 'glass', 'residential', 'granite'], type: 0, out: 1 },
+    { id: 'sendaiout', name: 'Sendai', jp: '仙台', x0: 4460, z0: -540, x1: 5540, z1: 540, cx: 30, cz: 28, sw: 6, h: [4.5, 9], styles: ['residential', 'residential', 'brown'], type: 0, out: 1 },
+    { id: 'suburbout', name: 'Suburbs', jp: '郊外', x0: 6960, z0: -540, x1: 8040, z1: 540, cx: 34, cz: 32, sw: 8, h: [5, 14], styles: ['residential', 'residential', 'brown', 'office'], type: 0, out: 1 },
+    { id: 'shibuyaout', name: 'Shibuya', jp: '渋谷', x0: 9460, z0: -540, x1: 10540, z1: 540, cx: 44, cz: 40, sw: 10, h: [14, 44], styles: ['office', 'glass', 'dept', 'darkglass'], type: 0, out: 1 },
+    { id: 'ikebukuroout', name: 'Ikebukuro', jp: '池袋', x0: 11960, z0: -540, x1: 13040, z1: 540, cx: 44, cz: 40, sw: 10, h: [12, 40], styles: ['office', 'dept', 'glass', 'residential'], type: 0, out: 1 }
   ];
   const AVE = [{ x0: 55, z0: -78, x1: 440, z1: -66, name: 'Yasukuni-dōri' }];
   function district(x, z) { for (const d of D) if (x >= d.x0 && x < d.x1 && z >= d.z0 && z < d.z1) return d; return D[3]; }
@@ -157,9 +163,10 @@ window.WORLD = (function () {
     night: { top: '#04050e', mid: '#0e1430', hor: '#26244a', sunC: '#9fb4ff', sunI: .5, sun: [0.35, 0.7, -0.4], hs: '#6a7ab8', hg: '#2a2230', hI: .8, fog: '#1c2440', fogD: .0045, night: 1, grade: [.95, .98, 1.12], lift: [0, .005, .03], sprite: '#a8b4e0', lamps: 1, bloomTh: .55, fuji: '#12142a' },
     indoor: { top: '#141418', mid: '#18181e', hor: '#1e1e24', sunC: '#fff4e4', sunI: .55, sun: [0.15, 1, 0.1], hs: '#f2eee6', hg: '#8a847c', hI: 1.05, fog: '#1c1c22', fogD: .006, night: 0, grade: [1.02, 1, .98], lift: [0, 0, 0], sprite: '#ffffff', lamps: 1, bloomTh: .78, fuji: '#141418' },
     indoorNight: { top: '#05060c', mid: '#080a14', hor: '#0c0e1a', sunC: '#8fa4e0', sunI: .32, sun: [0.3, 1, 0.5], hs: '#8a98c8', hg: '#2a2a3a', hI: .95, fog: '#0c0f1a', fogD: .012, night: 1, grade: [.95, .98, 1.1], lift: [0, .005, .03], sprite: '#b8c0e8', lamps: 1, bloomTh: .6, fuji: '#05060c' },
+    canyon: { top: '#34427e', mid: '#b87a78', hor: '#ffc88a', sunC: '#ffd2a0', sunI: 1.15, sun: [-0.92, 0.42, 0.12], hs: '#ffe0c4', hg: '#6a5e4c', hI: 1, fog: '#d8a88e', fogD: .0022, night: .1, grade: [1.06, .99, .93], lift: [.02, .01, 0], sprite: '#ffe6d0', lamps: .2, bloomTh: .74, fuji: '#7a5a78' },
     domain: { top: '#020103', mid: '#0a0406', hor: '#1a0a0c', sunC: '#ffd8b0', sunI: .7, sun: [0.1, 1, 0.3], hs: '#b8a8a0', hg: '#2a1814', hI: .8, fog: '#0a0406', fogD: .012, night: 1, grade: [1.05, .96, .94], lift: [.01, 0, 0], sprite: '#ffffff', lamps: 0, bloomTh: .6, fuji: '#020103' }
   };
-  const U = { night: { value: 0 }, cut: { value: [new THREE.Vector4(), new THREE.Vector4()] }, time: { value: 0 } };
+  const U = { power: { value: 1 }, night: { value: 0 }, cut: { value: [new THREE.Vector4(), new THREE.Vector4()] }, time: { value: 0 } };
   let TOD = TIMES.noon;
   function setTime(k) {
     TOD = TIMES[k] || TIMES.noon; const t = TOD;
@@ -178,7 +185,7 @@ window.WORLD = (function () {
   function buildingMat(tex, tile, key, shop) {
     const m = new THREE.MeshLambertMaterial({ map: tex });
     m.onBeforeCompile = sh => {
-      sh.uniforms.uNight = U.night; sh.uniforms.uCut = U.cut; sh.uniforms.uTile = { value: tile };
+      sh.uniforms.uNight = U.night; sh.uniforms.uPower = U.power; sh.uniforms.uCut = U.cut; sh.uniforms.uTile = { value: tile };
       sh.vertexShader = 'varying vec2 vFUV; varying float vRoof, vSeed, vH, vTop; varying vec3 vWP;\nuniform vec2 uTile;\n' + sh.vertexShader.replace('#include <project_vertex>', `#include <project_vertex>
         mat4 IM = mat4(1.0);
         #ifdef USE_INSTANCING
@@ -187,17 +194,17 @@ window.WORLD = (function () {
         mat4 MM = modelMatrix * IM; vec3 sc = vec3(length(MM[0].xyz), length(MM[1].xyz), length(MM[2].xyz)); vec3 lp = position;
         vFUV = (abs(normal.x) > .5 ? vec2(lp.z * sc.z * sign(normal.x), (lp.y + .5) * sc.y) : vec2(-lp.x * sc.x * sign(normal.z), (lp.y + .5) * sc.y)) / uTile;
         vRoof = normal.y; vH = (lp.y + .5) * sc.y; vTop = (.5 - lp.y) * sc.y; vSeed = fract(MM[3].x * .137 + MM[3].z * .311); vWP = (MM * vec4(lp, 1.)).xyz;`);
-      sh.fragmentShader = `#define SHOP ${shop ? '1.' : '0.'}\n#define ROOFC ${key === 'rock' ? 'vec3(.2,.3,.14)' : 'vec3(.46,.45,.47)'}\nvarying vec2 vFUV; varying float vRoof, vSeed, vH, vTop; varying vec3 vWP; uniform float uNight;\n` + GLSL_HASH + CUT_FRAG + sh.fragmentShader
+      sh.fragmentShader = `#define SHOP ${shop ? '1.' : '0.'}\n#define ROOFC ${key === 'rock' ? 'vec3(.2,.3,.14)' : 'vec3(.46,.45,.47)'}\nvarying vec2 vFUV; varying float vRoof, vSeed, vH, vTop; varying vec3 vWP; uniform float uNight, uPower;\n` + GLSL_HASH + CUT_FRAG + sh.fragmentShader
         .replace('#include <clipping_planes_fragment>', '#include <clipping_planes_fragment>\n' + CUT_CODE)
         .replace('#include <map_fragment>', `float lit = 0.; float seed = floor(vSeed * 997. + .5);   // snap: interpolation jitter in a varying seed made facades sparkle
           if (vRoof > .5) { diffuseColor.rgb *= ROOFC * (.8 + .35 * hh(floor(vWP.xz * 1.3))); }
           else if (vRoof > -.5) {
             float far = smoothstep(220., 700., distance(vWP, cameraPosition)); vec4 fac = texture2D(map, vFUV); diffuseColor.rgb *= mix(fac.rgb, texture2D(map, vFUV, 4.).rgb, far * .8);
             vec2 cell = floor(vFUV * 2.); lit = mix(step(.75, fac.a) * step(.58, hh(cell + seed * .0917)), .3, far);
-            if (vH < 1.8 && SHOP > .5) { float s = hh(vec2(floor(vFUV.x * 1.5), seed * .013)); diffuseColor.rgb = mix(vec3(.16,.18,.22), vec3(.55,.42,.3), s) * (vH < 1.35 ? 1. : .55); lit = step(.4, s) * step(vH, 1.35) * .8; }
+            if (vH < 1.8 && SHOP > .5) { float s = hh(vec2(floor(vFUV.x * 1.5), seed * .013)); diffuseColor.rgb = mix(vec3(.16,.18,.22), vec3(.55,.42,.3) * mix(.45, 1., uPower), s) * (vH < 1.35 ? 1. : .55); lit = step(.4, s) * step(vH, 1.35) * .8; }
             if (vTop < .38) diffuseColor.rgb *= .7;
           }`)
-        .replace('#include <emissivemap_fragment>', '#include <emissivemap_fragment>\ntotalEmissiveRadiance += vec3(1.,.8,.52) * lit * uNight * .9;');
+        .replace('#include <emissivemap_fragment>', '#include <emissivemap_fragment>\ntotalEmissiveRadiance += vec3(1.,.8,.52) * lit * uNight * uPower * .9;');
     };
     m.customProgramCacheKey = () => 'bld' + key;
     return m;
@@ -230,7 +237,7 @@ window.WORLD = (function () {
       if (win) { const w = P[1], sky = kind === 'glass' ? (16 - fy) * 2 : 0; set(x, y, w[0] + sky + n, w[1] + sky + n, w[2] + sky + n, 255); }
       else set(x, y, c0[0] + n - 5, c0[1] + n - 5, c0[2] + n - 5, 128);
     }
-    g.putImageData(id, 0, 0); const t = new THREE.CanvasTexture(c); t.magFilter = THREE.NearestFilter; t.minFilter = THREE.LinearMipmapLinearFilter; t.anisotropy = 4; t.wrapS = t.wrapT = THREE.RepeatWrapping; return t;
+    g.putImageData(id, 0, 0); const t = new THREE.CanvasTexture(c); t.magFilter = THREE.NearestFilter; t.minFilter = THREE.LinearMipmapLinearFilter; t.wrapS = t.wrapT = THREE.RepeatWrapping; return t;
   }
 
   /* ---------------- ground ---------------- */
@@ -356,8 +363,8 @@ window.WORLD = (function () {
     if (d.type !== 0) continue;
     for (let ox = d.x0; ox < d.x1 - 4; ox += d.cx) for (let oz = d.z0; oz < d.z1 - 4; oz += d.cz) {
       const x0 = ox + d.sw + 2.8, x1 = Math.min(ox + d.cx, d.x1) - 2.8, z0 = oz + d.sw + 2.8, z1 = Math.min(oz + d.cz, d.z1) - 2.8;
-      if (x1 - x0 < 3 || z1 - z0 < 3 || reserved(x0, z0, x1, z1)) continue;
-      const lotMin = d.id === 'gai' ? 3 : d.id === 'kabuki' ? 7 : 11, nx = Math.max(1, Math.min(3, Math.floor((x1 - x0) / lotMin * R(.5, 1)))), nz = Math.max(1, Math.min(2, Math.floor((z1 - z0) / lotMin * R(.5, 1))));
+      if (x1 - x0 < 3 || z1 - z0 < 3 || reserved(x0, z0, x1, z1) || (d.out && district((x0 + x1) / 2, (z0 + z1) / 2) !== d)) continue;
+      const lotMin = d.out ? 99 : d.id === 'gai' ? 3 : d.id === 'kabuki' ? 7 : 11, nx = Math.max(1, Math.min(3, Math.floor((x1 - x0) / lotMin * R(.5, 1)))), nz = Math.max(1, Math.min(2, Math.floor((z1 - z0) / lotMin * R(.5, 1))));
       for (let i = 0; i < nx; i++) for (let j = 0; j < nz; j++) {
         const lx0 = x0 + (x1 - x0) * i / nx, lx1 = x0 + (x1 - x0) * (i + 1) / nx, lz0 = z0 + (z1 - z0) * j / nz, lz1 = z0 + (z1 - z0) * (j + 1) / nz;
         const m = d.id === 'gai' ? .15 : .6, w = lx1 - lx0 - m * 2, dp = lz1 - lz0 - m * 2; if (w < 2 || dp < 2) continue;
@@ -373,7 +380,8 @@ window.WORLD = (function () {
   S('office', 4880, -150, 36, 24, 20, { lm: 'hospital', tint: 1.1 });
   const SB = (st, x, z, w, d, h, o = {}) => addB(st, x, z, w, d, h, Object.assign({ map: 'suburb', tint: R(.95, 1.05) }, o));
   for (const [x, z, w, d] of [[7330, -190, 40, 14], [7385, -190, 14, 40], [7340, -140, 30, 12]]) SB('residential', x, z, w, d, 12, { lm: 'eishu', tint: .9 });   // cell blocks
-  for (const [x, z, w, d] of [[7360, -229, 124, 1.2], [7360, -111, 124, 1.2], [7299, -170, 1.2, 118], [7421, -170, 1.2, 118]]) SB('granite', x, z, w, d, 5, { lm: 'eishu-wall' });
+  for (const [x, z, w, d] of [[7360, -229, 124, 1.2], [7326, -111, 56, 1.2], [7394, -111, 56, 1.2], [7299, -170, 1.2, 118], [7421, -170, 1.2, 118]]) SB('granite', x, z, w, d, 5, { lm: 'eishu-wall' });
+  for (const x of [7353, 7367]) SB('granite', x, -111, 2, 2, 6.2, { lm: 'eishu-gate' });
   SB('residential', 7620, -180, 90, 14, 14, { lm: 'satozakura', tint: 1.05 }); SB('brown', 7580, -130, 24, 30, 10, { lm: 'satozakura-gym' });   // the gym hosts the assembly
   SB('dept', 7452, 62, 36, 36, 12, { lm: 'cinema', tint: .85 });
   const IN = (map, st, x, z, w, d, h, o = {}) => addB(st, x, z, w, d, h, Object.assign({ map, tint: 1 }, o));
@@ -395,7 +403,8 @@ window.WORLD = (function () {
   for (let x = 21596; x < 21770; x += 12) IN('platform', 'concrete', x, 0, .9, .9, 7.2, { tint: 1.1 });
   const train = IN('platform', 'concrete', 21660, 9.5, 120, 3.2, 4.2); train.hidden = true;
   // Deadly Sentencing: a courtroom in the dark, the judge's bench, two stands
-  IN('court', 'woodwall', 22250, -22, 30, 5, 4.5); IN('court', 'woodwall', 22238, 2, 5, 3, 1.4); IN('court', 'woodwall', 22262, 2, 5, 3, 1.4); IN('court', 'woodwall', 22250, 12, 40, .8, 1.2);
+  IN('court', 'woodwall', 22250, -22, 30, 5, 4.5); IN('court', 'woodwall', 22238, 2, 5, 3, 1.4); IN('court', 'woodwall', 22262, 2, 5, 3, 1.4); IN('court', 'woodwall', 22250, 12, 40, .8, 1.2); IN('court', 'woodwall', 22250, -25, 36, .8, 9, { tint: .7 });
+  for (let r = 0; r < 4; r++) for (const x of [22236, 22264]) IN('court', 'woodwall', x, 18 + r * 3.2, 18, .9, .9, { tint: .8 });
   // Roppongi: an abandoned office floor, rooms off a corridor, some walls broken through
   for (const [x, z, w, d] of [[22650, -24.6, 104, .6], [22650, 24.6, 104, .6], [22598, 0, .6, 50], [22702, 0, .6, 50], [22625, -12, 30, .5], [22672, -12, 36, .5], [22630, 10, 40, .5], [22682, 10, 24, .5], [22640, -18, .5, 12], [22662, 17, .5, 14]])
     IN('ruins', 'concrete', x, z, w, d, 4.6, { tint: .75 });
@@ -444,7 +453,7 @@ window.WORLD = (function () {
   function torii(parent, x, z, ry, s = 1) { const t = new THREE.Group(); for (const dx of [-1.8, 1.8]) { const p = new THREE.Mesh(box, toriiM); p.scale.set(.4, 5, .4); p.position.set(dx, 2.5, 0); t.add(p); }
     const k = new THREE.Mesh(box, toriiM); k.scale.set(5.6, .45, .5); k.position.y = 5.1; t.add(k); const n = new THREE.Mesh(box, toriiM); n.scale.set(4.6, .3, .35); n.position.y = 4.2; t.add(n);
     t.traverse(o => o.castShadow = true); t.position.set(x, 0, z); t.rotation.y = ry; t.scale.setScalar(s); parent.add(t); return t; }
-  function canvasTex(w, h, draw, nearest = true) { const c = document.createElement('canvas'); c.width = w; c.height = h; draw(c.getContext('2d'), w, h); const t = new THREE.CanvasTexture(c); if (nearest) t.magFilter = THREE.NearestFilter; t.anisotropy = 4; return t; }
+  function canvasTex(w, h, draw, nearest = true) { const c = document.createElement('canvas'); c.width = w; c.height = h; draw(c.getContext('2d'), w, h); const t = new THREE.CanvasTexture(c); if (nearest) t.magFilter = THREE.NearestFilter; return t; }
   {
     const hm = new THREE.MeshLambertMaterial({ color: 0x4a5048 }), g = new THREE.Group(); g.position.set(108, 52, -124);
     const part = (w, h, d, x, y, z, rz) => { const m = new THREE.Mesh(box, hm); m.scale.set(w, h, d); m.position.set(x, y, z); if (rz) m.rotation.z = rz; m.castShadow = true; g.add(m); };
@@ -470,6 +479,7 @@ window.WORLD = (function () {
     m.frustumCulled = false; m.castShadow = !!shadow; m.receiveShadow = true; scene.add(m); return m; }
   const lamps = [], cars = [], trees = [], vend = [], signs = [];
   for (const d of D) {
+    if (d.out) continue;   // the outskirts are skyline only
     if (d.type === 1) { const n = (d.x1 - d.x0) * (d.z1 - d.z0) / 180; for (let i = 0; i < n; i++) { const x = R(d.x0 + 3, d.x1 - 3), z = R(d.z0 + 3, d.z1 - 3); if (d.id === 'gyoen' && Math.hypot(x - 350, z - 150) < 30) continue; trees.push([x, z, R(3, 6.5)]); } continue; }
     if (d.type !== 0) continue;
     for (let ox = d.x0; ox < d.x1 - 4; ox += d.cx) for (let oz = d.z0; oz < d.z1 - 4; oz += d.cz) {
@@ -531,7 +541,7 @@ window.WORLD = (function () {
   const upsOf = b => b._ups || (b._ups = [...near(b.x, b.z, Math.max(b.hw, b.hd) + 1)].filter(u => u !== b && u.base >= b.base + b.h0 - .05 && inside(b, u.x, u.z, 0)));
   // rooftop clutter: condenser units and water tanks
   { const ac = [], tank = [];
-    for (const b of B) { if (b.map || b.lm || b.hidden || b.h < 6 || upsOf(b).length || district(b.x, b.z).id === 'sendai') continue; const top = b.base + b.h, n = Math.min(4, 1 + (b.w * b.d / 90 | 0));
+    for (const b of B) { if (b.map || b.lm || b.hidden || b.h < 6 || district(b.x, b.z).out || upsOf(b).length || district(b.x, b.z).id === 'sendai') continue; const top = b.base + b.h, n = Math.min(4, 1 + (b.w * b.d / 90 | 0));
       for (let k = 0; k < n; k++) ac.push({ b, x: b.x + R(-.35, .35) * b.w, z: b.z + R(-.35, .35) * b.d, y: top, s: R(.8, 1.4), r: pick([0, Math.PI / 2]) });
       if (b.style !== 'glass' && b.style !== 'darkglass' && rnd() < .45) tank.push({ b, x: b.x + R(-.3, .3) * b.w, z: b.z + R(-.3, .3) * b.d, y: top, s: R(.8, 1.3) }); }
     const place = (it, m) => m.compose(P3.set(it.x, it.y, it.z), Q.setFromAxisAngle(new V3(0, 1, 0), it.r || 0), S3.setScalar(it.s));
@@ -563,7 +573,7 @@ window.WORLD = (function () {
     const wg = new THREE.BufferGeometry(); wg.setAttribute('position', new THREE.Float32BufferAttribute(wp, 3)); scene.add(new THREE.LineSegments(wg, new THREE.LineBasicMaterial({ color: 0x18181c }))); }
 
   // suburbs + Shibuya: ground planes, 109, signs and the big screens
-  for (const x of [7500, 10000]) { const g = new THREE.Mesh(new THREE.PlaneGeometry(900, 900), groundMat); g.rotation.x = -Math.PI / 2; g.position.set(x, 0, 0); g.receiveShadow = true; scene.add(g); }
+  for (const x of [7500, 10000]) { const g = new THREE.Mesh(new THREE.PlaneGeometry(1500, 1500), groundMat); g.rotation.x = -Math.PI / 2; g.position.set(x, 0, 0); g.receiveShadow = true; scene.add(g); }
   { const t = special(new THREE.CylinderGeometry(.5, .5, 1, 20), MATS.office, 9902, 17, -10, 18, 34, 18); t.userData.core = 1; const b = B.find(q => q.lm === '109'); b.spec = t; t.userData.b = b;
     const sg = (w, h, draw, x, y, z, ry) => { const m = new THREE.Mesh(new THREE.PlaneGeometry(w, h), new THREE.MeshBasicMaterial({ map: canvasTex(w * 12, h * 12, draw, false), side: THREE.DoubleSide })); m.position.set(x, y, z); m.rotation.y = ry || 0; scene.add(m); return m; };
     sg(9, 3, (c, w, h) => { c.fillStyle = '#101010'; c.fillRect(0, 0, w, h); c.fillStyle = '#f2f2f2'; c.font = 'bold 26px sans-serif'; c.textAlign = 'center'; c.fillText('SHIBUYA109', w / 2, 27); }, 9902, 30, .2, 0);
@@ -573,7 +583,7 @@ window.WORLD = (function () {
     const hachi = new THREE.Mesh(box, new THREE.MeshLambertMaterial({ color: 0x6a5a3a })); hachi.scale.set(.6, 1.2, 1.4); hachi.position.set(9978, .6, -12); scene.add(hachi);
     const water = new THREE.Mesh(new THREE.PlaneGeometry(600, 36), new THREE.MeshLambertMaterial({ color: 0x2a4a60, transparent: true, opacity: .85 })); water.rotation.x = -Math.PI / 2; water.position.set(7500, .08, 200); scene.add(water); }
   // Sendai is a low-rise town: tiled hip roofs on the houses, a running track and a clock at the school
-  { const roofs = B.filter(b => !b.map && !b.lm && district(b.x, b.z).id === 'sendai' && b.base === 0).map(b => ({ b, c: [0x3a4658, 0x4a3a34, 0x5a2a28, 0x39424a][(b.x * 3 + b.z) & 3] }));
+  { const roofs = B.filter(b => !b.map && !b.lm && ['sendai', 'sendaiout'].includes(district(b.x, b.z).id) && b.base === 0).map(b => ({ b, c: [0x3a4658, 0x4a3a34, 0x5a2a28, 0x39424a][(b.x * 3 + b.z) & 3] }));
     const rg = new THREE.ConeGeometry(.74, 1, 4, 1).rotateY(PI4).translate(0, .5, 0);
     const m = instanced(rg, new THREE.MeshLambertMaterial({ color: 0xffffff }), roofs.map(r => Object.assign(r, { c: 1, col: r.c })), (r, M, c) => { M.compose(P3.set(r.b.x, r.b.h - .1, r.b.z), Q.identity(), S3.set(r.b.w * 1.1, Math.min(3.2, r.b.w * .3), r.b.d * 1.1)); c.setHex(r.col); }, true);
     attachAll(m, roofs);
@@ -581,7 +591,7 @@ window.WORLD = (function () {
     const clock = new THREE.Mesh(new THREE.CircleGeometry(1.6, 20), new THREE.MeshBasicMaterial({ map: canvasTex(32, 32, c => { c.fillStyle = '#f2efe6'; c.beginPath(); c.arc(16, 16, 15, 0, 7); c.fill(); c.strokeStyle = '#222'; c.lineWidth = 2; c.stroke(); c.beginPath(); c.moveTo(16, 16); c.lineTo(16, 5); c.moveTo(16, 16); c.lineTo(24, 18); c.stroke(); }) }));
     clock.position.set(5010, 12.6, -48.9); scene.add(clock); }
   // Sendai: ground, school gate and signs
-  { const g3 = new THREE.Mesh(new THREE.PlaneGeometry(900, 900), groundMat); g3.rotation.x = -Math.PI / 2; g3.position.set(5000, 0, 0); g3.receiveShadow = true; scene.add(g3);
+  { const g3 = new THREE.Mesh(new THREE.PlaneGeometry(1500, 1500), groundMat); g3.rotation.x = -Math.PI / 2; g3.position.set(5000, 0, 0); g3.receiveShadow = true; scene.add(g3);
     const sign = (w, h, draw, x, y, z, ry) => { const m = new THREE.Mesh(new THREE.PlaneGeometry(w, h), new THREE.MeshBasicMaterial({ map: canvasTex(w * 16, h * 16, draw, false), side: THREE.DoubleSide })); m.position.set(x, y, z); m.rotation.y = ry || 0; scene.add(m); };
     const gm = new THREE.MeshLambertMaterial({ color: 0x9a9690 }); for (const x of [5004, 5016]) { const p = new THREE.Mesh(box, gm); p.scale.set(1, 3, 1); p.position.set(x, 1.5, 42); p.castShadow = true; scene.add(p); }
     sign(2.4, .6, (c, w, h) => { c.fillStyle = '#e8e4da'; c.fillRect(0, 0, w, h); c.fillStyle = '#1a1a1a'; c.font = 'bold 12px serif'; c.textAlign = 'center'; c.fillText('杉沢第三高校', w / 2, 11); }, 5003.4, 2.2, 42.6);
@@ -599,10 +609,10 @@ window.WORLD = (function () {
     const pts = []; for (let i = 0; i < 260; i++) { const street = i % 3; pts.push(street === 0 ? 9870 + R(-40, 40) : street === 1 ? 9958 + R(-30, 30) : 9900 + R(-10, 90), R(4, 7), street === 0 ? R(-160, -40) : street === 1 ? R(-60, 5) : R(10, 140)); }
     const pg = new THREE.BufferGeometry(); pg.setAttribute('position', new THREE.Float32BufferAttribute(pts, 3)); g.add(new THREE.Points(pg, new THREE.PointsMaterial({ map: lanT, size: .8, transparent: true, alphaTest: .4 }))); }
   // Ikebukuro inside the colony barrier; the theater Higuruma uses as his base
-  { const g = MAPG.ikebukuro; g.add(dome(260, 0x14061e, .38, 12500, 0), dome(263, 0x8a3aff, .1, 12500, 0));
+  { const g = MAPG.ikebukuro; g.add(dome(260, 0x14061e, .2, 12500, 0), dome(263, 0x8a3aff, .1, 12500, 0));
     const sg = new THREE.Mesh(new THREE.PlaneGeometry(12, 2.6), new THREE.MeshBasicMaterial({ map: canvasTex(144, 32, (c, w, h) => { c.fillStyle = '#2a0e10'; c.fillRect(0, 0, w, h); c.fillStyle = '#f2d27a'; c.font = 'bold 20px serif'; c.textAlign = 'center'; c.fillText('劇場 THEATER', w / 2, 23); }, false) }));
     sg.position.set(12430, 13, 86.2); g.add(sg);
-    const gr = new THREE.Mesh(new THREE.PlaneGeometry(900, 900), groundMat); gr.rotation.x = -Math.PI / 2; gr.position.set(12500, 0, 0); gr.receiveShadow = true; g.add(gr); }
+    const gr = new THREE.Mesh(new THREE.PlaneGeometry(1500, 1500), groundMat); gr.rotation.x = -Math.PI / 2; gr.position.set(12500, 0, 0); gr.receiveShadow = true; g.add(gr); }
   const roofM = new THREE.MeshLambertMaterial({ color: 0x3c4452 }), jjhTreeGeo = {};
   function hipRoof(w, d, h) {   // concave hip roof (shallow at the eaves, steep at the ridge), ridge along the long side
     const swap = d > w; if (swap) [w, d] = [d, w]; const N = 4, pos = [];
@@ -646,6 +656,19 @@ window.WORLD = (function () {
     const fol = jjhTreeGeo.fol, at = ([x, z, h, y], M) => M.compose(P3.set(x, y, z), Q.setFromAxisAngle(new V3(0, 1, 0), x), S3.set(h * .6, h, h * .6));
     const a = instanced(jjhTreeGeo.tr, new THREE.MeshLambertMaterial({ color: 0x4a3024 }), tr, at, true), f = instanced(fol, new THREE.MeshLambertMaterial({ color: 0xffffff }), tr.map(t => Object.assign(t, { c: 1 })), (t, M, c) => { at(t, M); c.setRGB(.12 + (t[0] % 3) * .012, .22 + (t[1] % 5) * .012, .11); }, true);
     g.add(a, f); }
+  // Koinokuchi Canyon floor: boulders in and along the river, scrub under the cliffs
+  { const g = MAPG.canyon, bl = [], sh = [];
+    for (let i = 0; i < 160; i++) { const z = (rnd() < .5 ? -1 : 1) * R(6, 22); bl.push([R(14790, 15210), z, R(.3, 1.1), rnd()]); }
+    for (let i = 0; i < 220; i++) sh.push([R(14790, 15210), (rnd() < .5 ? -1 : 1) * R(17, 24), R(.6, 1.4)]);
+    const bm = instanced(new THREE.IcosahedronGeometry(1, 0), new THREE.MeshLambertMaterial({ color: 0xffffff }), bl.map(b => Object.assign(b, { c: 1 })), ([x, z, k, r], M, c) => { M.compose(P3.set(x, k * .3, z), Q.setFromEuler(new THREE.Euler(r, r * 7, 0)), S3.set(k * 1.3, k * .8, k)); c.setRGB(.36 + r * .1, .34 + r * .08, .3 + r * .06); }, true);
+    const sm = instanced(new THREE.IcosahedronGeometry(1, 0), new THREE.MeshLambertMaterial({ color: 0xffffff }), sh.map(b => Object.assign(b, { c: 1 })), ([x, z, k], M, c) => { M.compose(P3.set(x, k * .5, z), Q.identity(), S3.set(k * 1.2, k * .8, k * 1.2)); c.setRGB(.2 + (x % 3) * .02, .32 + (z % 2) * .03, .14); }, true);
+    g.add(bm, sm); }
+  // Eishū: gate sign, floodlights over the yard
+  { const t = canvasTex(96, 20, (c, w, h) => { c.fillStyle = '#e8e4da'; c.fillRect(0, 0, w, h); c.fillStyle = '#1a1a1a'; c.font = 'bold 14px serif'; c.textAlign = 'center'; c.fillText('英集少年院', w / 2, 15); }, false);
+    const sg = new THREE.Mesh(new THREE.PlaneGeometry(3.6, .75), new THREE.MeshBasicMaterial({ map: t, side: THREE.DoubleSide })); sg.position.set(7350.9, 4.2, -109.9); scene.add(sg);
+    const fl = [[7310, -120], [7410, -120], [7310, -220], [7410, -220]], at = ([x, z], M) => M.compose(P3.set(x, 0, z), Q.identity(), S3.set(1, 1, 1));
+    instanced(new THREE.CylinderGeometry(.14, .18, 11, 6).translate(0, 5.5, 0), new THREE.MeshLambertMaterial({ color: 0x5a5c60 }), fl, at, true);
+    instanced(new THREE.BoxGeometry(1.4, .5, .8).translate(0, 11.1, 0), lampMat, fl, at); cityList.push(sg, ...scene.children.slice(-2)); }
   /* ---------------- interiors: floors, ceilings with lights, furniture, signs ---------------- */
   { const plane = (g, w, h, x, y, z, mat, rx, ry) => { const m = new THREE.Mesh(new THREE.PlaneGeometry(w, h), mat); m.position.set(x, y, z); if (rx) m.rotation.x = rx; if (ry) m.rotation.y = ry; g.add(m); return m; };
     const tex = (w, h, draw) => canvasTex(w, h, draw, false), basic = t => new THREE.MeshBasicMaterial({ map: t, side: THREE.DoubleSide }), lam = c => new THREE.MeshLambertMaterial({ color: c });
@@ -673,6 +696,9 @@ window.WORLD = (function () {
     // gym
     { const g = MAPG.gym; floor(g, 21240, 0); ceiling(g, 96, 60, 21240, 12, 0, lightsTex('#6a6660', '#e8e8e0'));
       plane(g, 40, 7, 21240, 5, -30.2, lam(0x6a1418)); plane(g, 30, 2, 21240, 10, -30.25, basic(tex(120, 16, (c, w, h) => { c.fillStyle = '#f2efe6'; c.fillRect(0, 0, w, h); c.fillStyle = '#222'; c.font = 'bold 12px serif'; c.textAlign = 'center'; c.fillText('里桜高校 全校集会', w / 2, 12); })));
+      const chairs = []; for (let r = 0; r < 7; r++) for (let x = -20; x <= 20; x += 1.25) if (Math.abs(x) > 1.5) chairs.push([21240 + x, 0, -19 + r * 1.7]);
+      put(g, new THREE.BoxGeometry(.5, .06, .5).translate(0, .46, 0), lam(0x3a4a6a), chairs, at()); put(g, new THREE.BoxGeometry(.5, .5, .06).translate(0, .72, .24), lam(0x3a4a6a), chairs, at()); put(g, new THREE.BoxGeometry(.04, .46, .04).translate(0, .23, 0), lam(0x9a9aa0), chairs, at());
+      for (const z of [-30.2, 30.2]) plane(g, 90, 1.6, 21240, 10, z * .99, new THREE.MeshBasicMaterial({ color: 0xd8e0e8 }), 0, z > 0 ? Math.PI : 0);
       for (const x of [21196, 21284]) { plane(g, 3.6, 2.4, x + (x < 21240 ? .5 : -.5), 5.2, 0, lam(0xf2f2f2), 0, Math.PI / 2); const rim = new THREE.Mesh(new THREE.TorusGeometry(.45, .05, 6, 16), lam(0xd05020)); rim.rotation.x = Math.PI / 2; rim.position.set(x + (x < 21240 ? 1.1 : -1.1), 4.4, 0); g.add(rim); } }
     // Shibuya Station B5F
     { const g = MAPG.platform; floor(g, 21680, 0); ceiling(g, 196, 30, 21680, 7.2, 0, lightsTex('#8a8c90', '#f4f6ff'));
@@ -696,6 +722,10 @@ window.WORLD = (function () {
   function setMap(k) { if (!MAPS[k]) k = 'shinjuku'; mapK = k; Object.assign(MAP, { ceil: 0 }, MAPS[k]); const city = CITY.includes(k);   // every city map shares the city meshes
     for (const o of cityList) o.visible = city; for (const s of STY) inst[s].visible = STY_MAPS[s] ? STY_MAPS[s].includes(k) : city; jjh.visible = k === 'jjh';
     for (const [m, g] of Object.entries(MAPG)) g.visible = m === k;
+    // draw only this map's buildings: each style's instances are reordered so the nearby ones come first, and the rest are skipped
+    const cx = (MAP.x0 + MAP.x1) / 2, hw = (MAP.x1 - MAP.x0) / 2 + 600;
+    for (const s of STY) { const m = inst[s]; if (!m.visible) continue; const near = [], far = []; for (const b of plan[s]) (Math.abs(b.x - cx) < hw ? near : far).push(b);
+      near.concat(far).forEach((b, i) => { b.i = i; writeB(b); }); m.count = near.length; m.instanceMatrix.needsUpdate = true; if (m.instanceColor) m.instanceColor.needsUpdate = true; }
     mini.width = Math.ceil((MAP.x1 - MAP.x0) * MAP.ms); mini.height = Math.ceil((MAP.z1 - MAP.z0) * MAP.ms); drawMini(); }
 
   /* ---------------- domain set pieces ---------------- */
@@ -783,10 +813,10 @@ window.WORLD = (function () {
     if (!quiet) chunk(b, local, b.h - local); setH(b, local, quiet); b.hp *= .6; if (!quiet) { debris(new V3(b.x, y, b.z), 10, null, 6); for (let k = 0; k < 3; k++) dustAt(new V3(b.x + R(-b.w, b.w) * .5, y, b.z + R(-b.d, b.d) * .5), R(4, 7)); } }
   function hitB(b, dmg, p) { if (b.h < .5) return; b.hp -= dmg; debris(p, 4, null, 7); if (b.hp <= 0) collapse(b); }
   function erase(b) { if (solid || b.h < .5) return; const c = new V3(b.x, b.base + b.h / 2, b.z); b.alive = false; setH(b, .4, true); dustAt(c, 10, 0x8a5ac8); crater(new V3(b.x, 0, b.z), Math.max(b.w, b.d) * .7); }
-  function ruin(id, frac) { for (const b of B) { if (b.map) continue; if (b.lm && b.lm !== 'omoide') { if (rnd() < frac * .4 && b.base === 0 && !b.spec && !['parktower', 'docomo', 'tocho'].includes(b.lm)) cutB(b, b.base + b.h * R(.4, .8), true); continue; }
+  function ruin(id, frac) { U.power.value = 0; for (const b of B) { if (b.map && b.map !== mapK) continue; if (b.lm && b.lm !== 'omoide') { if (rnd() < frac * .4 && b.base === 0 && !b.spec && !['parktower', 'docomo', 'tocho'].includes(b.lm)) cutB(b, b.base + b.h * R(.4, .8), true); continue; }
     const d = district(b.x, b.z); if (d.id === id && rnd() < frac) { if (b.base > 0) setH(b, 0); else collapse(b, true); } }
     for (let i = 0; i < 26; i++) { const b = pick(B.filter(q => !q.alive && !q.map)); if (b) fireAt(new V3(b.x, b.base + b.h, b.z), R(2.5, 5), 1e9); } }
-  function reset() { for (const b of B) { b.h = b.h0; b.alive = true; b.hp = b.hp0; if (!b.hidden) writeB(b); writeAtt(b); if (b.spec) { b.spec.visible = true; if (b.spec.userData.core) { b.spec.scale.y = b.h0; b.spec.position.y = b.h0 / 2; } } } for (const s of STY) { inst[s].instanceMatrix.needsUpdate = true; if (inst[s].instanceColor) inst[s].instanceColor.needsUpdate = true; }
+  function reset() { U.power.value = 1; for (const b of B) { b.h = b.h0; b.alive = true; b.hp = b.hp0; if (!b.hidden) writeB(b); writeAtt(b); if (b.spec) { b.spec.visible = true; if (b.spec.userData.core) { b.spec.scale.y = b.h0; b.spec.position.y = b.h0 / 2; } } } for (const s of STY) { inst[s].instanceMatrix.needsUpdate = true; if (inst[s].instanceColor) inst[s].instanceColor.needsUpdate = true; }
     for (const f of fires) scene.remove(f.o); fires.length = 0; for (const d of dust) scene.remove(d.o); dust.length = 0; for (const c of chunks) scene.remove(c.m); chunks.length = 0;
     for (const d of deb) d.life = 0; signs.forEach((s, i) => signMesh.setMatrixAt(i, M4.compose(P3.set(s.x, s.y, s.z), Q.setFromAxisAngle(new V3(0, 1, 0), s.ry), S3.set(1, 1, 1)))); signMesh.instanceMatrix.needsUpdate = true; drawMini(); for (let i = 0; i < DEC; i++) decM.setMatrixAt(i, M4.makeScale(0, 0, 0)); decM.instanceMatrix.needsUpdate = true; setMood(null); }
 
