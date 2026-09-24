@@ -481,7 +481,7 @@
     if (shakeA > 0) { camera.position.add(new V3(rand(-1, 1), rand(-1, 1), rand(-1, 1)).multiplyScalar(shakeA * .35)); shakeA = Math.max(0, shakeA - dt * 3); }
     camera.updateMatrixWorld(); camRight.setFromMatrixColumn(camera.matrixWorld, 0).setY(0).normalize(); camFwd.crossVectors(UP, camRight).normalize();
     // see-through cutouts around both fighters
-    [P, Q].forEach((f, i) => { if (G.mode === 'title' || G.mode === 'menu') { WORLD.setCut(i, 0, 0, 0, 0); return; } const v = f.center().project(camera); const d = camera.position.distanceTo(f.center());
+    [P, Q].forEach((f, i) => { if (G.mode === 'title' || G.mode === 'menu' || OW.active) { WORLD.setCut(i, 0, 0, 0, 0); return; } const v = f.center().project(camera); const d = camera.position.distanceTo(f.center());
       WORLD.setCut(i, (v.x * .5 + .5) * WORLD.W, (v.y * .5 + .5) * WORLD.H, clamp(WORLD.H * .16 * 12 / d, WORLD.H * .06, WORLD.H * .3), v.z * .5 + .5 - .0004); });
   }
 
@@ -515,9 +515,10 @@
 
   /* =================== FLOW =================== */
   let prog = {}; try { prog = JSON.parse(localStorage.getItem('ss2-progress') || '{}'); } catch (e) { }
-  let settings = { music: true, voice: true, sfx: true, auto: true, lang: 'ja' }; try { Object.assign(settings, JSON.parse(localStorage.getItem('ss2-settings') || '{}')); } catch (e) { }
+  let settings = { music: true, voice: true, sfx: true, auto: true, lang: 'ja', sharp: true }; try { Object.assign(settings, JSON.parse(localStorage.getItem('ss2-settings') || '{}')); } catch (e) { }
   const save = () => { try { localStorage.setItem('ss2-progress', JSON.stringify(prog)); localStorage.setItem('ss2-settings', JSON.stringify(settings)); } catch (e) { } };
   for (const k of ['music', 'voice', 'sfx', 'lang']) AUDIO.set(k, settings[k]);
+  WORLD.setPixel(settings.sharp === false ? 360 : 540);
   const screens = ['#title', '#story', '#versus', '#help', '#settings', '#result', '#pause', '#owmenu', '#quests'];
   function show(id) { for (const s of screens) $(s).hidden = s !== id; const fight = id === null && ['fight', 'ready', 'ko', 'ow'].includes(G.mode); $('#owhud').hidden = !(fight && G.mode === 'ow');
     $('#hud').hidden = !fight; $('#touch').hidden = !(fight && matchMedia('(pointer:coarse)').matches); }
@@ -628,10 +629,10 @@
     segRow($('#todV'), TODS.map(t => t[0].toUpperCase() + t.slice(1)), () => TODS.indexOf(G.tod), v => G.tod = TODS[v]);
     segRow($('#stageV'), STAGES.map(s => s.n), () => G.stage, v => G.stage = v); }
   function openSettings() { show('#settings'); const el = $('#setRows'); el.innerHTML = '';
-    for (const [k, label, note] of [['music', 'Music', 'Original score, synthesized live'], ['voice', 'Voices', 'Synthetic voices, not the anime cast'], ['lang', 'Voice language', 'Japanese with English subtitles, like the anime'], ['sfx', 'Sound effects', ''], ['auto', 'Auto-advance voiced lines', 'Cutscenes play on their own']]) {
+    for (const [k, label, note] of [['music', 'Music', 'Original score, synthesized live'], ['voice', 'Voices', 'Synthetic voices, not the anime cast'], ['lang', 'Voice language', 'Japanese with English subtitles, like the anime'], ['sfx', 'Sound effects', ''], ['auto', 'Auto-advance voiced lines', 'Cutscenes play on their own'], ['sharp', 'Sharp graphics', 'Higher-resolution world; turn off for chunkier pixels or a slow computer']]) {
       const b = document.createElement('button'); b.className = 'toggle'; const val = () => k === 'lang' ? (settings.lang === 'ja' ? '日本語' : 'English') : settings[k] ? 'ON' : 'OFF';
       const draw = () => b.innerHTML = `<span>${label}${note ? `<small>${note}</small>` : ''}</span><b>${val()}</b>`; draw();
-      b.onclick = () => { settings[k] = k === 'lang' ? (settings.lang === 'ja' ? 'en' : 'ja') : !settings[k]; if (k !== 'auto') AUDIO.set(k, settings[k]); save(); draw(); AUDIO.sfx('ui'); }; el.appendChild(b); } el.firstChild.focus(); }
+      b.onclick = () => { settings[k] = k === 'lang' ? (settings.lang === 'ja' ? 'en' : 'ja') : !settings[k]; if (k === 'sharp') WORLD.setPixel(settings.sharp === false ? 360 : 540); else if (k !== 'auto') AUDIO.set(k, settings[k]); save(); draw(); AUDIO.sfx('ui'); }; el.appendChild(b); } el.firstChild.focus(); }
   $('#bStory').onclick = () => { AUDIO.sfx('ui'); openStory(); };
   $('#bYuji').onclick = () => { AUDIO.sfx('ui'); G.mode = 'menu'; show('#owmenu'); OW.menu(); ($('#owCont').hidden ? $('#owNew') : $('#owCont')).focus(); };
   $('#owCont').onclick = () => { AUDIO.sfx('ui'); OW.start(false); }; $('#owNew').onclick = () => { AUDIO.sfx('ui'); OW.start(true); }; $('#bVersus').onclick = () => { AUDIO.sfx('ui'); openVersus(); }; $('#bHelp').onclick = () => { AUDIO.sfx('ui'); show('#help'); };
@@ -678,7 +679,7 @@
       t.el.style.left = (v.x + 1) / 2 * innerWidth + 'px'; t.el.style.top = (1 - v.y) / 2 * innerHeight + 'px'; t.el.style.opacity = Math.min(1, t.life / t.max * 2); t.el.hidden = v.z > 1; if (t.life <= 0) { t.el.remove(); FT.splice(i, 1); } }
     if (['fight', 'ko', 'ready', 'ow'].includes(G.mode)) hud(); if (G.mode === 'ow') OW.hud();
     const focus = P ? (['title', 'menu', 'boot'].includes(G.mode) ? camLook : G.mode === 'ow' || window.OW && OW.active ? P.pos.clone() : P.pos.clone().add(Q.pos).multiplyScalar(.5)) : new V3();
-    WORLD.update(rdt, focus); WORLD.compM.uniforms.dof.value = ['title', 'menu', 'boot'].includes(G.mode) ? .7 : 1; WORLD.render(focusD);
+    WORLD.update(rdt, focus); WORLD.solid = OW.active; WORLD.compM.uniforms.dof.value = ['title', 'menu', 'boot'].includes(G.mode) ? .6 : G.mode === 'ow' ? .3 : G.mode === 'cut' ? .6 : .45; WORLD.render(focusD);
   }
   window.GAME = { onCrash, G, RO, Fighter, aiIntent, cutscene, setShot, banner, floatText, flash, fillHud, show, clearArena, keys, pressed, later, spark, toTitle, wait, save: () => save(), settings, prog, SEASONS };
   addEventListener('resize', () => WORLD.resize());
